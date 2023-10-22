@@ -1,7 +1,3 @@
-<script setup>
-import MainView from '@/views/MainView.vue'
-</script>
-
 <template>
-  <MainView />
+  <router-view></router-view>
 </template>
