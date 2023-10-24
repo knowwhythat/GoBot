@@ -1,20 +1,17 @@
 <template>
   <div class="main">
-    <div>
-      <Toast position="top-center" group="tc" />
-      <Panel class="body" :header="title">
-        <router-view></router-view>
-      </Panel>
+    <Panel class="body" :header="title">
+      <router-view></router-view>
+    </Panel>
 
-      <div>
-        <Dock :model="items">
-          <template #item="{ item }">
-            <a v-tooltip.top="item.label" href="#" class="p-dock-link" @click="onDockItemClick($event, item)">
-              <img :alt="item.label" :src="item.icon" style="width: 100%" />
-            </a>
-          </template>
-        </Dock>
-      </div>
+    <div>
+      <Dock :model="items">
+        <template #item="{ item }">
+          <a v-tooltip.top="item.label" href="#" class="p-dock-link" @click="onDockItemClick($event, item)">
+            <img :alt="item.label" :src="item.icon" style="width: 100%" />
+          </a>
+        </template>
+      </Dock>
     </div>
   </div>
 </template>
@@ -24,7 +21,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Panel from 'primevue/panel'
 import Dock from 'primevue/dock'
-import Toast from 'primevue/toast'
 import TerminalSvg from '@/assets/images/terminal.svg'
 import DesignerSvg from '@/assets/images/designer.svg'
 import TriggerSvg from '@/assets/images/trigger.svg'
@@ -85,5 +81,9 @@ const onDockItemClick = (event, item) => {
   background-repeat: no-repeat;
   background-size: cover;
   padding: 0;
+}
+
+.body {
+  height: calc(100vh - 100px);
 }
 </style>

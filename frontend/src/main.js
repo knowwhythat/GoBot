@@ -7,6 +7,7 @@ import 'primevue/resources/themes/lara-light-teal/theme.css'
 import 'primeflex/primeflex.css'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import 'primeicons/primeicons.css'
 import './style.css'
 
 const app = createApp(App)
