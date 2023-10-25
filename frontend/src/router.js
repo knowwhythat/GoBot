@@ -4,7 +4,7 @@ import Flow from '@/views/main/FlowView.vue'
 import Trigger from '@/views/main/TriggerView.vue'
 import Record from '@/views/main/RecordView.vue'
 import Log from '@/views/main/LogView.vue'
-import FlowView from '@/views/design/flow/FlowView.vue'
+import WorkflowView from '@/views/design/flow/WorkflowView.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -22,8 +22,8 @@ export const router = createRouter({
       ],
     },
     {
-      path: '/design/flow',
-      component: FlowView,
+      path: '/design/WorkflowView',
+      component: WorkflowView,
     }
   ],
 })

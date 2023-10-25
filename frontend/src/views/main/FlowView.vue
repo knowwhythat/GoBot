@@ -42,7 +42,11 @@
                             <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
                         </div>
                         <div class="flex align-items-right">
-                            <SplitButton label="运行" icon="pi pi-play" @click="run" :model="items" />
+                            <SplitButton label="运行" icon="pi pi-play" @click="run" :model="items">
+                                <template #icon>
+                                    <v-remixicon size="24" name="riPlayLine" />
+                                </template>
+                            </SplitButton>
                         </div>
                     </div>
                 </div>
@@ -79,7 +83,7 @@ const items = [
         label: '编辑',
         icon: 'pi pi-file-edit',
         command: () => {
-            router.push("/design/flow")
+            router.push("/design/WorkflowView")
         }
     },
     {
