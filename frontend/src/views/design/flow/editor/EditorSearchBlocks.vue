@@ -1,30 +1,27 @@
 <template>
   <div class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg">
-    <button v-tooltip="在编辑器中搜索模块(ctrl + b)" class="hoverable p-2 rounded-lg rounded-lg" icon @click="toggleActiveSearch">
+    <Button class="hoverable p-2 rounded-lg rounded-lg" icon @click="toggleActiveSearch">
       <v-remixicon name="riSearch2Line" />
-    </button>
-    <ui-autocomplete ref="autocompleteEl" :model-value="state.query" :items="state.autocompleteItems"
-      :custom-filter="searchNodes" item-key="id" item-label="name" @cancel="blurInput" @select="onSelectItem"
-      @selected="onItemSelected">
-      <input id="search-blocks" v-model="state.query" :placeholder="t('common.search')"
-        :style="{ width: state.active ? '250px' : '0px' }" type="search" autocomplete="off"
-        class="py-2 focus:ring-0 rounded-lg bg-transparent" @focus="extractBlocks" @blur="clearState" />
-      <template #item="{ item }">
+    </Button>
+    <AutoComplete ref="autocompleteEl" v-model="state.query" :suggestions="state.autocompleteItems"
+      @complete="searchNodes" placeholder="搜索">
+      <template #option="slotProps">
         <div class="flex-1 overflow-hidden">
           <p class="text-overflow">
-            {{ item.name }}
+            {{ slotProps.option.name }}
           </p>
           <p class="text-sm text-overflow leading-none text-gray-600 dark:text-gray-300">
-            {{ item.description }}
+            {{ slotProps.option.description }}
           </p>
         </div>
       </template>
-    </ui-autocomplete>
+    </AutoComplete>
   </div>
 </template>
 <script setup>
 import { reactive, ref } from 'vue';
-import { useShortcut } from '@/composable/shortcut';
+import AutoComplete from 'primevue/autocomplete';
+import Button from 'primevue/button'
 
 const props = defineProps({
   editor: {
@@ -51,10 +48,6 @@ const state = reactive({
   autocompleteItems: [],
 });
 
-const shortcut = useShortcut('editor:search-blocks', () => {
-  state.active = true;
-  document.querySelector('#search-blocks')?.focus();
-});
 
 function searchNodes({ item, text }) {
   const query = text.toLocaleLowerCase();

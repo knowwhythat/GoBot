@@ -84,6 +84,6 @@ const onDockItemClick = (event, item) => {
 }
 
 .body {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 98px);
 }
 </style>

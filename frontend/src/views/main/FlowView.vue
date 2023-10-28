@@ -3,7 +3,7 @@
     <div class="card" style="height: 100%;">
         <DataView :value="products" :layout="layout">
             <template #header>
-                <div class="flex justify-content-end">
+                <div class="flex justify-end">
                     <DataViewLayoutOptions v-model="layout" />
                 </div>
             </template>
@@ -30,23 +30,31 @@
             </template>
 
             <template #grid="slotProps">
-                <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
-                    <div class="p-4 border-1 surface-border surface-card border-round">
+                <div class="border-gray-200 border-current border rounded-lg">
+                    <div class="p-4 border-1 surface-border border-round">
                         <div class="flex flex-wrap align-items-center justify-content-between gap-2">
                             <div class="flex align-items-center gap-2">
-                                <i class="pi pi-tag"></i>
+                                <v-remixicon size="18" name="riPriceTag3Line" />
                                 <span class="font-semibold">{{ slotProps.data.category }}</span>
                             </div>
                         </div>
                         <div class="flex flex-column align-items-center gap-3 py-5">
-                            <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
+                            <div class="text-xl font-bold truncate ">{{ slotProps.data.name }}</div>
                         </div>
-                        <div class="flex align-items-right">
-                            <SplitButton label="运行" icon="pi pi-play" @click="run" :model="items">
+                        <div class="flex flex-row-reverse gap-1">
+                            <SplitButton class="bg-violet-500 text-white p-2" label="设置" icon="pi pi-play" @click="run"
+                                :model="items">
                                 <template #icon>
-                                    <v-remixicon size="24" name="riPlayLine" />
+                                    <v-remixicon size="24" name="riSettings3Line" />
                                 </template>
                             </SplitButton>
+                            <Button class="bg-violet-500 text-white p-2" icon="pi pi-file-edit" @click="edit"
+                                v-tooltip="'编辑'" />
+                            <Button class="bg-violet-500 text-white p-2" icon="pi pi-caret-right" v-tooltip="'运行'">
+                                <template #icon>
+                                    <v-remixicon size=" 24" name="riPlayLine" />
+                                </template>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -61,13 +69,14 @@ import { useRouter } from 'vue-router'
 import DataView from 'primevue/dataview'
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
 import SplitButton from 'primevue/splitbutton'
+import Button from 'primevue/button'
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
 const router = useRouter()
 
 onMounted(() => {
     products.value = [
-        { 'category': 'test', 'name': 'test' },
+        { 'category': 'test', 'name': '测试中文名称很长的按实际发生备份脚本的时间副书记快捷方式国际快递发几个快递发几个防水等级覅是降低房价多少' },
         { 'category': 'test', 'name': 'test' },
         { 'category': 'test', 'name': 'test' },
         { 'category': 'test', 'name': 'test' },
@@ -97,7 +106,7 @@ const items = [
         label: '发布',
         icon: 'pi pi-send',
         command: () => {
-            window.location.href = 'https://vuejs.org/';
+            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
         }
     },
     { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
@@ -106,4 +115,18 @@ const items = [
 const run = () => {
     toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
 };
+
+const edit = () => {
+    router.push("/design/WorkflowView")
+}
 </script>
+<style scoped>
+.card:deep(.p-dataview-content) {
+    height: calc(100vh - 268px);
+    overflow: auto;
+}
+
+:deep(.p-grid) {
+    @apply sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+</style>
