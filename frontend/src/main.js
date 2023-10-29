@@ -8,7 +8,9 @@ import Tooltip from 'primevue/tooltip'
 import ConfirmationService from 'primevue/confirmationservice';
 import 'primeicons/primeicons.css'
 import vRemixicon, { icons } from '@/components/vRemixicon';
-import './style.css'
+import '@/assets/css/style.css'
+import '@/assets/css/drawflow.css'
+import '@/assets/css/flow.css'
 import 'primevue/resources/themes/lara-light-teal/theme.css'
 
 

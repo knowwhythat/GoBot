@@ -1,24 +1,18 @@
 <template>
-    <vue-flow :id="props.id" style="height: 100vh;" :class="{ disabled: isDisabled }" @drop="onDropInEditor"
-        @dragend="clearHighlightedElements" @dragover.prevent="onDragoverEditor" :default-edge-options="{
+    <vue-flow :id="props.id" :class="{ disabled: isDisabled }" @drop="onDropInEditor" @dragend="clearHighlightedElements"
+        @dragover.prevent="onDragoverEditor" :default-edge-options="{
             type: 'custom',
             updatable: true,
             selectable: true,
             markerEnd: settings.arrow ? MarkerType.ArrowClosed : '',
         }">
         <Background />
-        <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" class="hidden md:block" />
+        <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" class="hidden md:block" pannable zoomable />
         <div
             class="flex flex-col gap-2 p-2 justify-center absolute z-10 inset-y-20 left-4 w-40 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-auto">
-            <div v-for="block in blocks" :key="block.id" :title="getBlockTitle(block)" draggable="true"
-                class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition group bg-white"
+            <div v-for="block in blocks" :key="block.name" :title="block.name" draggable="true"
+                class="transform select-none cursor-move relative p-4 rounded-lg transition group bg-white"
                 @dragstart="$event.dataTransfer.setData('block', JSON.stringify(block))">
-                <div
-                    class="flex items-center absolute right-2 invisible group-hover:visible top-2 text-gray-600 dark:text-gray-300">
-                    <a :href="`https://docs.automa.site/blocks/${block.id}.html`" title="帮助" target="_blank" rel="noopener">
-                        <v-remixicon name="riInformationLine" size="18" />
-                    </a>
-                </div>
                 <v-remixicon :path="getIconPath(block.icon)" :name="block.icon" size="24" class="mb-2" />
                 <p class="leading-tight text-overflow capitalize">
                     {{ block.name }}
@@ -30,16 +24,15 @@
             <editor-search-blocks :editor="editor" />
             <div class="flex-grow pointer-events-none" />
             <slot name="controls-append" />
-
             <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
                 <Button v-tooltip="'重置'" class="control-button p-2 rounded-lg" @click="editor.fitView()">
                     <v-remixicon name="riFullscreenLine" />
                 </Button>
-                <Button v-tooltip="'放大'" class="p-2 rounded-lg relative z-10" @click="editor.zoomOut()">
+                <Button v-tooltip="'缩小'" class="p-2 rounded-lg relative z-10" @click="editor.zoomOut()">
                     <v-remixicon name="riSubtractLine" />
                 </Button>
                 <hr class="h-6 border-r inline-block" />
-                <Button v-tooltip.top="'缩小'" class="p-2 rounded-lg" @click="editor.zoomIn()">
+                <Button v-tooltip.top="'放大'" class="p-2 rounded-lg" @click="editor.zoomIn()">
                     <v-remixicon name="riAddLine" />
                 </Button>
             </div>
@@ -55,7 +48,7 @@
     </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, watch, computed, reactive, markRaw } from 'vue';
+import { onMounted, onBeforeUnmount, watch, computed, reactive } from 'vue';
 import {
     VueFlow,
     useVueFlow,

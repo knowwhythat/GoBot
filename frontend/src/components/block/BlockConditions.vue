@@ -6,7 +6,7 @@
       <div :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
         class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black">
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
-        <span>{{ data.name }}</span>
+        <span>{{ block.details.name }}</span>
       </div>
     </div>
     <p v-show="data.description" class="text-gray-600 mt-2 dark:text-gray-200 text-overflow leading-tight">
@@ -69,6 +69,7 @@ const appStore = useAppStore();
 
 const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(props.label);
+console.log(block)
 </script>
 <style>
 .condition-handle {
