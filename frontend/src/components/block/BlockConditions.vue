@@ -8,6 +8,10 @@
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
         <span>{{ block.details.name }}</span>
       </div>
+      <div class="flex-grow pointer-events-none" />
+      <Button class="bg-primary" v-tooltip="'添加条件'">
+        <v-remixicon name="riAddLine" size="20" class="m-1" />
+      </Button>
     </div>
     <p v-show="data.description" class="text-gray-600 mt-2 dark:text-gray-200 text-overflow leading-tight">
       {{ data.description }}
@@ -48,6 +52,7 @@ import { Handle } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 import BlockBase from './BlockBase.vue';
+import Button from 'primevue/button';
 
 const props = defineProps({
   id: {

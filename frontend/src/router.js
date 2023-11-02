@@ -4,7 +4,9 @@ import Flow from '@/views/main/FlowView.vue'
 import Trigger from '@/views/main/TriggerView.vue'
 import Record from '@/views/main/RecordView.vue'
 import Log from '@/views/main/LogView.vue'
+import DesignView from '@/views/design/DesignView.vue'
 import WorkflowView from '@/views/design/flow/WorkflowView.vue'
+import SequenceView from '@/views/design/sequence/SequenceView.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -14,16 +16,18 @@ export const router = createRouter({
       component: Main,
       children: [
         { path: '', component: Flow },
-
         { path: 'trigger', component: Trigger },
-
         { path: 'record', component: Record },
         { path: 'log', component: Log },
       ],
     },
     {
-      path: '/design/WorkflowView',
-      component: WorkflowView,
+      path: '/design',
+      component: DesignView,
+      children :[
+        { path: '', component: WorkflowView },
+        { path: 'sequence', component: SequenceView },
+      ]
     }
   ],
 })

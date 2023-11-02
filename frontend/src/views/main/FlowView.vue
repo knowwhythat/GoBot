@@ -1,11 +1,33 @@
-
 <template>
-    <div class="card" style="height: 100%;">
+    <div style="height: 100%;">
         <DataView :value="products" :layout="layout">
             <template #header>
-                <div class="flex justify-end">
-                    <DataViewLayoutOptions v-model="layout" />
-                </div>
+                <Toolbar class="bg-gray-100 p-2">
+                    <template #start>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="value1" style="margin-left: 40px" placeholder="Search" />
+                        </span>
+                    </template>
+                    <template #end>
+                        <Button label="导入" class="bg-primary text-white p-2 mr-8">
+                            <template #icon>
+                                <v-remixicon name="riDownloadLine" />
+                            </template>
+                        </Button>
+                        <Button label="新建" class="bg-primary text-white p-2 mr-8">
+                            <template #icon>
+                                <v-remixicon name="riAddLine" />
+                            </template>
+                        </Button>
+                        <SelectButton v-model="layout" :options="options" optionValue="value" optionLabel="value"
+                            dataKey="value" aria-labelledby="custom">
+                            <template #option="slotProps">
+                                <i :class="slotProps.option.icon"></i>
+                            </template>
+                        </SelectButton>
+                    </template>
+                </Toolbar>
             </template>
 
             <template #list="slotProps">
@@ -42,15 +64,15 @@
                             <div class="text-xl font-bold truncate ">{{ slotProps.data.name }}</div>
                         </div>
                         <div class="flex flex-row-reverse gap-1">
-                            <SplitButton class="bg-violet-500 text-white p-2" label="设置" icon="pi pi-play" @click="run"
+                            <SplitButton class="bg-primary text-white p-2" label="设置" icon="pi pi-play" @click="run"
                                 :model="items">
                                 <template #icon>
                                     <v-remixicon size="24" name="riSettings3Line" />
                                 </template>
                             </SplitButton>
-                            <Button class="bg-violet-500 text-white p-2" icon="pi pi-file-edit" @click="edit"
+                            <Button class="bg-primary text-white p-2" icon="pi pi-file-edit" @click="edit"
                                 v-tooltip="'编辑'" />
-                            <Button class="bg-violet-500 text-white p-2" icon="pi pi-caret-right" v-tooltip="'运行'">
+                            <Button class="bg-primary text-white p-2" icon="pi pi-caret-right" v-tooltip="'运行'">
                                 <template #icon>
                                     <v-remixicon size=" 24" name="riPlayLine" />
                                 </template>
@@ -67,7 +89,9 @@
 import { ref, onMounted } from "vue"
 import { useRouter } from 'vue-router'
 import DataView from 'primevue/dataview'
-import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
+import Toolbar from 'primevue/toolbar';
+import InputText from "primevue/inputtext";
+import SelectButton from "primevue/selectbutton";
 import SplitButton from 'primevue/splitbutton'
 import Button from 'primevue/button'
 import { useToast } from "primevue/usetoast"
@@ -86,13 +110,17 @@ onMounted(() => {
 
 const products = ref();
 const layout = ref('grid');
+const options = ref([
+    { icon: 'pi pi-table', value: 'grid' },
+    { icon: 'pi pi-list', value: 'list' },
+]);
 
 const items = [
     {
         label: '编辑',
         icon: 'pi pi-file-edit',
         command: () => {
-            router.push("/design/WorkflowView")
+            router.push("/design")
         }
     },
     {
@@ -117,7 +145,7 @@ const run = () => {
 };
 
 const edit = () => {
-    router.push("/design/WorkflowView")
+    router.push("/design")
 }
 </script>
 <style scoped>

@@ -10,9 +10,15 @@
         <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" class="hidden md:block" pannable zoomable />
         <div
             class="flex flex-col gap-2 p-2 justify-center absolute z-10 inset-y-20 left-4 w-40 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-auto">
-            <div v-for="block in blocks" :key="block.name" :title="block.name" draggable="true"
+            <div v-for="block in blocks" :key="block.name" draggable="true"
                 class="transform select-none cursor-move relative p-4 rounded-lg transition group bg-white"
                 @dragstart="$event.dataTransfer.setData('block', JSON.stringify(block))">
+                <div
+                    class="flex items-center absolute right-2 invisible group-hover:visible top-2 text-gray-600 dark:text-gray-300">
+                    <a :title="block.description" target="_blank" rel="noopener">
+                        <v-remixicon name="riInformationLine" size="18" />
+                    </a>
+                </div>
                 <v-remixicon :path="getIconPath(block.icon)" :name="block.icon" size="24" class="mb-2" />
                 <p class="leading-tight text-overflow capitalize">
                     {{ block.name }}
@@ -65,13 +71,11 @@ import { useEditorBlock } from '@/composable/editorBlock';
 import { categories } from '@/utils/shared';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
+import { useToast } from "primevue/usetoast"
 import Button from 'primevue/button'
 
+const toast = useToast()
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
-
-const state = reactive({
-    dataChanged: false,
-})
 
 const props = defineProps({
     id: {
@@ -108,6 +112,7 @@ const emit = defineEmits([
     'update:node',
     'delete:node',
     'update:settings',
+    "update:flow"
 ]);
 
 const fallbackBlocks = {
@@ -117,7 +122,6 @@ const fallbackBlocks = {
 
 const blockComponents = import.meta.glob('@/components/block/*.vue', { eager: true });
 const nodeTypes = {}
-console.log(blockComponents)
 for (let each in blockComponents) {
     const name = blockComponents[each].default.__name
     nodeTypes[`node-${name}`] = blockComponents[each].default
@@ -234,7 +238,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
             editor.addEdges(newElements.edges);
         }
 
-        state.dataChanged = true;
+        emit("update:flow");
         return;
     }
 
@@ -244,11 +248,13 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     clearHighlightedElements();
 
     const isTriggerExists =
-        block.id === 'trigger' &&
-        editor.getNodes.value.some((node) => node.label === 'trigger');
-    if (isTriggerExists) return;
-
-    const position = editor.project({ x: clientX - 60, y: clientY - 18 });
+        block.name === '开始' &&
+        editor.getNodes.value.some((node) => node.label === '开始');
+    if (isTriggerExists) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '只允许有一个开始节点', life: 3000 });
+        return;
+    }
+    const position = editor.project({ x: clientX - 60, y: clientY - 40 });
     const nodeId = nanoid();
     const newNode = {
         position,
@@ -259,7 +265,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     };
     editor.addNodes([newNode]);
 
-    state.dataChanged = true;
+    emit("update:flow");
 }
 
 function clearHighlightedElements() {

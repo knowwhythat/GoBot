@@ -12,6 +12,7 @@ import '@/assets/css/style.css'
 import '@/assets/css/drawflow.css'
 import '@/assets/css/flow.css'
 import 'primevue/resources/themes/lara-light-teal/theme.css'
+import BadgeDirective from 'primevue/badgedirective';
 
 
 const pinia = createPinia()
@@ -28,6 +29,7 @@ app.use(PrimeVue, {
 app.use(ToastService)
 app.use(ConfirmationService)
 app.directive('tooltip', Tooltip);
+app.directive('badge', BadgeDirective);
 app.use(vRemixicon, icons)
 
 app.mount('#app')
