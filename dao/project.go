@@ -25,12 +25,12 @@ func (t *Tx) SelectAllProject() (projects []*models.Project, err error) {
 	return projects, nil
 }
 
-func (t *Tx) SelectProject(id uuid.UUID) (project *models.Project, err error) {
+func (t *Tx) SelectProject(id string) (project *models.Project, err error) {
 	b := t.tx.Bucket([]byte(constants.ProjectBucket))
 	if b == nil {
 		return nil, nil
 	}
-	value := b.Get([]byte(id.String()))
+	value := b.Get([]byte(id))
 	if len(value) == 0 {
 		return nil, nil
 	}
@@ -78,12 +78,12 @@ func (t *Tx) UpdateProject(project *models.Project) (err error) {
 	return nil
 }
 
-func (t *Tx) DeleteProject(id uuid.UUID) (err error) {
+func (t *Tx) DeleteProject(id string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ProjectBucket))
 	if b == nil {
 		return nil
 	}
-	if err = b.Delete([]byte(id.String())); err != nil {
+	if err = b.Delete([]byte(id)); err != nil {
 		return err
 	}
 	return nil

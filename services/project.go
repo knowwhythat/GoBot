@@ -65,7 +65,7 @@ func CountProject() (total int, err error) {
 	return total, nil
 }
 
-func QueryProjectById(id uuid.UUID) (result *models.Project, err error) {
+func QueryProjectById(id string) (result *models.Project, err error) {
 	if err := dao.ReadTx(dao.MainDB, func(tx dao.Tx) error {
 		result, err = tx.SelectProject(id)
 		return err
@@ -112,7 +112,7 @@ func AddProject(name string) (result *models.Project, err error) {
 	return result, nil
 }
 
-func ModifyProject(id uuid.UUID, form models.Project) (result *models.Project, err error) {
+func ModifyProject(id string, form models.Project) (result *models.Project, err error) {
 	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
 		project, err := tx.SelectProject(id)
 		if err != nil {
@@ -133,21 +133,26 @@ func ModifyProject(id uuid.UUID, form models.Project) (result *models.Project, e
 	return result, nil
 }
 
-func RemoveSchedule(id uuid.UUID) (res interface{}, err error) {
+func RemoveProject(id string) (err error) {
 	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
 		if project, err := tx.SelectProject(id); err != nil {
 			return err
 		} else if project == nil {
 			return errors.New("project not found")
 		} else {
+			if utils.PathExist(project.Path) {
+				if err := os.RemoveAll(project.Path); err != nil {
+					return err
+				}
+			}
 			if err = tx.DeleteProject(id); err != nil {
 				return err
 			}
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }

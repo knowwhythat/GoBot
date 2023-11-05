@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%;">
-        <DataView :value="products" :layout="layout">
+        <DataView :value="projects" :layout="layout">
             <template #header>
                 <Toolbar class="bg-gray-100 p-2">
                     <template #start>
@@ -66,12 +66,13 @@
                             <div class="text-xl font-bold truncate ">{{ slotProps.data.name }}</div>
                         </div>
                         <div class="flex flex-row-reverse gap-1">
-                            <SplitButton label="设置" icon="pi pi-play" @click="run" :model="items">
+                            <SplitButton label="设置" icon="pi pi-play" @click="run(slotProps.data.id)"
+                                :model="getItems(slotProps.data.id)">
                                 <template #icon>
                                     <v-remixicon size="24" name="riSettings3Line" />
                                 </template>
                             </SplitButton>
-                            <Button icon="pi pi-file-edit" @click="edit" v-tooltip="'编辑'" />
+                            <Button icon="pi pi-file-edit" @click="edit(slotProps.data.id)" v-tooltip="'编辑'" />
                             <Button icon="pi pi-caret-right" v-tooltip="'运行'">
                                 <template #icon>
                                     <v-remixicon size="24" name="riPlayLine" />
@@ -82,8 +83,7 @@
                 </div>
             </template>
         </DataView>
-        <Dialog v-model:visible="newFlow.visible" modal header="Header" :style="{ width: '50rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog v-model:visible="newFlow.visible" modal header="Header">
             <template #header>
                 <div class="inline-flex align-items-center justify-content-center gap-2">
                     <v-remixicon size="20" name="riAddLine" />
@@ -121,19 +121,19 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import { useToast } from "primevue/usetoast"
 import { throttle } from 'lodash-es'
-import { NewWorkflow, ListProject } from "@back/go/main/App"
+import { NewWorkflow, ListProject, DeleteProject } from "@back/go/main/App"
 const toast = useToast()
 const router = useRouter()
 
-onMounted(() => {
+const projects = ref();
+const layout = ref('grid');
+const options = ref([
+    { icon: 'pi pi-table', value: 'grid' },
+    { icon: 'pi pi-list', value: 'list' },
+]);
 
-    products.value = [
-        { 'category': 'test', 'name': '测试中文名称很长的按实际发生备份脚本的时间副书记快捷方式国际快递发几个快递发几个防水等级覅是降低房价多少' },
-        { 'category': 'test', 'name': 'test' },
-        { 'category': 'test', 'name': 'test' },
-        { 'category': 'test', 'name': 'test' },
-        { 'category': 'test', 'name': 'test' },
-    ]
+onMounted(() => {
+    listProject()
 });
 
 const searchText = ref("")
@@ -143,44 +143,44 @@ watch(searchText, throttle((newVal, oldVal) => {
 
 function listProject(name) {
     ListProject(name).then((result) => {
-        console.log(result)
+        projects.value = result.list
     }).catch((error) => {
+        toast.add({ severity: 'error', summary: '加载失败', detail: error, life: 3000 });
         console.error(error)
     })
 }
 
-const products = ref();
-const layout = ref('grid');
-const options = ref([
-    { icon: 'pi pi-table', value: 'grid' },
-    { icon: 'pi pi-list', value: 'list' },
-]);
+function getItems(id) {
+    return [
+        {
+            label: '编辑',
+            icon: 'pi pi-file-edit',
+            command: () => {
 
+            }
+        },
+        {
+            label: '删除',
+            icon: 'pi pi-times',
+            command: () => {
+                DeleteProject(id).then((result) => {
+                    listProject()
+                }).catch((error) => {
+                    console.error(error)
+                })
+            }
+        },
+        {
+            label: '发布',
+            icon: 'pi pi-send',
+            command: () => {
+                toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
+            }
+        },
+        { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
+    ];
+}
 
-const items = [
-    {
-        label: '编辑',
-        icon: 'pi pi-file-edit',
-        command: () => {
-            router.push("/design")
-        }
-    },
-    {
-        label: '删除',
-        icon: 'pi pi-times',
-        command: () => {
-            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
-        }
-    },
-    {
-        label: '发布',
-        icon: 'pi pi-send',
-        command: () => {
-            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
-        }
-    },
-    { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
-];
 
 const run = () => {
     toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gobot/dao"
 	"gobot/forms"
+	"gobot/models"
 	"gobot/services"
 )
 
@@ -42,8 +43,23 @@ func (a *App) ListProject(query string, pageNum int) (result map[string]interfac
 			PageSize: 12,
 		},
 	})
-	result = map[string]interface{}{"total": total, "result": resultList}
+	result = map[string]interface{}{"total": total, "list": resultList}
 	return result, err
+}
+
+func (a *App) SelectProject(id string) (project *models.Project, err error) {
+	project, err = services.QueryProjectById(id)
+	return project, err
+}
+
+func (a *App) UpdateProject(id string, name string) error {
+	_, err := services.ModifyProject(id, models.Project{Name: name})
+	return err
+}
+
+func (a *App) DeleteProject(id string) error {
+	err := services.RemoveProject(id)
+	return err
 }
 
 func (a *App) NewWorkflow(name string) error {
