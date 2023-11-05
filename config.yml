@@ -1,0 +1,4 @@
+kvdb:
+  path: "../data/db"
+python:
+  path: "D:\\Program Files (x86)\\Python3.8\\python.exe"

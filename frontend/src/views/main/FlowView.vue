@@ -4,26 +4,28 @@
             <template #header>
                 <Toolbar class="bg-gray-100 p-2">
                     <template #start>
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
-                            <InputText v-model="value1" style="margin-left: 40px" placeholder="Search" />
-                        </span>
+                        <div class="flex gap-1">
+                            <span class="p-input-icon-left">
+                                <i class="pi pi-search" />
+                                <InputText v-model="searchText" style="margin-left: 40px" placeholder="Search" />
+                            </span>
+                            <Button label="导入">
+                                <template #icon>
+                                    <v-remixicon name="riDownloadLine" />
+                                </template>
+                            </Button>
+                            <Button label="新建" @click="newWorkflow">
+                                <template #icon>
+                                    <v-remixicon name="riAddLine" />
+                                </template>
+                            </Button>
+                        </div>
                     </template>
                     <template #end>
-                        <Button label="导入" class="bg-primary text-white p-2 mr-8">
-                            <template #icon>
-                                <v-remixicon name="riDownloadLine" />
-                            </template>
-                        </Button>
-                        <Button label="新建" class="bg-primary text-white p-2 mr-8">
-                            <template #icon>
-                                <v-remixicon name="riAddLine" />
-                            </template>
-                        </Button>
                         <SelectButton v-model="layout" :options="options" optionValue="value" optionLabel="value"
                             dataKey="value" aria-labelledby="custom">
                             <template #option="slotProps">
-                                <i :class="slotProps.option.icon"></i>
+                                <i :class="slotProps.option.icon" size="32"></i>
                             </template>
                         </SelectButton>
                     </template>
@@ -64,17 +66,15 @@
                             <div class="text-xl font-bold truncate ">{{ slotProps.data.name }}</div>
                         </div>
                         <div class="flex flex-row-reverse gap-1">
-                            <SplitButton class="bg-primary text-white p-2" label="设置" icon="pi pi-play" @click="run"
-                                :model="items">
+                            <SplitButton label="设置" icon="pi pi-play" @click="run" :model="items">
                                 <template #icon>
                                     <v-remixicon size="24" name="riSettings3Line" />
                                 </template>
                             </SplitButton>
-                            <Button class="bg-primary text-white p-2" icon="pi pi-file-edit" @click="edit"
-                                v-tooltip="'编辑'" />
-                            <Button class="bg-primary text-white p-2" icon="pi pi-caret-right" v-tooltip="'运行'">
+                            <Button icon="pi pi-file-edit" @click="edit" v-tooltip="'编辑'" />
+                            <Button icon="pi pi-caret-right" v-tooltip="'运行'">
                                 <template #icon>
-                                    <v-remixicon size=" 24" name="riPlayLine" />
+                                    <v-remixicon size="24" name="riPlayLine" />
                                 </template>
                             </Button>
                         </div>
@@ -82,11 +82,35 @@
                 </div>
             </template>
         </DataView>
+        <Dialog v-model:visible="newFlow.visible" modal header="Header" :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <template #header>
+                <div class="inline-flex align-items-center justify-content-center gap-2">
+                    <v-remixicon size="20" name="riAddLine" />
+                    <span class="font-bold white-space-nowrap">新建流程</span>
+                </div>
+            </template>
+            <div class="card flex justify-content-center">
+                <form @submit="onSubmit" class="flex flex-col gap-2">
+                    <span>
+                        <label for="value">流程名称</label>
+                        <InputText id="value" v-model="newFlow.value" type="text"
+                            :class="{ 'p-invalid': newFlow.errorMessage }" aria-describedby="text-error" />
+                    </span>
+                    <small class="p-error" id="text-error">{{ newFlow.errorMessage || '&nbsp;' }}</small>
+                </form>
+            </div>
+
+            <template #footer>
+                <Button label="取消" icon="pi pi-check" @click="newFlow.visible = false" />
+                <Button label="确定" icon="pi pi-check" @click="newFlow.visible = false" />
+            </template>
+        </Dialog>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, reactive, watch } from "vue"
 import { useRouter } from 'vue-router'
 import DataView from 'primevue/dataview'
 import Toolbar from 'primevue/toolbar';
@@ -94,11 +118,15 @@ import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton";
 import SplitButton from 'primevue/splitbutton'
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 import { useToast } from "primevue/usetoast"
+import { throttle } from 'lodash-es'
+import { NewWorkflow, ListProject } from "@back/go/main/App"
 const toast = useToast()
 const router = useRouter()
 
 onMounted(() => {
+
     products.value = [
         { 'category': 'test', 'name': '测试中文名称很长的按实际发生备份脚本的时间副书记快捷方式国际快递发几个快递发几个防水等级覅是降低房价多少' },
         { 'category': 'test', 'name': 'test' },
@@ -108,12 +136,26 @@ onMounted(() => {
     ]
 });
 
+const searchText = ref("")
+watch(searchText, throttle((newVal, oldVal) => {
+    listProject(newVal)
+}, 1000))
+
+function listProject(name) {
+    ListProject(name).then((result) => {
+        console.log(result)
+    }).catch((error) => {
+        console.error(error)
+    })
+}
+
 const products = ref();
 const layout = ref('grid');
 const options = ref([
     { icon: 'pi pi-table', value: 'grid' },
     { icon: 'pi pi-list', value: 'list' },
 ]);
+
 
 const items = [
     {
@@ -147,10 +189,26 @@ const run = () => {
 const edit = () => {
     router.push("/design")
 }
+
+const newFlow = reactive({
+    visible: false,
+    flowName: '',
+    errorMessage: ""
+
+})
+
+function newWorkflow() {
+    newFlow.visible = true
+    // NewWorkflow("test").then((result) => {
+    //     toast.add({ severity: 'warn', summary: 'Delete', detail: result, life: 3000 });
+    // }).catch((error) => {
+    //     console.error(error)
+    // });
+}
 </script>
 <style scoped>
-.card:deep(.p-dataview-content) {
-    height: calc(100vh - 268px);
+:deep(.p-dataview-content) {
+    height: calc(100vh - 298px);
     overflow: auto;
 }
 

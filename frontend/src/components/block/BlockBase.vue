@@ -53,7 +53,7 @@ function runWorkflow() {
 </script>
 <style>
 .block-menu {
-  @apply mb-1 bg-box-transparent-2 rounded-md;
+  @apply mb-1 rounded-md;
 
   button {
     padding-left: 6px;
