@@ -6,9 +6,9 @@ export namespace models {
 	    path: string;
 	    icon: string;
 	    description: string;
-	    // Go type: JsonTime
+	    // Go type: time
 	    create_ts: any;
-	    // Go type: JsonTime
+	    // Go type: time
 	    update_ts: any;
 	
 	    static createFrom(source: any = {}) {

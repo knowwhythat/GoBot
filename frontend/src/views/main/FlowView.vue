@@ -14,7 +14,7 @@
                                     <v-remixicon name="riDownloadLine" />
                                 </template>
                             </Button>
-                            <Button label="新建" @click="newWorkflow">
+                            <Button label="新建" @click="createProject">
                                 <template #icon>
                                     <v-remixicon name="riAddLine" />
                                 </template>
@@ -83,7 +83,7 @@
                 </div>
             </template>
         </DataView>
-        <Dialog v-model:visible="newFlow.visible" modal header="Header">
+        <Dialog v-model:visible="newProject.dialogVisible" modal header="Header">
             <template #header>
                 <div class="inline-flex align-items-center justify-content-center gap-2">
                     <v-remixicon size="20" name="riAddLine" />
@@ -93,17 +93,17 @@
             <div class="card flex justify-content-center">
                 <form @submit="onSubmit" class="flex flex-col gap-2">
                     <span>
-                        <label for="value">流程名称</label>
-                        <InputText id="value" v-model="newFlow.value" type="text"
-                            :class="{ 'p-invalid': newFlow.errorMessage }" aria-describedby="text-error" />
+                        <label for="value" class="mr-2">流程名称</label>
+                        <InputText id="value" v-model="newProject.name" type="text"
+                            :class="{ 'p-invalid': newProject.errorMessage }" aria-describedby="text-error" />
                     </span>
-                    <small class="p-error" id="text-error">{{ newFlow.errorMessage || '&nbsp;' }}</small>
+                    <small class="p-error" id="text-error">{{ newProject.errorMessage || '&nbsp;' }}</small>
                 </form>
             </div>
 
             <template #footer>
-                <Button label="取消" icon="pi pi-check" @click="newFlow.visible = false" />
-                <Button label="确定" icon="pi pi-check" @click="newFlow.visible = false" />
+                <Button label="取消" icon="pi pi-times" @click="newProject.dialogVisible = false" />
+                <Button label="确定" icon="pi pi-check" @click="doCreateProject" :loading="newProject.loading" />
             </template>
         </Dialog>
     </div>
@@ -121,7 +121,7 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import { useToast } from "primevue/usetoast"
 import { throttle } from 'lodash-es'
-import { NewWorkflow, ListProject, DeleteProject } from "@back/go/main/App"
+import { CreateProject, ListProject, DeleteProject } from "@back/go/main/App"
 const toast = useToast()
 const router = useRouter()
 
@@ -177,7 +177,11 @@ function getItems(id) {
                 toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
             }
         },
-        { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
+        {
+            label: 'Upload', icon: 'pi pi-upload', command: () => {
+
+            }
+        }
     ];
 }
 
@@ -186,25 +190,35 @@ const run = () => {
     toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
 };
 
-const edit = () => {
-    router.push("/design")
+const edit = (id) => {
+    router.push("/design?id=" + id)
 }
 
-const newFlow = reactive({
-    visible: false,
-    flowName: '',
+const newProject = reactive({
+    dialogVisible: false,
+    loading: false,
+    name: '',
     errorMessage: ""
 
 })
 
-function newWorkflow() {
-    newFlow.visible = true
-    // NewWorkflow("test").then((result) => {
-    //     toast.add({ severity: 'warn', summary: 'Delete', detail: result, life: 3000 });
-    // }).catch((error) => {
-    //     console.error(error)
-    // });
+function createProject() {
+    newProject.dialogVisible = true
 }
+
+function doCreateProject() {
+    newProject.loading = true
+    CreateProject(newProject.name).then((result) => {
+        newProject.loading = false
+        newProject.dialogVisible = false
+        listProject()
+    }).catch((error) => {
+        console.error(error)
+        newProject.loading = false
+        newProject.errorMessage = error
+    });
+}
+
 </script>
 <style scoped>
 :deep(.p-dataview-content) {

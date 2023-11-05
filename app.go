@@ -62,7 +62,7 @@ func (a *App) DeleteProject(id string) error {
 	return err
 }
 
-func (a *App) NewWorkflow(name string) error {
+func (a *App) CreateProject(name string) error {
 	_, err := services.AddProject(name)
 	return err
 }

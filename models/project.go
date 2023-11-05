@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	uuid "github.com/google/uuid"
 )
 
@@ -10,6 +12,6 @@ type Project struct {
 	Path        string    `json:"path"`
 	Icon        string    `json:"icon"`
 	Description string    `json:"description"`
-	CreateTs    JsonTime  `json:"create_ts"`
-	UpdateTs    JsonTime  `json:"update_ts"`
+	CreateTs    time.Time `json:"create_ts"`
+	UpdateTs    time.Time `json:"update_ts"`
 }

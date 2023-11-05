@@ -45,10 +45,10 @@ func (t *Tx) InsertProject(project *models.Project) (err error) {
 		project.Id = uuid.New()
 	}
 	if project.CreateTs.IsZero() {
-		project.CreateTs = models.JsonTime{Time: time.Now()}
+		project.CreateTs = time.Now()
 	}
 	if project.UpdateTs.IsZero() {
-		project.UpdateTs = models.JsonTime{Time: time.Now()}
+		project.UpdateTs = time.Now()
 	}
 
 	value, err := json.Marshal(&project)
@@ -70,7 +70,7 @@ func (t *Tx) UpdateProject(project *models.Project) (err error) {
 	if b == nil {
 		return nil
 	}
-	project.UpdateTs = models.JsonTime{Time: time.Now()}
+	project.UpdateTs = time.Now()
 	value, _ := json.Marshal(&project)
 	if err = b.Put([]byte(project.Id.String()), value); err != nil {
 		return err
