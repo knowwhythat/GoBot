@@ -38,7 +38,7 @@
 		}
 	}
 	svg g.connected-edges path {
-		stroke:  theme('colors.primary');
+		stroke:  theme('colors.indigo.600');
 	}
 }
 
