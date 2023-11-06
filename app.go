@@ -66,3 +66,11 @@ func (a *App) CreateProject(name string) error {
 	_, err := services.AddProject(name)
 	return err
 }
+
+func (a *App) GetMainFlow(id string) (string, error) {
+	return services.ReadMainFlow(id)
+}
+
+func (a *App) SaveMainFlow(id, data string) error {
+	return services.SaveMainFLow(id, data)
+}

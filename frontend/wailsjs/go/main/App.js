@@ -10,12 +10,20 @@ export function DeleteProject(arg1) {
   return window['go']['main']['App']['DeleteProject'](arg1);
 }
 
+export function GetMainFlow(arg1) {
+  return window['go']['main']['App']['GetMainFlow'](arg1);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
 export function ListProject(arg1, arg2) {
   return window['go']['main']['App']['ListProject'](arg1, arg2);
+}
+
+export function SaveMainFlow(arg1, arg2) {
+  return window['go']['main']['App']['SaveMainFlow'](arg1, arg2);
 }
 
 export function SelectProject(arg1) {

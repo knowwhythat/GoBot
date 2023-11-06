@@ -8,3 +8,22 @@
   @tailwind components;
   @tailwind utilities;
 }
+
+:host, :root {
+  --color-primary: #064a34;
+  --color-secondary: 96 165 250;
+  --color-accent: 24 24 27;
+}
+.dark {
+  --color-primary: 96 165 250;
+  --color-secondary: 59 130 246;
+  --color-accent: 244 244 245;
+}
+
+* {
+  @apply dark:border-gray-700;
+}
+
+html.dark {
+  @apply bg-gray-900;
+}

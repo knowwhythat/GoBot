@@ -1,6 +1,6 @@
 module gobot
 
-go 1.20.5
+go 1.18
 
 require github.com/wailsapp/wails/v2 v2.6.0
 

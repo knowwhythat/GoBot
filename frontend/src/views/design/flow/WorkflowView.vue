@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <Toolbar class="bg-primary p-2">
+        <Toolbar class="p-2">
             <template #start>
                 <Button @click="router.back()" v-tooltip="'返回'" class="mr-2">
                     <template #icon>
@@ -16,7 +16,7 @@
 
             <template #center>
                 <span class="flex ">
-                    <p>工作流名称</p>
+                    <p class="pt-3 pr-2">工作流名称</p>
                     <Button v-tooltip="'编辑'">
                         <template #icon>
                             <v-remixicon name="riEditBoxLine" />
@@ -45,21 +45,46 @@
                 </Button>
             </template>
         </Toolbar>
-        <WorkflowEditor class="workflow-editor" @init="onEditorInit" @edit="editBlock"
-            @update:flow="state.dataChanged = true" @update:node="state.dataChanged = true"
+        <WorkflowEditor v-if="loaded" :id="props.id" :data="workflow" class="workflow-editor" @init="onEditorInit"
+            @edit="editBlock" @update:flow="state.dataChanged = true" @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true" />
     </div>
 </template>
 
 <script setup>
-import { reactive, shallowRef } from 'vue';
+import { reactive, ref, shallowRef, onBeforeMount } from 'vue';
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import WorkflowEditor from '@/views/design/flow/WorkflowEditor.vue'
 import { useToast } from "primevue/usetoast"
+import { GetMainFlow, SaveMainFlow } from "@back/go/main/App"
+import { trim } from 'lodash-es'
 const toast = useToast()
 
+const props = defineProps({
+    id: {
+        type: String,
+        default: '',
+    },
+});
+
+const workflow = ref(null)
+const loaded = ref(false)
+
+onBeforeMount(() => {
+    console.log(props.id)
+    GetMainFlow(props.id).then((result) => {
+        if (trim(result).length > 0) {
+            workflow.value = JSON.parse(result)
+        }
+        loaded.value = true
+    }).catch((error) => {
+        loaded.value = true
+        console.error(error)
+        toast.add({ severity: 'error', summary: '错误', detail: error, life: 3000 });
+    })
+})
 const state = reactive({
     dataChanged: false,
 })
@@ -94,8 +119,12 @@ function save() {
         toast.add({ severity: 'warn', summary: '警告', detail: '当前流程图中不存在开始节点', life: 3000 });
         return;
     }
-    console.log(flow)
-    state.dataChanged = false
+    console.log(JSON.stringify(flow))
+    SaveMainFlow(props.id, JSON.stringify(flow)).then((result) => {
+        state.dataChanged = false
+    }).catch((error) => {
+        toast.add({ severity: 'error', summary: '未知异常', detail: error, life: 3000 });
+    })
 }
 function editBlock(data) {
     console.log(data)
@@ -106,6 +135,6 @@ function editBlock(data) {
 </script>
 <style scoped>
 .workflow-editor {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 70px);
 }
 </style>

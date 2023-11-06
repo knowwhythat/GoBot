@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"gobot/constants"
 	"gobot/dao"
 	"gobot/forms"
 	"gobot/models"
@@ -13,7 +14,7 @@ import (
 	"os/user"
 	"strings"
 
-	. "github.com/ahmetb/go-linq"
+	"github.com/ahmetb/go-linq"
 	uuid "github.com/google/uuid"
 	"github.com/spf13/viper"
 )
@@ -25,7 +26,7 @@ func QueryProjectPage(page forms.QueryForm) (total int, resultList []*models.Pro
 			return err
 		}
 
-		query := From(allProjects).Where(func(project interface{}) bool {
+		query := linq.From(allProjects).Where(func(project interface{}) bool {
 			projectVlue := project.(*models.Project)
 			return strings.Contains(projectVlue.Name, page.Query)
 		}).OrderByDescendingT(func(project *models.Project) int64 {
@@ -82,7 +83,7 @@ func AddProject(name string) (result *models.Project, err error) {
 		return nil, err
 	}
 	id := uuid.New()
-	projectDir := currentUser.HomeDir + "\\gobot\\"
+	projectDir := currentUser.HomeDir + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + id.String()
 	if !utils.PathExist(projectDir) {
 		os.MkdirAll(projectDir, fs.ModeDir)
 	}
@@ -90,9 +91,9 @@ func AddProject(name string) (result *models.Project, err error) {
 		Id:          id,
 		Name:        name,
 		Description: "",
-		Path:        projectDir + id.String(),
+		Path:        projectDir,
 	}
-	command := exec.Command(path, "-m", "venv", result.Path)
+	command := exec.Command(path, "-m", "venv", result.Path+"\\venv")
 	// if err = command.Run(); err != nil {
 	// 	return nil, err
 	// }
@@ -155,4 +156,35 @@ func RemoveProject(id string) (err error) {
 	}
 
 	return nil
+}
+
+func ReadMainFlow(id string) (string, error) {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return "", err
+	}
+	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.MainFlow
+	if !utils.PathExist(mainFlowPath) {
+		return "", nil
+	}
+	data, err := os.ReadFile(mainFlowPath)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func SaveMainFLow(id string, data string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	if !utils.PathExist(mainFlowPath) {
+		if err = os.MkdirAll(mainFlowPath, fs.ModeDir); err != nil {
+			return err
+		}
+	}
+	err = os.WriteFile(mainFlowPath+string(os.PathSeparator)+constants.MainFlow, []byte(data), 0666)
+	return err
 }

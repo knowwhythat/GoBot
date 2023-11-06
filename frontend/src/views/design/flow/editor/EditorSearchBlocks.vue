@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg">
-    <Button class="hoverable p-2 rounded-lg rounded-lg" icon @click="toggleActiveSearch">
+    <Button class="hoverable p-2 rounded-lg" icon @click="toggleActiveSearch">
       <v-remixicon name="riSearch2Line" />
     </Button>
     <AutoComplete ref="autocompleteEl" v-model="state.query" :suggestions="state.autocompleteItems"

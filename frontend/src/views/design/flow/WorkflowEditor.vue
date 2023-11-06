@@ -9,7 +9,7 @@
         <Background />
         <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" class="hidden md:block" pannable zoomable />
         <div
-            class="flex flex-col gap-2 p-2 justify-center absolute z-10 inset-y-20 left-4 w-40 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-auto">
+            class="flex flex-col gap-2 p-2 justify-center absolute z-10 inset-y-28 left-4 w-40 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-auto">
             <div v-for="block in blocks" :key="block.name" draggable="true"
                 class="transform select-none cursor-move relative p-4 rounded-lg transition group bg-white"
                 @dragstart="$event.dataTransfer.setData('block', JSON.stringify(block))">
@@ -31,7 +31,7 @@
             <div class="flex-grow pointer-events-none" />
             <slot name="controls-append" />
             <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
-                <Button v-tooltip="'重置'" class="control-button p-2 rounded-lg" @click="editor.fitView()">
+                <Button v-tooltip="'重置'" class="p-2 rounded-lg" @click="editor.fitView()">
                     <v-remixicon name="riFullscreenLine" />
                 </Button>
                 <Button v-tooltip="'缩小'" class="p-2 rounded-lg relative z-10" @click="editor.zoomOut()">
@@ -366,7 +366,7 @@ function applyFlowData() {
         editor.snapToGrid.value = true;
         editor.snapGrid.value = Object.values(settings.snapGrid);
     }
-
+    console.log(props.data?.nodes)
     editor.setNodes(
         props.data?.nodes?.map((node) => ({ ...node, events: {} })) || []
     );

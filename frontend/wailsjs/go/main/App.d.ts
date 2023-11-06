@@ -6,9 +6,13 @@ export function CreateProject(arg1:string):Promise<void>;
 
 export function DeleteProject(arg1:string):Promise<void>;
 
+export function GetMainFlow(arg1:string):Promise<string>;
+
 export function Greet(arg1:string):Promise<string>;
 
 export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any}>;
+
+export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SelectProject(arg1:string):Promise<models.Project>;
 

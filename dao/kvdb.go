@@ -17,7 +17,7 @@ var (
 
 func InitKvDB() error {
 	path := viper.GetString("kvdb.path")
-	if utils.PathExist(path) == false {
+	if !utils.PathExist(path) {
 		if err := os.MkdirAll(path, os.ModePerm); err != nil {
 			return err
 		}
