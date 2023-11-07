@@ -88,13 +88,6 @@ jobs:
           path: |
             build/bin
 
-      - name: 上传Artifacts(installer)
-        uses: actions/upload-artifact@v3
-        with:
-          name: gobot-setup-windows-amd64-${{ env.VERRSION }}
-          path: |
-            build/*.exe
-
   deploy-linux:
     runs-on: ubuntu-latest
     steps:
