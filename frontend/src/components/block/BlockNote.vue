@@ -23,11 +23,9 @@
           </div>
         </template>
       </ConfirmPopup>
-      <Button @click="setting($event)">
-        <template #icon>
-          <v-remixicon name="riSettings3Line" size="20" class="cursor-pointer" />
-        </template>
-      </Button>
+      <p @click="setting($event)">
+        <v-remixicon name="riSettings3Line" size="20" class="cursor-pointer" />
+      </p>
       <hr class="mx-2 h-7 border-r" />
       <v-remixicon name="riDeleteBin7Line" size="20" class="cursor-pointer" @click="$emit('delete', id)" />
     </div>

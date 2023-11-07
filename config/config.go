@@ -33,7 +33,9 @@ func (c *Config) Init() error {
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		return err
+		viper.SetDefault("kvdb.path", "./data")
+		viper.SetDefault("python.path", "./python/python.exe")
+		viper.WriteConfig()
 	}
 
 	return nil
@@ -50,7 +52,7 @@ func InitConfig(cfg string) error {
 	}
 
 	// 监控配置文件变化并热加载程序
-	c.WatchConfig()
+	// c.WatchConfig()
 
 	return nil
 }
