@@ -3,19 +3,15 @@
     @delete="$emit('delete', id)" @update="$emit('update', $event)" @settings="$emit('settings', $event)">
     <Handle :id="`${id}-input-1`" type="target" :position="appStore.inputPosition" />
     <div class="flex items-center">
-      <div :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black">
+      <div :class="block.color" class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black">
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
-        <span>{{ block.details.name }}</span>
+        <span>{{ block.name }}</span>
       </div>
       <div class="flex-grow pointer-events-none" />
-      <Button class="bg-primary" v-tooltip="'添加条件'">
+      <p class="p-1 rounded-lg dark:text-black" :class="block.color">
         <v-remixicon name="riAddLine" size="20" class="m-1" />
-      </Button>
+      </p>
     </div>
-    <p v-show="data.description" class="text-gray-600 mt-2 dark:text-gray-200 text-overflow leading-tight">
-      {{ data.description }}
-    </p>
     <ul v-if="data.conditions && data.conditions.length !== 0" class="mt-4 space-y-2">
       <li v-for="item in data.conditions" :key="item.id"
         class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg w-full relative"
@@ -50,7 +46,7 @@
 import { useAppStore } from '@/stores/app';
 import { Handle } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
-import { useEditorBlock } from '@/composable/editorBlock';
+import { getBlocks } from '@/utils/getSharedData';
 import BlockBase from './BlockBase.vue';
 import Button from 'primevue/button';
 
@@ -73,8 +69,8 @@ defineEmits(['delete', 'settings', 'edit', 'update']);
 const appStore = useAppStore();
 
 const componentId = useComponentId('block-conditions');
-const block = useEditorBlock(props.label);
-console.log(block)
+const blocks = getBlocks();
+const block = blocks[props.label];
 </script>
 <style>
 .condition-handle {

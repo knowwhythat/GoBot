@@ -114,7 +114,7 @@ function save() {
         return edge;
     });
 
-    const triggerBlock = flow.nodes.find((node) => node.label === '开始');
+    const triggerBlock = flow.nodes.find((node) => node.label === 'Start');
     if (!triggerBlock) {
         toast.add({ severity: 'warn', summary: '警告', detail: '当前流程图中不存在开始节点', life: 3000 });
         return;

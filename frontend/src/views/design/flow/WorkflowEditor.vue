@@ -67,8 +67,6 @@ import { customAlphabet } from 'nanoid';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { useAppStore } from '@/stores/app';
 import { getBlocks } from '@/utils/getSharedData';
-import { useEditorBlock } from '@/composable/editorBlock';
-import { categories } from '@/utils/shared';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 import { useToast } from "primevue/usetoast"
@@ -115,11 +113,6 @@ const emit = defineEmits([
     "update:flow"
 ]);
 
-const fallbackBlocks = {
-    BlockBasic: ['BlockExportData'],
-    BlockBasicWithFallback: ['BlockWebhook'],
-};
-
 const blockComponents = import.meta.glob('@/components/block/*.vue', { eager: true });
 const nodeTypes = {}
 for (let each in blockComponents) {
@@ -163,19 +156,7 @@ editor.onEdgeUpdate(({ edge, connection }) => {
 });
 
 const blocks = getBlocks();
-function getBlockTitle({ description, id, name }) {
-    const blockPath = `workflow.blocks.${id}`;
-    if (!blockPath) return blocksDetail[id].name;
 
-    const descPath = `${blockPath}.${description ? 'description' : 'name'}`;
-    let blockDescription = descPath ? descPath : name;
-
-    if (description) {
-        blockDescription = `${blockPath}.name\n${blockDescription}`;
-    }
-
-    return blockDescription;
-}
 function getIconPath(path) {
     if (path && path.startsWith('path')) {
         const { 1: iconPath } = path.split(':');
@@ -213,43 +194,10 @@ function onDragoverEditor({ target }) {
 }
 
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
-    const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
-    if (savedBlocks) {
-        if (savedBlocks.settings.asBlock) {
-            const position = editor.project({
-                x: clientX,
-                y: clientY - 18,
-            });
-            editor.addNodes([
-                {
-                    position,
-                    id: nanoid(),
-                    data: savedBlocks,
-                    type: 'BlockPackage',
-                    label: 'block-package',
-                },
-            ]);
-        } else {
-            const { nodes, edges } = savedBlocks.data;
-            /* eslint-disable-next-line */
-            const newElements = copyElements(nodes, edges, { clientX, clientY });
-
-            editor.addNodes(newElements.nodes);
-            editor.addEdges(newElements.edges);
-        }
-
-        emit("update:flow");
-        return;
-    }
-
     const block = parseJSON(dataTransfer.getData('block'), null);
-    if (!block || block.fromBlockBasic) return;
-
     clearHighlightedElements();
 
-    const isTriggerExists =
-        block.name === '开始' &&
-        editor.getNodes.value.some((node) => node.label === '开始');
+    const isTriggerExists = block.id === 'Start' && editor.getNodes.value.some((node) => node.id === 'Start');
     if (isTriggerExists) {
         toast.add({ severity: 'warn', summary: '警告', detail: '只允许有一个开始节点', life: 3000 });
         return;
@@ -258,7 +206,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     const nodeId = nanoid();
     const newNode = {
         position,
-        label: block.name,
+        label: block.blockId,
         data: block.data,
         type: block.component,
         id: nodeId,
@@ -302,8 +250,7 @@ function clearBlockSettings() {
     });
 }
 function minimapNodeClassName({ label }) {
-    const block = useEditorBlock(label);
-    return block.category.color;
+    return blocks[label].color;
 }
 function updateBlockData(nodeId, data = {}) {
     if (isDisabled.value) return;

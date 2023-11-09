@@ -70,9 +70,10 @@ const path = computed(() => {
 
   if (props.sourceX > props.targetX) {
     return getSmoothStepPath(options);
+    // return getBezierPath(options);
   }
 
-  return getBezierPath(options);
+  return getSmoothStepPath(options);
 });
 </script>
 <script>
