@@ -2,18 +2,16 @@
   <div class="block-base relative w-48" @dblclick.stop="$emit('edit')">
     <div class="top-0 w-full absolute block-menu-container hidden" style="transform: translateY(-100%)">
       <div class="inline-flex items-center dark:text-gray-300 block-menu">
-        <button v-if="!blockData.details?.disableDelete" title="删除" @click.stop="$emit('delete')">
+        <button v-if="!blockData.disableDelete" title="删除" @click.stop="$emit('delete')">
           <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
-        <button title="设置" @click.stop="
-          $emit('settings', { details: blockData.details, data, blockId })
-          ">
+        <button v-if="!blockData.disableSetting" title="设置" @click.stop="$emit('settings', { data, blockId })">
           <v-remixicon size="20" name="riSettings3Line" />
         </button>
-        <button title="从这里运行" @click.stop="runWorkflow">
+        <button title="从这里运行" @click.stop="$emit('run')">
           <v-remixicon size="20" name="riPlayLine" />
         </button>
-        <button v-if="!blockData.details?.disableEdit" title="编辑" @click="$emit('edit')">
+        <button v-if="!blockData.disableEdit" title="编辑" @click="$emit('edit')">
           <v-remixicon size="20" name="riPencilLine" />
         </button>
         <slot name="action" />
@@ -46,14 +44,12 @@ const props = defineProps({
     default: '',
   },
 });
-defineEmits(['delete', 'edit', 'update', 'settings']);
+defineEmits(['delete', 'edit', 'run', 'settings']);
 
-function runWorkflow() {
-}
 </script>
 <style>
 .block-menu {
-  @apply mb-1 rounded-md;
+  @apply mb-1 rounded-md bg-slate-400;
 
   button {
     padding-left: 6px;

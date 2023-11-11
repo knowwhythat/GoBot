@@ -51,10 +51,14 @@
         <template #edge-custom="edgeProps">
             <editor-custom-edge v-bind="edgeProps" />
         </template>
+        <Dialog v-model:visible="blockSettingsState.show" @hide="clearBlockSettings" maximizable modal header="模块设置"
+            :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <editor-block-setting :data="blockSettingsState?.data" @change="updateBlockSettingsData" />
+        </Dialog>
     </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, watch, computed, reactive } from 'vue';
+import { onMounted, onBeforeUnmount, watch, computed, reactive, markRaw } from 'vue';
 import {
     VueFlow,
     useVueFlow,
@@ -69,8 +73,10 @@ import { useAppStore } from '@/stores/app';
 import { getBlocks } from '@/utils/getSharedData';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
+import EditorBlockSetting from './editor/EditorBlockSetting.vue';
 import { useToast } from "primevue/usetoast"
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 
 const toast = useToast()
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
@@ -142,17 +148,43 @@ const editor = useVueFlow({
     ...props.options,
 });
 editor.onConnect((params) => {
+    if (params.source === params.target) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '起点和终点不能为同一个', life: 3000 });
+        return;
+    }
+    if (params.sourceHandle.includes("input") || params.targetHandle.includes('output')) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '两个端点不允许都为输入或者输出', life: 3000 });
+        return;
+    }
+    const oldEdge = editor.getEdges.value.find((edge) => edge.source === params.source && edge.sourceHandle === params.sourceHandle);
+    if (oldEdge) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '只允许有一个输出方向', life: 3000 });
+        return;
+    }
+    if (params.sourceHandle.includes('fallback')) {
+        params.label = "异常"
+        params.animated = true
+    }
     params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
     params.updatable = true;
     editor.addEdges([params]);
+    emit("update:flow");
 });
 editor.onEdgeUpdate(({ edge, connection }) => {
-    const isBothOutput =
-        connection.sourceHandle.includes('output') &&
-        connection.targetHandle.includes('output');
-    if (isBothOutput) return;
-
+    if (connection.source === connection.target) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '起点和终点不能为同一个', life: 3000 });
+        return;
+    }
+    if (connection.sourceHandle.includes("input") || connection.targetHandle.includes('output')) {
+        toast.add({ severity: 'warn', summary: '警告', detail: '两个端点不允许都为输入或者输出', life: 3000 });
+        return;
+    }
+    if (connection.sourceHandle.includes('fallback')) {
+        connection.label = "异常"
+        connection.animated = true
+    }
     Object.assign(edge, connection);
+    emit("update:flow");
 });
 
 const blocks = getBlocks();
@@ -197,12 +229,12 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     const block = parseJSON(dataTransfer.getData('block'), null);
     clearHighlightedElements();
 
-    const isTriggerExists = block.id === 'Start' && editor.getNodes.value.some((node) => node.id === 'Start');
+    const isTriggerExists = block.blockId === 'Start' && editor.getNodes.value.some((node) => node.label === 'Start');
     if (isTriggerExists) {
         toast.add({ severity: 'warn', summary: '警告', detail: '只允许有一个开始节点', life: 3000 });
         return;
     }
-    const position = editor.project({ x: clientX - 60, y: clientY - 40 });
+    const position = editor.project({ x: clientX - 60, y: clientY - 80 });
     const nodeId = nanoid();
     const newNode = {
         position,
@@ -234,12 +266,10 @@ const blockSettingsState = reactive({
     data: {},
 });
 
-function initEditBlockSettings({ blockId, details, data, itemId }) {
+function initEditBlockSettings({ blockId, data }) {
     blockSettingsState.data = {
-        itemId,
         blockId,
-        id: details.id,
-        data: cloneDeep(data),
+        data: data,
     };
     blockSettingsState.show = true;
 }
@@ -262,27 +292,12 @@ function updateBlockData(nodeId, data = {}) {
 }
 function updateBlockSettingsData(newSettings) {
     if (isDisabled.value) return;
-
     const nodeId = blockSettingsState.data.blockId;
     const node = editor.getNode.value(nodeId);
-
-    if (blockSettingsState.data.itemId) {
-        const index = node.data.blocks.findIndex(
-            (item) => item.itemId === blockSettingsState.data.itemId
-        );
-        if (index === -1) return;
-
-        node.data.blocks[index].data = {
-            ...node.data.blocks[index].data,
-            ...newSettings,
-        };
-    } else {
-        node.data = { ...node.data, ...newSettings };
-    }
+    node.data = { ...node.data, ...newSettings };
 
     emit('update:settings', {
         settings: newSettings,
-        itemId: blockSettingsState.data.itemId,
         blockId: blockSettingsState.data.blockId,
     });
 }
@@ -313,7 +328,6 @@ function applyFlowData() {
         editor.snapToGrid.value = true;
         editor.snapGrid.value = Object.values(settings.snapGrid);
     }
-    console.log(props.data?.nodes)
     editor.setNodes(
         props.data?.nodes?.map((node) => ({ ...node, events: {} })) || []
     );

@@ -16,7 +16,7 @@
 
             <template #center>
                 <span class="flex ">
-                    <p class="pt-3 pr-2">工作流名称</p>
+                    <p class="pt-3 pr-2 text-xl font-serif font-semibold">工作流名称</p>
                     <Button v-tooltip="'编辑'">
                         <template #icon>
                             <v-remixicon name="riEditBoxLine" />
@@ -47,7 +47,7 @@
         </Toolbar>
         <WorkflowEditor v-if="loaded" :id="props.id" :data="workflow" class="workflow-editor" @init="onEditorInit"
             @edit="editBlock" @update:flow="state.dataChanged = true" @update:node="state.dataChanged = true"
-            @delete:node="state.dataChanged = true" />
+            @update:settings="state.dataChanged = true" @delete:node="state.dataChanged = true" />
     </div>
 </template>
 

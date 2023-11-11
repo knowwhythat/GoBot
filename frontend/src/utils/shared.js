@@ -5,11 +5,12 @@ export const tasks = {
     description: '流程执行的起点,每个工作流中有且只能有一个开始节点',
     icon: 'riPlayCircleLine',
     component: 'BlockBasic',
-    inputs: 0,
-    outputs: 1,
+    disableEdit:true,
+    disableDelete:true,
+    disableSetting:true,
     color: 'bg-green-200 dark:bg-green-300 fill-green-200 dark:fill-green-300',
-    maxConnection: 1,
-    data: {},
+    data: {
+    },
   },
   'SubFlow': {
     blockId:'SubFlow',
@@ -17,16 +18,15 @@ export const tasks = {
     description: '一个相对独立的功能块,可以编写具体的业务逻辑,一个工作流由多个子流程组合而成',
     icon: 'riFlowChart',
     component: 'BlockBasic',
-    inputs: 1,
-    outputs: 1,
     color:
       'bg-orange-200 dark:bg-orange-300 fill-orange-200 dark:fill-orange-300',
-    allowedInputs: true,
-    maxConnection: 1,
     data: {
-      retryConditions: false,
+      label:'',
+      errorEnable:false,
+      retry: false,
       retryCount: 10,
       retryTimeout: 1000,
+      toDo:'error'
     },
   },
   'Condition': {
@@ -40,6 +40,7 @@ export const tasks = {
     color: 'bg-lime-200 dark:bg-lime-300 fill-lime-200 dark:fill-lime-300',
     allowedInputs: true,
     maxConnection: 1,
+    disableEdit:true,
     data: {
       description: '',
       conditions: [],
@@ -58,6 +59,7 @@ export const tasks = {
     outputs: 1,
     color: 'bg-cyan-200 dark:bg-cyan-300 fill-cyan-200 dark:fill-cyan-300',
     maxConnection: 1,
+    disableEdit:true,
     data: {
       disableBlock: false,
       note: '',

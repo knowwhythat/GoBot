@@ -1,9 +1,7 @@
 name: deploy
 
 on:
-  push:
-    tags:
-      - 'v*'
+  push
 env:
   VERRSION: "1.0.12"
 jobs:

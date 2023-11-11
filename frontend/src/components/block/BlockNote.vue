@@ -31,7 +31,8 @@
     </div>
     <textarea :value="data.note" :style="initialSize" :class="[fontSize[data.fontSize || 'regular'].class]"
       placeholder="在这里填写注释..." cols="30" rows="7" style="resize: both; min-width: 160px; min-height: 88px"
-      @input="updateData({ note: $event.target.value })" class="bg-transparent" @mousedown.stop @mouseup="onMouseup" />
+      @input="updateData({ note: $event.target.value })" class="p-2 bg-transparent" @mousedown.stop
+      @mouseup="onMouseup" />
   </div>
 </template>
 <script setup>

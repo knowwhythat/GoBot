@@ -1,6 +1,6 @@
 <template>
   <block-base :id="componentId" :data="data" :block-id="id" :block-data="block" class="w-64" @edit="$emit('edit')"
-    @delete="$emit('delete', id)" @update="$emit('update', $event)" @settings="$emit('settings', $event)">
+    @delete="$emit('delete', id)" @run="$emit('run', $event)" @settings="$emit('settings', $event)">
     <Handle :id="`${id}-input-1`" type="target" :position="appStore.inputPosition" />
     <div class="flex items-center">
       <div :class="block.color" class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black">
@@ -64,7 +64,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'settings', 'edit', 'update']);
+defineEmits(['delete', 'settings', 'edit', 'run']);
 
 const appStore = useAppStore();
 
