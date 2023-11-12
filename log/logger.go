@@ -46,5 +46,5 @@ func Init() {
 		return fmt.Sprintf("%s;", i)
 	}
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
-	Logger = zerolog.New(multi).With().Timestamp().Logger()
+	Logger = zerolog.New(multi).With().Timestamp().Logger().With().Caller().Logger()
 }
