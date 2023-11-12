@@ -100,6 +100,7 @@ func AddProject(name string) (result *models.Project, err error) {
 	output, err := command.Output()
 	if err != nil {
 		fmt.Println(string(output))
+		return nil, err
 	}
 	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
 		if err := tx.InsertProject(result); err != nil {
@@ -158,20 +159,20 @@ func RemoveProject(id string) (err error) {
 	return nil
 }
 
-func ReadMainFlow(id string) (string, error) {
+func ReadMainFlow(id string) (string, string, error) {
 	project, err := QueryProjectById(id)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.MainFlow
 	if !utils.PathExist(mainFlowPath) {
-		return "", nil
+		return "", "", nil
 	}
 	data, err := os.ReadFile(mainFlowPath)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return string(data), nil
+	return project.Name, string(data), nil
 }
 
 func SaveMainFLow(id string, data string) error {

@@ -6,7 +6,7 @@ export function CreateProject(arg1:string):Promise<void>;
 
 export function DeleteProject(arg1:string):Promise<void>;
 
-export function GetMainFlow(arg1:string):Promise<string>;
+export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
 export function Greet(arg1:string):Promise<string>;
 

@@ -4,8 +4,8 @@ import (
 	"embed"
 	"gobot/config"
 	"gobot/dao"
+	"gobot/log"
 
-	"github.com/labstack/gommon/log"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -16,9 +16,10 @@ var assets embed.FS
 
 func main() {
 	if err := config.InitConfig("./config.yml"); err != nil {
-		log.Error("Init config error:" + err.Error())
+		println("Init config error:" + err.Error())
 		panic(err)
 	}
+	log.Init()
 	dao.InitKvDB()
 	// Create an instance of the app structure
 	app := NewApp()
@@ -43,6 +44,7 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		log.Logger.Err(err).Msg("启动失败")
 	}
+	log.Logger.Info().Msg("服务启动成功")
 }

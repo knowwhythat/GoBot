@@ -33,7 +33,9 @@ func (c *Config) Init() error {
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		viper.SetDefault("kvdb.path", "./data")
+		viper.SetDefault("kvdb.path", "./data/")
+		viper.SetDefault("kvdb.path", "./log/")
+		viper.SetDefault("kvdb.level", "Info")
 		viper.SetDefault("python.path", "./python/python.exe")
 		viper.WriteConfig()
 	}

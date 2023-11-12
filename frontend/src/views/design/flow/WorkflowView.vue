@@ -16,7 +16,7 @@
 
             <template #center>
                 <span class="flex ">
-                    <p class="pt-3 pr-2 text-xl font-serif font-semibold">工作流名称</p>
+                    <p class="pt-3 pr-2 text-xl font-serif font-semibold">{{ projectName }}</p>
                     <Button v-tooltip="'编辑'">
                         <template #icon>
                             <v-remixicon name="riEditBoxLine" />
@@ -71,12 +71,14 @@ const props = defineProps({
 
 const workflow = ref(null)
 const loaded = ref(false)
+const projectName = ref('')
 
 onBeforeMount(() => {
     console.log(props.id)
-    GetMainFlow(props.id).then((result) => {
-        if (trim(result).length > 0) {
-            workflow.value = JSON.parse(result)
+    GetMainFlow(props.id).then(({ name, data }) => {
+        projectName.value = name
+        if (trim(data).length > 0) {
+            workflow.value = JSON.parse(data)
         }
         loaded.value = true
     }).catch((error) => {

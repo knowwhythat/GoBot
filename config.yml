@@ -1,4 +1,7 @@
 kvdb:
   path: "./build/data"
+log:
+  path: "./build/log/"
+  level: 'Info'
 python:
   path: "D:\\Program Files (x86)\\Python3.8\\python.exe"
