@@ -107,7 +107,7 @@ function onEditorInit(instance) {
     editor.value = instance;
 }
 
-function save() {
+function save(callback) {
     const flow = editor.value.toObject();
     flow.edges = flow.edges.map((edge) => {
         delete edge.sourceNode;
@@ -121,17 +121,18 @@ function save() {
         toast.add({ severity: 'warn', summary: '警告', detail: '当前流程图中不存在开始节点', life: 3000 });
         return;
     }
-    console.log(JSON.stringify(flow))
     SaveMainFlow(props.id, JSON.stringify(flow)).then((result) => {
         state.dataChanged = false
+        if (typeof callback === "function") {
+            callback()
+        }
     }).catch((error) => {
         toast.add({ severity: 'error', summary: '未知异常', detail: error, life: 3000 });
     })
 }
 function editBlock(data) {
-    console.log(data)
-    if (data.id = '子流程') {
-        router.push('design/sequence')
+    if (data.id === 'SubFlow') {
+        save(() => { router.push(`design/sequence?id=${props.id}&subflowId=${data.blockId}&label=${data.data.label}`) })
     }
 }
 </script>

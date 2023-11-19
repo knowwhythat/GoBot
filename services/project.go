@@ -11,8 +11,8 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
-	"os/user"
 	"strings"
+	"syscall"
 
 	"github.com/ahmetb/go-linq"
 	uuid "github.com/google/uuid"
@@ -78,12 +78,9 @@ func QueryProjectById(id string) (result *models.Project, err error) {
 
 func AddProject(name string) (result *models.Project, err error) {
 	path := viper.GetString("python.path")
-	currentUser, err := user.Current()
-	if err != nil {
-		return nil, err
-	}
+	dataPath := viper.GetString("data.path")
 	id := uuid.New()
-	projectDir := currentUser.HomeDir + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + id.String()
+	projectDir := dataPath + constants.BaseDir + string(os.PathSeparator) + id.String()
 	if !utils.PathExist(projectDir) {
 		os.MkdirAll(projectDir, fs.ModeDir)
 	}
@@ -94,6 +91,7 @@ func AddProject(name string) (result *models.Project, err error) {
 		Path:        projectDir,
 	}
 	command := exec.Command(path, "-m", "venv", result.Path+"\\venv")
+	command.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	// if err = command.Run(); err != nil {
 	// 	return nil, err
 	// }

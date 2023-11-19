@@ -26,7 +26,7 @@ export const router = createRouter({
       component: DesignView,
       children :[
         { path: '', component: WorkflowView, props: route => ({ id: route.query.id })},
-        { path: 'sequence', component: SequenceView },
+        { path: 'sequence', component: SequenceView,props: route => ({ id: route.query.id, subflowId:route.query.subflowId ,label:route.query.label})},
       ]
     }
   ],
