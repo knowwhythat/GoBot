@@ -4,7 +4,7 @@
       <template #start>
         <Button @click="router.back()" v-tooltip="'返回'" class="mr-2">
           <template #icon>
-            <v-remixicon name="riArrowGoBackLine" />
+            <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
         <Button v-tooltip="'运行'" class="mr-2">
@@ -76,13 +76,7 @@
       </SplitterPanel>
       <SplitterPanel class="h-full" :size="75">
         <div class="flex justify-around">
-          <Sequence
-            :id="activity.id"
-            :label="activity.label"
-            :showLabel="activity.showLabel"
-            :children="activity.children"
-            @update="update"
-          />
+          <Sequence :element="mainActivity" @update="update" />
         </div>
       </SplitterPanel>
     </Splitter>
@@ -116,15 +110,15 @@ const nodes = ref(null);
 const router = useRouter();
 const dataChanged = ref(false);
 
-const activity = reactive({
+const mainActivity = reactive({
   id: nanoid(8),
   label: "主流程",
-  showLabel: true,
+  icon_path: "riHome5Line",
   children: [],
 });
 
 function update({ children }) {
-  activity.children = children;
+  mainActivity.children = children;
 }
 
 onMounted(() => {
@@ -166,8 +160,8 @@ onMounted(() => {
             {
               key: "0-1-0",
               label: "Invoices.txt",
-              icon_path: "pi pi-fw pi-file",
-              component: "BasicActivity",
+              icon_path: "riFolderZipLine",
+              component: "Sequence",
               data: {},
             },
           ],
