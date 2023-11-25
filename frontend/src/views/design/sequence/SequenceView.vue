@@ -54,7 +54,7 @@
           <template #default="slotProps">
             <div class="flex">
               <p class="pr-2">
-                <v-remixicon name="riPlayLine" />
+                <v-remixicon :name="slotProps.node.icon_path" />
               </p>
               <div
                 v-if="isLeaf(slotProps)"
@@ -76,7 +76,7 @@
       </SplitterPanel>
       <SplitterPanel class="h-full" :size="75">
         <div class="flex justify-around">
-          <Sequence :element="mainActivity" @update="update" />
+          <SequenceActivity :element="mainActivity" @update="update" />
         </div>
       </SplitterPanel>
     </Splitter>
@@ -90,7 +90,7 @@ import { useRouter, onBeforeRouteLeave } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import Tree from "primevue/tree";
 import { ref, onMounted, reactive } from "vue";
-import Sequence from "@/components/activity/Sequence.vue";
+import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";
 const props = defineProps({
   id: {
@@ -113,6 +113,8 @@ const dataChanged = ref(false);
 const mainActivity = reactive({
   id: nanoid(8),
   label: "主流程",
+  toggleable: false,
+  deleteable: false,
   icon_path: "riHome5Line",
   children: [],
 });
@@ -125,43 +127,85 @@ onMounted(() => {
   nodes.value = [
     {
       key: "0",
-      label: "Documents",
+      label: "流程控制",
       data: {},
-      icon_path: "pi pi-fw pi-inbox",
+      icon_path: "riArticleLine",
       children: [
         {
-          key: "0-0",
-          label: "work",
+          key: "0-0-1",
+          label: "IF条件",
+          icon_path: "riDragDropLine",
+          component: "ConditionActivity",
           data: {},
-          icon_path: "pi pi-fw pi-cog",
+        },
+        {
+          key: "0-0-2",
+          label: "模块组",
+          icon_path: "riDragDropLine",
+          component: "SequenceActivity",
+          data: {},
+        },
+        {
+          key: "0-1",
+          label: "循环",
+          data: {},
+          icon_path: "riKeyboardLine",
           children: [
             {
-              key: "0-0-0",
-              label: "Work11111111111111111",
-              icon_path: "pi pi-fw pi-file",
+              key: "0-1-1",
+              label: "ForEach列表循环",
+              icon_path: "riFolderZipLine",
+              component: "SequenceActivity",
+              data: {},
+            },
+            {
+              key: "0-1-2",
+              label: "ForEach字典循环",
+              icon_path: "riFolderZipLine",
+              component: "SequenceActivity",
+              data: {},
+            },
+            {
+              key: "0-1-3",
+              label: "For次数循环",
+              icon_path: "riFolderZipLine",
+              component: "SequenceActivity",
+              data: {},
+            },
+            {
+              key: "0-1-4",
+              label: "继续下次循环",
+              icon_path: "riPushpin2Fill",
               component: "BasicActivity",
               data: {},
             },
             {
-              key: "0-0-1",
-              label: "Resume.doc",
-              icon_path: "pi pi-fw pi-file",
+              key: "0-1-5",
+              label: "退出循环",
+              icon_path: "riPushpin2Fill",
               component: "BasicActivity",
               data: {},
             },
           ],
         },
         {
-          key: "0-1",
-          label: "Home",
+          key: "0-2",
+          label: "异常处理",
           data: {},
-          icon_path: "pi pi-fw pi-home",
+          icon_path: "riKeyboardLine",
           children: [
             {
-              key: "0-1-0",
-              label: "Invoices.txt",
-              icon_path: "riFolderZipLine",
-              component: "Sequence",
+              key: "0-2-0",
+              label: "异常处理",
+              icon_path: "riPushpin2Fill",
+              component: "TryCatchActivity",
+              data: {},
+            },
+            {
+              key: "0-2-1",
+              label: "抛出异常",
+              icon_path: "riPushpin2Fill",
+              component: "BasicActivity",
               data: {},
             },
           ],

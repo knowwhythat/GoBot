@@ -1,12 +1,13 @@
 <template>
-  <div
-    class="flex flex-col min-w-[300px] bg-gray-50 border-2 border-gray-200 rounded-xl m-4"
-    style="cursor: grab"
+  <ActivityBase
+    :toggleable="props.element.toggleable"
+    :deleteable="props.element.deleteable"
+    :label="props.element.label"
+    :icon="props.element.icon_path"
+    :color="props.element.color"
+    @delete="$emit('delete', { id: props.element.id })"
+    @update="updateData($event)"
   >
-    <div class="flex bg-gray-300 rounded-t-xl p-2 truncate">
-      <v-remixicon :name="props.element.icon_path" class="pr-2" />
-      {{ props.element.label }}
-    </div>
     <draggable
       v-if="props.element.children"
       :model-value="props.element.children"
@@ -21,19 +22,17 @@
       "
     >
       <template #item="{ element, index }">
-        <Sequence
-          v-if="element.component == 'Sequence'"
+        <SequenceActivity
+          v-if="element.component == 'SequenceActivity'"
           v-bind="{ element: element }"
-          @dragstart="onDragStart(element, $event)"
-          @dragend="onDragEnd(element, $event)"
           @update="update"
+          @delete="deleteNode($event)"
         />
         <component
           v-else
           :is="findComponent(element.component)"
           v-bind="{ element: element }"
-          @dragstart="onDragStart(element, $event)"
-          @dragend="onDragEnd(element, $event)"
+          @delete="deleteNode($event)"
         />
       </template>
       <template #footer>
@@ -44,10 +43,11 @@
         </div>
       </template>
     </draggable>
-  </div>
+  </ActivityBase>
 </template>
 <script setup>
 import { ref, onMounted, computed, shallowReactive, watch } from "vue";
+import ActivityBase from "./ActivityBase.vue";
 import draggable from "vuedraggable";
 import { nanoid } from "nanoid";
 
@@ -79,6 +79,19 @@ function findComponent(name) {
   return activityMap[name];
 }
 
+function deleteNode({ id }) {
+  console.log(id);
+  const blockIndex = props.element.children.findIndex(
+    (activity) => activity.id === id
+  );
+
+  if (blockIndex !== -1) {
+    const copyActivities = [...props.element.children];
+    copyActivities.splice(blockIndex, 1);
+    emit("update", { id: props.element.id, children: copyActivities });
+  }
+}
+
 function update({ id, children }) {
   if (id) {
     console.log(id);
@@ -87,34 +100,6 @@ function update({ id, children }) {
   } else {
     props.element.children = children;
   }
-}
-
-function onDragStart(item, event) {
-  event.dataTransfer.setData(
-    "activity",
-    JSON.stringify({ ...item, from: "sequence", containerId: props.id })
-  );
-}
-
-function onDragEnd(item, event) {
-  const droppedBlock = JSON.parse(
-    event.dataTransfer.getData("activity") || null
-  );
-  setTimeout(() => {
-    const blockEl = document.querySelector(`[group-item-id="${item.itemId}"]`);
-
-    if (blockEl) {
-      const blockIndex = props.children.findIndex(
-        (activity) => activity.itemId === item.itemId
-      );
-
-      if (blockIndex !== -1) {
-        const copyActivities = [...props.children];
-        copyActivities.splice(blockIndex, 1);
-        emit("update", { id: props.element.id, children: copyActivities });
-      }
-    }
-  }, 200);
 }
 
 function handleDrop(event) {
@@ -133,12 +118,15 @@ function handleDrop(event) {
     copyActivities.splice(
       index,
       0,
-      shallowReactive({ ...droppedBlock, id: nanoid(10) })
+      shallowReactive({ ...droppedBlock, id: nanoid(16) })
     );
   } else {
-    copyActivities.push(shallowReactive({ ...droppedBlock, id: nanoid(10) }));
+    copyActivities.push(shallowReactive({ ...droppedBlock, id: nanoid(16) }));
   }
 
   emit("update", { id: props.element.id, children: copyActivities });
+}
+function updateData({ label }) {
+  props.element.label = label;
 }
 </script>
