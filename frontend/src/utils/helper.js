@@ -33,10 +33,10 @@ export function findTriggerBlock(drawflow = {}) {
     const blocks = Object.values(drawflow.drawflow?.Home?.data);
     if (!blocks) return null;
 
-    return blocks.find(({ name }) => name === 'trigger');
+    return blocks.find(({ name }) => name === "trigger");
   }
   if (drawflow.nodes) {
-    return drawflow.nodes.find((node) => node.label === 'trigger');
+    return drawflow.nodes.find((node) => node.label === "trigger");
   }
 
   return null;
@@ -73,7 +73,7 @@ export function convertArrObjTo2DArr(arr) {
       const value = obj[key];
 
       const rowIndex = keyIndex.get(key);
-      row[rowIndex] = typeof value === 'object' ? JSON.stringify(value) : value;
+      row[rowIndex] = typeof value === "object" ? JSON.stringify(value) : value;
     });
 
     values.push([...row]);
@@ -123,7 +123,7 @@ export function parseJSON(data, def) {
 }
 
 export function parseFlow(flow) {
-  const obj = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
+  const obj = typeof flow === "string" ? parseJSON(flow, {}) : flow;
 
   return obj;
 }
@@ -135,10 +135,10 @@ export function replaceMustache(str, replacer) {
 
 export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
   return new Promise((resolve) => {
-    const input = document.createElement('input');
-    input.type = 'file';
+    const input = document.createElement("input");
+    input.type = "file";
     input.accept = Array.isArray(acceptedFileTypes)
-      ? acceptedFileTypes.join(',')
+      ? acceptedFileTypes.join(",")
       : acceptedFileTypes;
 
     Object.entries(attrs).forEach(([key, value]) => {
@@ -163,11 +163,11 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
 }
 
 export function fileSaver(filename, data) {
-  const anchor = document.createElement('a');
+  const anchor = document.createElement("a");
   anchor.download = filename;
   anchor.href = data;
 
-  anchor.dispatchEvent(new MouseEvent('click'));
+  anchor.dispatchEvent(new MouseEvent("click"));
   anchor.remove();
 }
 
@@ -176,9 +176,9 @@ export function countDuration(started, ended) {
   const minutes = parseInt((duration / 60) % 60, 10);
   const seconds = parseInt(duration % 60, 10);
 
-  const getText = (num, suffix) => (num > 0 ? `${num}${suffix}` : '');
+  const getText = (num, suffix) => (num > 0 ? `${num}${suffix}` : "");
 
-  return `${getText(minutes, 'm')} ${seconds}s`;
+  return `${getText(minutes, "m")} ${seconds}s`;
 }
 
 export function toCamelCase(str, capitalize = false) {
@@ -188,11 +188,11 @@ export function toCamelCase(str, capitalize = false) {
       : letter.toUpperCase();
   });
 
-  return result.replace(/\s+|[-]/g, '');
+  return result.replace(/\s+|[-]/g, "");
 }
 
 export function isObject(obj) {
-  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 }
 
 export function objectHasKey(obj, key) {
@@ -220,12 +220,12 @@ export function debounce(callback, time = 200) {
   };
 }
 
-export function arraySorter({ data, key, order = 'asc' }) {
+export function arraySorter({ data, key, order = "asc" }) {
   let runCounts = {};
   const copyData = data.slice();
 
-  if (key === 'mostUsed') {
-    runCounts = parseJSON(localStorage.getItem('runCounts'), {}) || {};
+  if (key === "mostUsed") {
+    runCounts = parseJSON(localStorage.getItem("runCounts"), {}) || {};
   }
 
   return copyData.sort((a, b) => {
@@ -233,7 +233,7 @@ export function arraySorter({ data, key, order = 'asc' }) {
     let itemA = a[key] || a;
     let itemB = b[key] || b;
 
-    if (key === 'mostUsed') {
+    if (key === "mostUsed") {
       itemA = runCounts[a.id] || 0;
       itemB = runCounts[b.id] || 0;
     }
@@ -244,6 +244,15 @@ export function arraySorter({ data, key, order = 'asc' }) {
       comparison = -1;
     }
 
-    return order === 'desc' ? comparison * -1 : comparison;
+    return order === "desc" ? comparison * -1 : comparison;
   });
+}
+
+export function getIconPath(path) {
+  if (path && path.startsWith("path")) {
+    const { 1: iconPath } = path.split(":");
+    return { viewBox: "0 0 1024 1024", path: iconPath };
+  }
+
+  return { name: path };
 }

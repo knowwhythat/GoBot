@@ -6,6 +6,7 @@ import (
 	"gobot/dao"
 	"gobot/forms"
 	"gobot/models"
+	"gobot/plugin"
 	"gobot/services"
 )
 
@@ -28,6 +29,10 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) shutdown(ctx context.Context) {
 	dao.MainDB.Close()
 	dao.LogDB.Close()
+}
+
+func (a *App) beforeClose(ctx context.Context) bool {
+	return false
 }
 
 // Greet returns a greeting for the given name
@@ -74,5 +79,18 @@ func (a *App) GetMainFlow(id string) (map[string]string, error) {
 }
 
 func (a *App) SaveMainFlow(id, data string) error {
-	return services.SaveMainFLow(id, data)
+	return services.SaveMainFlow(id, data)
+}
+
+func (a *App) GetSubFlow(id, subId string) (string, error) {
+	data, err := services.ReadSubFlow(id, subId)
+	return data, err
+}
+
+func (a *App) SaveSubFlow(id, subId, data string) error {
+	return services.SaveSubFlow(id, subId, data)
+}
+
+func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
+	return plugin.ParseAllPlugin()
 }

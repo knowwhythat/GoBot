@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
@@ -23,6 +24,7 @@
     >
       <template #item="{ element, index }">
         <SequenceActivity
+          :index="index"
           v-if="element.component == 'SequenceActivity'"
           v-bind="{ element: element }"
           @update="update"
@@ -30,6 +32,7 @@
         />
         <component
           v-else
+          :index="index"
           :is="findComponent(element.component)"
           v-bind="{ element: element }"
           @delete="deleteNode($event)"
@@ -103,6 +106,7 @@ function update({ id, children }) {
 }
 
 function handleDrop(event) {
+  console.log(event);
   event.preventDefault();
   event.stopPropagation();
   const droppedBlock = JSON.parse(
@@ -126,7 +130,11 @@ function handleDrop(event) {
 
   emit("update", { id: props.element.id, children: copyActivities });
 }
-function updateData({ label }) {
-  props.element.label = label;
+function updateData(data) {
+  for (const key in data) {
+    if (Object.hasOwnProperty.call(data, key)) {
+      props.element[key] = data[key];
+    }
+  }
 }
 </script>

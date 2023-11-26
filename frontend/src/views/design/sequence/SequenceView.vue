@@ -54,7 +54,7 @@
           <template #default="slotProps">
             <div class="flex">
               <p class="pr-2">
-                <v-remixicon :name="slotProps.node.icon_path" />
+                <v-remixicon v-bind="getIconPath(slotProps.node.icon_path)" />
               </p>
               <div
                 v-if="isLeaf(slotProps)"
@@ -76,7 +76,7 @@
       </SplitterPanel>
       <SplitterPanel class="h-full" :size="75">
         <div class="flex justify-around">
-          <SequenceActivity :element="mainActivity" @update="update" />
+          <SequenceActivity :element="mainActivity.sequence" @update="update" />
         </div>
       </SplitterPanel>
     </Splitter>
@@ -89,9 +89,13 @@ import SplitterPanel from "primevue/splitterpanel";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import Tree from "primevue/tree";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, provide } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";
+import { ParseAllPlugin, GetSubFlow, SaveSubFlow } from "@back/go/main/App";
+import { getIconPath } from "@/utils/helper";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 const props = defineProps({
   id: {
     type: String,
@@ -109,116 +113,92 @@ const props = defineProps({
 const nodes = ref(null);
 const router = useRouter();
 const dataChanged = ref(false);
+provide("dataChanged", { dataChanged, updateDataChanged });
+
+function updateDataChanged() {
+  dataChanged.value = true;
+}
 
 const mainActivity = reactive({
-  id: nanoid(8),
-  label: "主流程",
-  toggleable: false,
-  deleteable: false,
-  icon_path: "riHome5Line",
-  children: [],
+  sequence: {
+    id: nanoid(8),
+    key: "main",
+    label: "主流程",
+    toggleable: false,
+    deleteable: false,
+    icon_path: "riHome5Line",
+    children: [],
+  },
 });
 
 function update({ children }) {
-  mainActivity.children = children;
+  dataChanged.value = true;
+  mainActivity.sequence.children = children;
 }
 
 onMounted(() => {
-  nodes.value = [
-    {
-      key: "0",
-      label: "流程控制",
-      data: {},
-      icon_path: "riArticleLine",
-      children: [
-        {
-          key: "0-0-1",
-          label: "IF条件",
-          icon_path: "riDragDropLine",
-          component: "ConditionActivity",
-          data: {},
-        },
-        {
-          key: "0-0-2",
-          label: "模块组",
-          icon_path: "riDragDropLine",
-          component: "SequenceActivity",
-          data: {},
-        },
-        {
-          key: "0-1",
-          label: "循环",
-          data: {},
-          icon_path: "riKeyboardLine",
-          children: [
-            {
-              key: "0-1-1",
-              label: "ForEach列表循环",
-              icon_path: "riFolderZipLine",
-              component: "SequenceActivity",
-              data: {},
-            },
-            {
-              key: "0-1-2",
-              label: "ForEach字典循环",
-              icon_path: "riFolderZipLine",
-              component: "SequenceActivity",
-              data: {},
-            },
-            {
-              key: "0-1-3",
-              label: "For次数循环",
-              icon_path: "riFolderZipLine",
-              component: "SequenceActivity",
-              data: {},
-            },
-            {
-              key: "0-1-4",
-              label: "继续下次循环",
-              icon_path: "riPushpin2Fill",
-              component: "BasicActivity",
-              data: {},
-            },
-            {
-              key: "0-1-5",
-              label: "退出循环",
-              icon_path: "riPushpin2Fill",
-              component: "BasicActivity",
-              data: {},
-            },
-          ],
-        },
-        {
-          key: "0-2",
-          label: "异常处理",
-          data: {},
-          icon_path: "riKeyboardLine",
-          children: [
-            {
-              key: "0-2-0",
-              label: "异常处理",
-              icon_path: "riPushpin2Fill",
-              component: "TryCatchActivity",
-              data: {},
-            },
-            {
-              key: "0-2-1",
-              label: "抛出异常",
-              icon_path: "riPushpin2Fill",
-              component: "BasicActivity",
-              data: {},
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  ParseAllPlugin()
+    .then((result) => {
+      nodes.value = result;
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.add({
+        severity: "error",
+        summary: "加载组件树异常",
+        detail: err,
+        life: 3000,
+      });
+    });
+  GetSubFlow(props.id, props.subflowId)
+    .then((result) => {
+      console.log(result);
+      const data = JSON.parse(result);
+      mainActivity.sequence = reactive(data.sequence);
+    })
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "加载流程异常",
+        detail: err,
+        life: 3000,
+      });
+    });
 });
+
 function isLeaf(data) {
   return !(data.node.children && data.node.children.length > 0);
 }
 
-function save() {}
+function save() {
+  console.log(JSON.stringify(mainActivity));
+  SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity))
+    .then((result) => {
+      dataChanged.value = false;
+      toast.add({
+        severity: "success",
+        summary: "提示",
+        detail: "保存成功",
+        life: 3000,
+      });
+    })
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "保存失败",
+        detail: err,
+        life: 3000,
+      });
+    });
+}
+onBeforeRouteLeave(onBeforeLeave);
+
+function onBeforeLeave() {
+  if (dataChanged.value) {
+    const confirm = window.confirm("有修改尚未保存，是否退出");
+    if (!confirm) return false;
+  }
+}
 </script>
 <style scoped>
 #sequence-designer {

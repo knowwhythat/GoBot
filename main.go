@@ -32,15 +32,20 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
+		// Frameless:          true,
+		MinWidth:           400,
+        MinHeight:          400,
 		// BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup:  app.startup,
 		OnShutdown: app.shutdown,
+		OnBeforeClose:      app.beforeClose,
 		Bind: []interface{}{
 			app,
 		},
 		Debug: options.Debug{
 			OpenInspectorOnStartup: false,
 		},
+		EnableDefaultContextMenu: false,
 	})
 
 	if err != nil {

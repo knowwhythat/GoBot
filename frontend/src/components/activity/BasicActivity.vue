@@ -23,7 +23,11 @@ const emit = defineEmits(["delete"]);
 onMounted(() => {
   console.log(props);
 });
-function updateData({ label }) {
-  props.element.label = label;
+function updateData(data) {
+  for (const key in data) {
+    if (Object.hasOwnProperty.call(data, key)) {
+      props.element[key] = data[key];
+    }
+  }
 }
 </script>

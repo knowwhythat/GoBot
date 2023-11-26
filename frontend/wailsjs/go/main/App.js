@@ -14,6 +14,10 @@ export function GetMainFlow(arg1) {
   return window['go']['main']['App']['GetMainFlow'](arg1);
 }
 
+export function GetSubFlow(arg1, arg2) {
+  return window['go']['main']['App']['GetSubFlow'](arg1, arg2);
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
@@ -22,8 +26,16 @@ export function ListProject(arg1, arg2) {
   return window['go']['main']['App']['ListProject'](arg1, arg2);
 }
 
+export function ParseAllPlugin() {
+  return window['go']['main']['App']['ParseAllPlugin']();
+}
+
 export function SaveMainFlow(arg1, arg2) {
   return window['go']['main']['App']['SaveMainFlow'](arg1, arg2);
+}
+
+export function SaveSubFlow(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SaveSubFlow'](arg1, arg2, arg3);
 }
 
 export function SelectProject(arg1) {

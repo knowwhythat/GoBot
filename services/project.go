@@ -173,7 +173,7 @@ func ReadMainFlow(id string) (string, string, error) {
 	return project.Name, string(data), nil
 }
 
-func SaveMainFLow(id string, data string) error {
+func SaveMainFlow(id string, data string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {
 		return err
@@ -185,5 +185,36 @@ func SaveMainFLow(id string, data string) error {
 		}
 	}
 	err = os.WriteFile(mainFlowPath+string(os.PathSeparator)+constants.MainFlow, []byte(data), 0666)
+	return err
+}
+
+func ReadSubFlow(id string, subId string) (string, error) {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return "", err
+	}
+	subFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + subId + ".flow"
+	if !utils.PathExist(subFlowPath) {
+		return "", nil
+	}
+	data, err := os.ReadFile(subFlowPath)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func SaveSubFlow(id string, subId string, data string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	devPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir
+	if !utils.PathExist(devPath) {
+		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
+			return err
+		}
+	}
+	err = os.WriteFile(devPath+string(os.PathSeparator)+subId+".flow", []byte(data), 0666)
 	return err
 }

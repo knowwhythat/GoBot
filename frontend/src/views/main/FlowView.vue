@@ -43,73 +43,101 @@
       </template>
 
       <template #list="slotProps">
-        <div class="col-12">
-          <div
-            class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
-          >
-            <div
-              class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4"
-            >
+        <div
+          class="border-gray-200 border-current border rounded-lg p-2 m-2"
+          v-for="(item, index) in slotProps.items"
+          :key="index"
+        >
+          <div class="activity-node p-4 bg-input flex items-center group">
+            <div class="leading-tight flex-1 overflow-hidden">
+              <div class="text-xl font-bold truncate">
+                {{ item?.name }}
+              </div>
               <div
-                class="flex flex-column align-items-center sm:align-items-start gap-3"
+                class="flex flex-wrap align-items-center justify-content-between gap-2 pt-2"
               >
-                <div class="text-2xl font-bold text-900">
-                  {{ slotProps.data.name }}
-                </div>
-                <div class="flex align-items-center gap-3">
-                  <span class="flex align-items-center gap-2">
-                    <i class="pi pi-tag"></i>
-                    <span class="font-semibold">{{
-                      slotProps.data.category
-                    }}</span>
-                  </span>
+                <div class="flex align-items-center gap-2">
+                  <v-remixicon size="18" name="riPriceTag3Line" />
+                  <span class="font-semibold">测试</span>
                 </div>
               </div>
               <div
-                class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
-              ></div>
+                class="flex flex-wrap align-items-center justify-content-between gap-2 pt-2"
+              >
+                <div class="flex align-items-center gap-2">
+                  <span class="font-semibold">2023-11-24 10:00</span>
+                </div>
+              </div>
+            </div>
+            <div class="invisible group-hover:visible ml-8">
+              <v-remixicon
+                name="riPencilLine"
+                size="24"
+                class="cursor-pointer inline-block mr-2"
+                @click="edit(item?.id)"
+              />
+              <v-remixicon
+                name="riSettings3Line"
+                size="24"
+                class="cursor-pointer inline-block mr-2"
+                @click="editItemSettings(element)"
+              />
+              <v-remixicon
+                name="riDeleteBin7Line"
+                size="24"
+                class="cursor-pointer inline-block"
+                @click="deleteItem(index, element.itemId)"
+              />
             </div>
           </div>
         </div>
       </template>
 
       <template #grid="slotProps">
-        <div class="border-gray-200 border-current border rounded-lg">
-          <div class="p-4 border-1 surface-border border-round">
-            <div
-              class="flex flex-wrap align-items-center justify-content-between gap-2"
-            >
-              <div class="flex align-items-center gap-2">
-                <v-remixicon size="18" name="riPriceTag3Line" />
-                <span class="font-semibold">{{ slotProps.data.category }}</span>
-              </div>
-            </div>
-            <div class="flex flex-column align-items-center gap-3 py-5">
-              <div class="text-xl font-bold truncate">
-                {{ slotProps.data.name }}
-              </div>
-            </div>
-            <div class="flex flex-row-reverse gap-1">
-              <SplitButton
-                label="设置"
-                icon="pi pi-play"
-                @click="run(slotProps.data.id)"
-                :model="getItems(slotProps.data.id)"
+        <div
+          class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2"
+        >
+          <div
+            v-for="(item, index) in slotProps.items"
+            :key="index"
+            class="border-gray-200 border-current border rounded-lg"
+          >
+            <div class="p-4 border-1 surface-border border-round">
+              <div
+                class="flex flex-wrap align-items-center justify-content-between gap-2"
               >
-                <template #icon>
-                  <v-remixicon size="24" name="riSettings3Line" />
-                </template>
-              </SplitButton>
-              <Button
-                icon="pi pi-file-edit"
-                @click="edit(slotProps.data.id)"
-                v-tooltip="'编辑'"
-              />
-              <Button icon="pi pi-caret-right" v-tooltip="'运行'">
-                <template #icon>
-                  <v-remixicon size="24" name="riPlayLine" />
-                </template>
-              </Button>
+                <div class="flex align-items-center gap-2">
+                  <v-remixicon size="18" name="riPriceTag3Line" />
+                  <span class="font-semibold">{{ item?.category }}</span>
+                </div>
+              </div>
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <div class="text-xl font-bold truncate">
+                  {{ item?.name }}
+                </div>
+              </div>
+              <div class="flex flex-row-reverse gap-1">
+                <SplitButton
+                  label="设置"
+                  icon="pi pi-play"
+                  @click="run(item?.id)"
+                  :model="getItems(item?.id)"
+                >
+                  <template #icon>
+                    <v-remixicon size="24" name="riSettings3Line" />
+                  </template>
+                </SplitButton>
+                <Button
+                  icon="pi pi-file-edit"
+                  @click="edit(item?.id)"
+                  v-tooltip="'编辑'"
+                />
+                <Button icon="pi pi-caret-right" v-tooltip="'运行'">
+                  <template #icon>
+                    <v-remixicon size="24" name="riPlayLine" />
+                  </template>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -198,6 +226,7 @@ function listProject(name) {
   ListProject(name)
     .then((result) => {
       projects.value = result.list;
+      console.log(projects);
     })
     .catch((error) => {
       toast.add({

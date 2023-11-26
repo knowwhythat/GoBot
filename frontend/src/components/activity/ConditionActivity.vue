@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
@@ -87,7 +88,11 @@ function addCondition() {
     children: [],
   });
 }
-function updateData({ label }) {
-  props.element.label = label;
+function updateData(data) {
+  for (const key in data) {
+    if (Object.hasOwnProperty.call(data, key)) {
+      props.element[key] = data[key];
+    }
+  }
 }
 </script>
