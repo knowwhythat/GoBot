@@ -7,12 +7,11 @@ import (
 	"gobot/dao"
 	"gobot/forms"
 	"gobot/models"
+	"gobot/services/sys_exec"
 	"gobot/utils"
 	"io/fs"
 	"os"
-	"os/exec"
 	"strings"
-	"syscall"
 
 	"github.com/ahmetb/go-linq"
 	uuid "github.com/google/uuid"
@@ -90,11 +89,7 @@ func AddProject(name string) (result *models.Project, err error) {
 		Description: "",
 		Path:        projectDir,
 	}
-	command := exec.Command(path, "-m", "venv", result.Path+"\\venv")
-	command.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	// if err = command.Run(); err != nil {
-	// 	return nil, err
-	// }
+	command := sys_exec.BuildCmd(path, "-m", "venv", result.Path+"\\venv")
 	output, err := command.Output()
 	if err != nil {
 		fmt.Println(string(output))
