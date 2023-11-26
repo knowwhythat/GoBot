@@ -5,12 +5,15 @@ package sys_exec
 
 import (
 	"os/exec"
+	"syscall"
 )
 
 func BuildCmd(cmdStr ...string) *exec.Cmd {
 	cmdArr := []string{"/c"}
 	cmdArr = append(cmdArr, cmdStr...)
-	return exec.Command("cmd", cmdArr...)
+	command := exec.Command("cmd", cmdArr...)
+	command.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	return command
 }
 
 func Setpgid(cmd *exec.Cmd) {

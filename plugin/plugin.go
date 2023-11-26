@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-//go:embed *
+//go:embed config
 var f embed.FS
 
 var file_list []string = []string{
@@ -57,7 +57,7 @@ type Output struct {
 func ParseAllPlugin() ([]Activitiy, error) {
 	var activities []Activitiy
 	for _, name := range file_list {
-		pluginFile, _ := f.Open(name)
+		pluginFile, _ := f.Open("config/" + name)
 		content, err := io.ReadAll(pluginFile)
 		if err != nil {
 			return nil, err
