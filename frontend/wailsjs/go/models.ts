@@ -49,6 +49,28 @@ export namespace models {
 
 export namespace plugin {
 	
+	export class Output {
+	    key: string;
+	    label: string;
+	    type: string;
+	    default_value: string;
+	    required: boolean;
+	    editor_type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Output(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.key = source["key"];
+	        this.label = source["label"];
+	        this.type = source["type"];
+	        this.default_value = source["default_value"];
+	        this.required = source["required"];
+	        this.editor_type = source["editor_type"];
+	    }
+	}
 	export class Input {
 	    key: string;
 	    label: string;
@@ -78,8 +100,9 @@ export namespace plugin {
 	    }
 	}
 	export class ParameterDefine {
-	    error_deal?: boolean;
+	    error?: boolean;
 	    inputs?: Input[];
+	    extra?: Input[];
 	    outputs?: Output[];
 	
 	    static createFrom(source: any = {}) {
@@ -88,8 +111,9 @@ export namespace plugin {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.error_deal = source["error_deal"];
+	        this.error = source["error"];
 	        this.inputs = this.convertValues(source["inputs"], Input);
+	        this.extra = this.convertValues(source["extra"], Input);
 	        this.outputs = this.convertValues(source["outputs"], Output);
 	    }
 	
@@ -159,6 +183,7 @@ export namespace plugin {
 		    return a;
 		}
 	}
+	
 	
 
 }

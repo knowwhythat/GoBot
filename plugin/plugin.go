@@ -11,6 +11,7 @@ var f embed.FS
 
 var file_list []string = []string{
 	"base_control.json",
+	"data_process.json",
 }
 
 type PluginConfig struct {
@@ -35,9 +36,10 @@ type Activitiy struct {
 }
 
 type ParameterDefine struct {
-	ErrorDeal bool     `json:"error_deal,omitempty"`
-	Inputs    []Input  `json:"inputs,omitempty"`
-	Outputs   []Output `json:"outputs,omitempty"`
+	Error   bool     `json:"error,omitempty"`
+	Inputs  []Input  `json:"inputs,omitempty"`
+	Extra   []Input  `json:"extra,omitempty"`
+	Outputs []Output `json:"outputs,omitempty"`
 }
 
 type Input struct {
@@ -52,6 +54,12 @@ type Input struct {
 	ShowIf       string      `json:"show_if,omitempty"`
 }
 type Output struct {
+	Key          string `json:"key"`
+	Label        string `json:"label"`
+	Type         string `json:"type"`
+	DefaultValue string `json:"default_value"`
+	Required     bool   `json:"required"`
+	EditorType   string `json:"editor_type"`
 }
 
 func ParseAllPlugin() ([]Activitiy, error) {

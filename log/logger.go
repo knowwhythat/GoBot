@@ -10,7 +10,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-var Logger zerolog.Logger
+type LogType zerolog.Logger
+
+var Logger LogType
 
 func Init() {
 	logLevel := viper.GetString("log.level")
@@ -46,5 +48,34 @@ func Init() {
 		return fmt.Sprintf("%s;", i)
 	}
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
-	Logger = zerolog.New(multi).With().Timestamp().Logger().With().Caller().Logger()
+	Logger = LogType(zerolog.New(multi).With().Timestamp().Logger().With().Caller().Logger())
+}
+
+func (LogType) Print(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Info().Msg(message)
+}
+func (LogType) Trace(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Trace().Msg(message)
+}
+func (LogType) Debug(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Debug().Msg(message)
+}
+func (LogType) Info(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Info().Msg(message)
+}
+func (LogType) Warning(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Warn().Msg(message)
+}
+func (LogType) Error(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Error().Msg(message)
+}
+func (LogType) Fatal(message string) {
+	logger := zerolog.Logger(Logger)
+	logger.Fatal().Msg(message)
 }

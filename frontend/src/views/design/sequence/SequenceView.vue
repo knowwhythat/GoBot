@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh" class="overflow-hidden">
+  <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
     <Toolbar class="p-2">
       <template #start>
         <Button @click="router.back()" v-tooltip="'返回'" class="mr-2">
@@ -121,9 +121,9 @@ function updateDataChanged() {
 
 const mainActivity = reactive({
   sequence: {
-    id: nanoid(8),
+    id: props.subflowId,
     key: "main",
-    label: "主流程",
+    label: props.label,
     toggleable: false,
     deleteable: false,
     icon_path: "riHome5Line",
@@ -152,9 +152,13 @@ onMounted(() => {
     });
   GetSubFlow(props.id, props.subflowId)
     .then((result) => {
-      console.log(result);
-      const data = JSON.parse(result);
-      mainActivity.sequence = reactive(data.sequence);
+      if (result) {
+        const data = JSON.parse(result);
+        mainActivity.sequence = reactive(data.sequence);
+      } else {
+        mainActivity.sequence.id = props.subflowId;
+        mainActivity.sequence.label = props.label ? props.label : "子流程";
+      }
     })
     .catch((err) => {
       toast.add({
@@ -171,7 +175,6 @@ function isLeaf(data) {
 }
 
 function save() {
-  console.log(JSON.stringify(mainActivity));
   SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity))
     .then((result) => {
       dataChanged.value = false;

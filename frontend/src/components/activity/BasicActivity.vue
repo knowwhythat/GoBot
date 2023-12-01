@@ -6,12 +6,13 @@
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
+    :parameter_define="props.element.parameter_define"
+    :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
   />
 </template>
 <script setup>
-import { onMounted } from "vue";
 import ActivityBase from "./ActivityBase.vue";
 const props = defineProps({
   element: {
@@ -20,9 +21,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["delete"]);
-onMounted(() => {
-  console.log(props);
-});
+
 function updateData(data) {
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {

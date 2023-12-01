@@ -41,50 +41,24 @@
     <div class="flex-row content-center">
       <slot></slot>
     </div>
-    <Dialog
-      v-model:visible="dialogShow"
+    <ParamEditorDialog
+      :icon="props.icon"
+      :color="props.color"
+      :dialogShow="dialogShow"
+      :parameter_define="props.parameter_define"
+      :nodeData="nodeData"
       @hide="dialogShow = false"
-      maximizable
-      modal
-      header="参数设置"
-      :style="{ width: '50rem' }"
-      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-    >
-      <template #header>
-        <div class="flex align-items-center gap-2">
-          <span
-            :class="props.color"
-            class="inline-block rounded-lg dark:text-black p-3"
-          >
-            <v-remixicon v-bind="getIconPath(props?.icon)" />
-          </span>
-          <InputText type="text" v-model="nodeData.label" />
-        </div>
-      </template>
-      <div class="mb-4">
-        <span class="ml-2 mr-2"> 模块名称 </span>
-        <ExpressionTextInput value="" />
-      </div>
-      <template #footer>
-        <Button
-          label="取消"
-          icon="pi pi-times"
-          @click="dialogShow = false"
-          text
-        />
-        <Button label="确认" icon="pi pi-check" @click="updateData" />
-      </template>
-    </Dialog>
+      @update="updateData($event)"
+    ></ParamEditorDialog>
   </Panel>
 </template>
 <script setup>
 import { getIconPath } from "@/utils/helper";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
-import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
-import { reactive, ref, markRaw, inject } from "vue";
-import ExpressionTextInput from "@/components/editor/ExpressionTextInput.vue";
+import ParamEditorDialog from "@/components/editor/ParamEditorDialog.vue";
+import { reactive, onMounted, inject, ref } from "vue";
+
 const props = defineProps({
   label: {
     type: String,
@@ -111,24 +85,43 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  parameter_define: {
+    type: Object,
+    default: () => ({}),
+  },
+  parameter: {
+    type: Object,
+    default: () => ({}),
+  },
 });
+
 const emit = defineEmits(["delete", "update"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
-const dialogShow = ref(false);
+
 const nodeData = reactive({
-  collapsed: props.collapsed,
-  label: props.label,
+  collapsed: false,
+  label: "",
+  parameter: {},
 });
+
+onMounted(() => {
+  nodeData.collapsed = props.collapsed;
+  nodeData.label = props.label;
+  nodeData.parameter = props.parameter;
+});
+
+const dialogShow = ref(false);
 
 function panelToggle(event) {
   nodeData.collapsed = event;
   emit("update", { collapsed: event });
 }
 
-function updateData() {
-  console.log(dataChanged);
+function updateData(data) {
   dialogShow.value = false;
   updateDataChanged();
-  emit("update", { ...nodeData });
+  nodeData.label = data.label;
+  nodeData.parameter = data.parameter;
+  emit("update", { ...data });
 }
 </script>

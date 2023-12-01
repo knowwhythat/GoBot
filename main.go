@@ -7,6 +7,7 @@ import (
 	"gobot/log"
 
 	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
@@ -33,12 +34,12 @@ func main() {
 			Assets: assets,
 		},
 		// Frameless:          true,
-		MinWidth:           400,
-        MinHeight:          400,
+		MinWidth:  400,
+		MinHeight: 400,
 		// BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:  app.startup,
-		OnShutdown: app.shutdown,
-		OnBeforeClose:      app.beforeClose,
+		OnStartup:     app.startup,
+		OnShutdown:    app.shutdown,
+		OnBeforeClose: app.beforeClose,
 		Bind: []interface{}{
 			app,
 		},
@@ -46,10 +47,12 @@ func main() {
 			OpenInspectorOnStartup: false,
 		},
 		EnableDefaultContextMenu: false,
+		Logger:                   log.Logger,
+		LogLevel:                 logger.DEBUG,
 	})
 
 	if err != nil {
-		log.Logger.Err(err).Msg("启动失败")
+		log.Logger.Error("启动失败")
 	}
-	log.Logger.Info().Msg("服务启动成功")
+	log.Logger.Info("服务启动成功")
 }

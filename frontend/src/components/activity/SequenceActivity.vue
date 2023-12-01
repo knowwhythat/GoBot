@@ -106,7 +106,6 @@ function update({ id, children }) {
 }
 
 function handleDrop(event) {
-  console.log(event);
   event.preventDefault();
   event.stopPropagation();
   const droppedBlock = JSON.parse(
@@ -122,10 +121,12 @@ function handleDrop(event) {
     copyActivities.splice(
       index,
       0,
-      shallowReactive({ ...droppedBlock, id: nanoid(16) })
+      shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
     );
   } else {
-    copyActivities.push(shallowReactive({ ...droppedBlock, id: nanoid(16) }));
+    copyActivities.push(
+      shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
+    );
   }
 
   emit("update", { id: props.element.id, children: copyActivities });
