@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"gobot/constants"
@@ -204,12 +205,22 @@ func SaveSubFlow(id string, subId string, data string) error {
 	if err != nil {
 		return err
 	}
-	devPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
 	if !utils.PathExist(devPath) {
 		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
 			return err
 		}
 	}
 	err = os.WriteFile(devPath+string(os.PathSeparator)+subId+".flow", []byte(data), 0666)
+	if err != nil {
+		return err
+	}
+	flow := Flow{}
+	err = json.Unmarshal([]byte(data), &flow)
+	if err != nil {
+		return nil
+	}
+	err = flow.GeneratePythonCode(projectPath + string(os.PathSeparator) + subId + ".py")
 	return err
 }

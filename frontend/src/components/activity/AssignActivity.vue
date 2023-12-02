@@ -15,7 +15,7 @@
       <InputText
         v-model="variableName"
         @update:model-value="chageName($event)"
-        class="w-40"
+        class="w-32"
         placeholder="变量名称"
       />
       <span class="mx-1 my-auto"> = </span>
@@ -23,7 +23,7 @@
         <InputText
           v-model="variableValue"
           @update:model-value="chageValue($event)"
-          class="w-40"
+          class="w-32"
           placeholder="变量值"
         />
         <Button
@@ -57,7 +57,6 @@ const variableValue = ref("");
 watch(
   () => props.element.parameter,
   (value, oldValue) => {
-    console.log(value);
     variableName.value = value["variable_name"];
     if (
       "variable_value" in value &&

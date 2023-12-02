@@ -6,6 +6,8 @@
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
+    :parameter_define="props.element.parameter_define"
+    :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
   >
@@ -40,7 +42,7 @@
       </template>
       <template #footer>
         <div
-          class="w-full p-8 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
+          class="w-full p-4 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
         >
           拖放组件到此处
         </div>
@@ -83,7 +85,6 @@ function findComponent(name) {
 }
 
 function deleteNode({ id }) {
-  console.log(id);
   const blockIndex = props.element.children.findIndex(
     (activity) => activity.id === id
   );
@@ -114,21 +115,25 @@ function handleDrop(event) {
   if (!droppedBlock || droppedBlock.id) return;
 
   const copyActivities = [...props.element.children];
-
-  const ancestorElement = event.target.closest(".activity-node");
-  if (ancestorElement) {
-    let index = ancestorElement.getAttribute("index");
-    copyActivities.splice(
-      index,
-      0,
-      shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
-    );
-  } else {
+  if (event.target.innerText === "拖放组件到此处") {
     copyActivities.push(
       shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
     );
+  } else {
+    const ancestorElement = event.target.closest(".activity-node");
+    if (ancestorElement && ancestorElement.getAttribute("index") > -1) {
+      let index = ancestorElement.getAttribute("index");
+      copyActivities.splice(
+        index,
+        0,
+        shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
+      );
+    } else {
+      copyActivities.push(
+        shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
+      );
+    }
   }
-
   emit("update", { id: props.element.id, children: copyActivities });
 }
 function updateData(data) {
@@ -137,5 +142,6 @@ function updateData(data) {
       props.element[key] = data[key];
     }
   }
+  console.log(props.element.parameter);
 }
 </script>

@@ -46,6 +46,9 @@ onMounted(() => {
     props.element.children.push({
       id: nanoid(16),
       label: "Try",
+      key: "try",
+      method: "try",
+      isPseudo: true,
       toggleable: true,
       deleteable: false,
       icon_path: "riHome5Line",
@@ -54,14 +57,36 @@ onMounted(() => {
     props.element.children.push({
       id: nanoid(16),
       label: "Catch",
+      key: "except",
+      method: "except",
+      isPseudo: true,
       toggleable: true,
       deleteable: false,
       icon_path: "riHome5Line",
+      parameter_define: {
+        inputs: [
+          {
+            category: null,
+            key: "expression",
+            label: "异常变量",
+            type: "any",
+            default_value: "1:exception",
+            required: true,
+            options: null,
+            editor_type: "text",
+            show_if: null,
+          },
+        ],
+        outputs: [],
+      },
       children: [],
     });
     props.element.children.push({
       id: nanoid(16),
       label: "Finally",
+      key: "finally",
+      method: "finally",
+      isPseudo: true,
       toggleable: true,
       deleteable: false,
       icon_path: "riHome5Line",

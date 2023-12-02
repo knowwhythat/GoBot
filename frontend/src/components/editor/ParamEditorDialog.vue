@@ -237,7 +237,6 @@ const nodeData = reactive({
 function setData() {
   nodeData.label = props.nodeData.label;
   nodeData.parameter = props.nodeData.parameter;
-  console.log(props.parameter_define);
 }
 
 function updateInnerValue(key, value) {
@@ -245,6 +244,7 @@ function updateInnerValue(key, value) {
 }
 
 function updateData() {
+  console.log(nodeData);
   emit("update", { ...nodeData });
 }
 </script>

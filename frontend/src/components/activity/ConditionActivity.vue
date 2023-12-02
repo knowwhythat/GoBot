@@ -25,6 +25,7 @@
         v-for="element in props.element.children"
         :element="element"
         @update="update"
+        @delete="deleteNode($event)"
       />
     </div>
   </ActivityBase>
@@ -54,18 +55,40 @@ onMounted(() => {
     props.element.children = reactive([]);
     props.element.children.push({
       id: nanoid(16),
+      key: "if",
+      method: "if",
       label: "IF",
       toggleable: true,
       deleteable: false,
       icon_path: "riHome5Line",
+      isPseudo: true,
+      parameter_define: {
+        inputs: [
+          {
+            category: null,
+            key: "expression",
+            label: "表达式",
+            type: "any",
+            default_value: "1:True",
+            required: true,
+            options: null,
+            editor_type: "text",
+            show_if: null,
+          },
+        ],
+        outputs: [],
+      },
       children: [],
     });
     props.element.children.push({
       id: nanoid(16),
+      key: "else",
+      method: "else",
       label: "Else",
       toggleable: true,
       deleteable: false,
       icon_path: "riHome5Line",
+      isPseudo: true,
       children: [],
     });
   }
@@ -83,10 +106,29 @@ function update({ id, children }) {
 function addCondition() {
   props.element.children.splice(1, 0, {
     id: nanoid(16),
+    key: "else if",
+    method: "else if",
     label: "ElseIf",
     toggleable: true,
-    deleteable: false,
+    deleteable: true,
     icon_path: "riHome5Line",
+    isPseudo: true,
+    parameter_define: {
+      inputs: [
+        {
+          category: null,
+          key: "expression",
+          label: "表达式",
+          type: "any",
+          default_value: "1:True",
+          required: true,
+          options: null,
+          editor_type: "text",
+          show_if: null,
+        },
+      ],
+      outputs: [],
+    },
     children: [],
   });
 }
@@ -95,6 +137,17 @@ function updateData(data) {
     if (Object.hasOwnProperty.call(data, key)) {
       props.element[key] = data[key];
     }
+  }
+}
+
+function deleteNode({ id }) {
+  console.log(id);
+  const blockIndex = props.element.children.findIndex(
+    (activity) => activity.id === id
+  );
+
+  if (blockIndex !== -1) {
+    props.element.children.splice(blockIndex, 1);
   }
 }
 </script>
