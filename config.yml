@@ -1,9 +1,9 @@
 kvdb:
-  path: "./build/data/"
+  path: "D:\\code\\go\\gobot\\build\\data\\"
 log:
-  path: "./build/log/"
-  level: 'Info'
+  path: "D:\\code\\go\\gobot\\build\\log\\"
+  level: "Info"
 data:
-  path: "./build/data/"
+  path: "D:\\code\\go\\gobot\\build\\data\\"
 python:
   path: "D:\\Program Files (x86)\\Python3.8\\python.exe"

@@ -293,10 +293,51 @@
             "inputs": [
               {
                 "category": null,
-                "key": "delay",
-                "label": "表达式",
+                "key": "duration",
+                "label": "等待时间(s)",
                 "type": "number",
                 "default_value": "1:10",
+                "required": true,
+                "options": null,
+                "editor_type": "text",
+                "show_if": null
+              }
+            ],
+            "outputs": []
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "base.control.log",
+          "label": "打印日志",
+          "icon_path": "riGitRepositoryLine",
+          "description": "打印日志",
+          "namespace": "robot_basic",
+          "method": "print_log",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "log_level",
+                "label": "日志级别",
+                "required": true,
+                "type": "str",
+                "default_value": "0:info",
+                "options": [
+                  { "label": "调试", "value": "debug" },
+                  { "label": "信息", "value": "info" },
+                  { "label": "警告", "value": "warning" },
+                  { "label": "错误", "value": "error" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": null
+              },
+              {
+                "category": null,
+                "key": "content",
+                "label": "日志内容",
+                "type": "str",
+                "default_value": "0:",
                 "required": true,
                 "options": null,
                 "editor_type": "text",

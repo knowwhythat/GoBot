@@ -30,8 +30,8 @@ export function ParseAllPlugin() {
   return window['go']['main']['App']['ParseAllPlugin']();
 }
 
-export function RunSubFlow(arg1, arg2, arg3) {
-  return window['go']['main']['App']['RunSubFlow'](arg1, arg2, arg3);
+export function RunSubFlow(arg1, arg2) {
+  return window['go']['main']['App']['RunSubFlow'](arg1, arg2);
 }
 
 export function SaveMainFlow(arg1, arg2) {

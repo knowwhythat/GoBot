@@ -7,11 +7,6 @@
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button v-tooltip="'运行'" class="mr-2" @click="run">
-          <template #icon>
-            <v-remixicon name="riPlayLine" />
-          </template>
-        </Button>
       </template>
 
       <template #center>
@@ -21,6 +16,11 @@
       </template>
 
       <template #end>
+        <Button v-tooltip="'运行'" class="mr-2" @click="run" :loading="running">
+          <template #icon>
+            <v-remixicon name="riPlayLine" />
+          </template>
+        </Button>
         <Button v-tooltip="'保存'" @click="save">
           <template #icon>
             <span>
@@ -98,6 +98,7 @@ import {
   SaveSubFlow,
   RunSubFlow,
 } from "@back/go/main/App";
+import { EventsOn, EventsOff } from "@back/runtime/runtime";
 import { getIconPath } from "@/utils/helper";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
@@ -198,9 +199,30 @@ async function save() {
     });
   }
 }
+const running = ref(false);
 async function run() {
   await save();
-  await RunSubFlow(props.id, props.subflowId);
+  running.value = true;
+  EventsOn("log_event", (data) => {
+    console.log(data);
+  });
+  try {
+    await RunSubFlow(props.id, props.subflowId);
+    toast.add({
+      severity: "success",
+      summary: "提示",
+      detail: "运行成功",
+      life: 3000,
+    });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "运行失败",
+      detail: err,
+    });
+  }
+  running.value = false;
+  EventsOff("log_event");
 }
 onBeforeRouteLeave(onBeforeLeave);
 

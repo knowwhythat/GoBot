@@ -17,7 +17,7 @@ export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any
 
 export function ParseAllPlugin():Promise<Array<plugin.Activitiy>>;
 
-export function RunSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
+export function RunSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 

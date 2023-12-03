@@ -1,6 +1,8 @@
 package services
 
 import (
+	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -8,16 +10,20 @@ import (
 	"gobot/constants"
 	"gobot/dao"
 	"gobot/forms"
+	"gobot/log"
 	"gobot/models"
 	"gobot/services/sys_exec"
 	"gobot/utils"
 	"io/fs"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ahmetb/go-linq"
 	uuid "github.com/google/uuid"
+	"github.com/hpcloud/tail"
 	"github.com/spf13/viper"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 func QueryProjectPage(page forms.QueryForm) (total int, resultList []*models.Project, err error) {
@@ -226,14 +232,20 @@ func SaveSubFlow(id string, subId string, data string) error {
 	return err
 }
 
-func RunSubFlow(id string, subId string) error {
+func RunSubFlow(ctx context.Context, id string, subId string) error {
 	params := make(map[string]interface{})
 	project, err := QueryProjectById(id)
 	if err != nil {
 		return err
 	}
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
-	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + uuid.New().String() + ".log"
+	logDir := project.Path + string(os.PathSeparator) + constants.LogDir
+	logPath := logDir + string(os.PathSeparator) + uuid.New().String() + ".log"
+	if !utils.PathExist(logDir) {
+		if err = os.MkdirAll(logDir, fs.ModeDir); err != nil {
+			return err
+		}
+	}
 	params["sys_path_list"] = []string{projectPath}
 	params["log_path"] = logPath
 	params["log_level"] = "DEBUG"
@@ -244,11 +256,56 @@ func RunSubFlow(id string, subId string) error {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
+	log.Logger.Debug(base64Param)
 	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-m", "robot_core.robot_interpreter", base64Param)
-	output, err := command.Output()
+	var stderr bytes.Buffer
+	command.Stderr = &stderr
+	background, cancle := context.WithCancel(context.Background())
+	go func() {
+		monitorLog(ctx, background, logPath)
+	}()
+	_, err = command.Output()
+	cancle()
 	if err != nil {
-		fmt.Println(string(output))
-		return err
+		errStr := stderr.String()
+		_, errStr, founded := strings.Cut(errStr, projectPath)
+		log.Logger.Error(fmt.Sprintf("%t", founded))
+		log.Logger.Error(errStr)
+		return errors.New(errStr)
 	}
 	return nil
+}
+
+func monitorLog(ctx, background context.Context, logPath string) {
+	config := tail.Config{
+		ReOpen:    true,                                 //重新打开
+		Follow:    true,                                 //是否跟随
+		Location:  &tail.SeekInfo{Offset: 0, Whence: 0}, //从哪儿开始读
+		MustExist: false,                                //文件不存在不报错
+		Poll:      true,                                 //
+	}
+	tails, err := tail.TailFile(logPath, config)
+	if err != nil {
+		log.Logger.Error("tail file failed, err:" + err.Error())
+		return
+	}
+
+	var (
+		line *tail.Line
+		ok   bool
+	)
+loop:
+	for {
+		select {
+		case <-background.Done():
+			log.Logger.Info("结束监控")
+			break loop
+		case line, ok = <-tails.Lines:
+			if !ok {
+				time.Sleep(time.Second)
+				continue
+			}
+			runtime.EventsEmit(ctx, "log_event", line.Text)
+		}
+	}
 }

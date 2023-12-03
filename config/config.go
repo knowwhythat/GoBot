@@ -2,6 +2,8 @@ package config
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
@@ -32,12 +34,17 @@ func (c *Config) Init() error {
 	viper.SetEnvPrefix("GOBOT") // 读取环境变量的前缀为GOBOT
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exePath := filepath.Dir(ex)
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		viper.SetDefault("kvdb.path", "./data/")
-		viper.SetDefault("log.path", "./log/")
+		viper.SetDefault("kvdb.path", exePath+string(os.PathSeparator)+"data"+string(os.PathListSeparator))
+		viper.SetDefault("log.path", exePath+string(os.PathSeparator)+"log"+string(os.PathListSeparator))
 		viper.SetDefault("log.level", "Info")
-		viper.SetDefault("data.path", "./data/")
-		viper.SetDefault("python.path", "./python/python.exe")
+		viper.SetDefault("data.path", exePath+string(os.PathSeparator)+"data"+string(os.PathListSeparator))
+		viper.SetDefault("python.path", exePath+string(os.PathSeparator)+"python"+string(os.PathListSeparator)+"python.exe")
 		viper.WriteConfig()
 	}
 

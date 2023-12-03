@@ -8,6 +8,8 @@ import (
 	"gobot/models"
 	"gobot/plugin"
 	"gobot/services"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -32,7 +34,16 @@ func (a *App) shutdown(ctx context.Context) {
 }
 
 func (a *App) beforeClose(ctx context.Context) bool {
-	return false
+	dialog, err := runtime.MessageDialog(ctx, runtime.MessageDialogOptions{
+		Type:    runtime.QuestionDialog,
+		Title:   "退出?",
+		Message: "退出后所有的任务将停止,是否确定退出?",
+	})
+
+	if err != nil {
+		return false
+	}
+	return dialog != "Yes"
 }
 
 // Greet returns a greeting for the given name
@@ -92,7 +103,7 @@ func (a *App) SaveSubFlow(id, subId, data string) error {
 }
 
 func (a *App) RunSubFlow(id, subId string) error {
-	return services.RunSubFlow(id, subId)
+	return services.RunSubFlow(a.ctx, id, subId)
 }
 
 func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
