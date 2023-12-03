@@ -91,6 +91,10 @@ func (a *App) SaveSubFlow(id, subId, data string) error {
 	return services.SaveSubFlow(id, subId, data)
 }
 
+func (a *App) RunSubFlow(id, subId string) error {
+	return services.RunSubFlow(id, subId)
+}
+
 func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
 	return plugin.ParseAllPlugin()
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -223,4 +224,31 @@ func SaveSubFlow(id string, subId string, data string) error {
 	}
 	err = flow.GeneratePythonCode(projectPath + string(os.PathSeparator) + subId + ".py")
 	return err
+}
+
+func RunSubFlow(id string, subId string) error {
+	params := make(map[string]interface{})
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + uuid.New().String() + ".log"
+	params["sys_path_list"] = []string{projectPath}
+	params["log_path"] = logPath
+	params["log_level"] = "DEBUG"
+	params["mod"] = subId
+	params["environment_variables"] = make(map[string]string)
+	marshalParam, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
+	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-m", "robot_core.robot_interpreter", base64Param)
+	output, err := command.Output()
+	if err != nil {
+		fmt.Println(string(output))
+		return err
+	}
+	return nil
 }

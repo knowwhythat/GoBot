@@ -7,7 +7,7 @@
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button v-tooltip="'运行'" class="mr-2">
+        <Button v-tooltip="'运行'" class="mr-2" @click="run">
           <template #icon>
             <v-remixicon name="riPlayLine" />
           </template>
@@ -92,7 +92,12 @@ import Tree from "primevue/tree";
 import { ref, onMounted, reactive, provide } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";
-import { ParseAllPlugin, GetSubFlow, SaveSubFlow } from "@back/go/main/App";
+import {
+  ParseAllPlugin,
+  GetSubFlow,
+  SaveSubFlow,
+  RunSubFlow,
+} from "@back/go/main/App";
 import { getIconPath } from "@/utils/helper";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
@@ -174,25 +179,28 @@ function isLeaf(data) {
   return !(data.node.children && data.node.children.length > 0);
 }
 
-function save() {
-  SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity))
-    .then((result) => {
-      dataChanged.value = false;
-      toast.add({
-        severity: "success",
-        summary: "提示",
-        detail: "保存成功",
-        life: 3000,
-      });
-    })
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "保存失败",
-        detail: err,
-        life: 3000,
-      });
+async function save() {
+  try {
+    await SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity));
+    dataChanged.value = false;
+    toast.add({
+      severity: "success",
+      summary: "提示",
+      detail: "保存成功",
+      life: 3000,
     });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "保存失败",
+      detail: err,
+      life: 3000,
+    });
+  }
+}
+async function run() {
+  await save();
+  await RunSubFlow(props.id, props.subflowId);
 }
 onBeforeRouteLeave(onBeforeLeave);
 
