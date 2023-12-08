@@ -22,12 +22,12 @@ export function GetSubFlow(arg1, arg2) {
   return window['go']['main']['App']['GetSubFlow'](arg1, arg2);
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
-}
-
 export function ListProject(arg1, arg2) {
   return window['go']['main']['App']['ListProject'](arg1, arg2);
+}
+
+export function OpenDialog(arg1) {
+  return window['go']['main']['App']['OpenDialog'](arg1);
 }
 
 export function ParseAllPlugin() {

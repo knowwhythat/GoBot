@@ -124,7 +124,15 @@
               <v-remixicon name="riInformationLine" size="18" />
             </a>
           </div>
-          <div v-if="nodeData.parameter['exception'] === 'retry'" class="mr-2">
+          <div class="inline-flex">
+            <InputSwitch
+              v-model="nodeData.parameter['retry']"
+              trueValue="True"
+              falseValue="False"
+            />
+            <span class="ml-2"> 重试操作 </span>
+          </div>
+          <div v-if="nodeData.parameter['retry'] == 'True'" class="mr-2">
             <div class="inline-flex items-center">
               <span> 次数 </span>
               <v-remixicon
@@ -133,12 +141,7 @@
                 size="20"
                 class="mr-2"
               />
-              <InputNumber
-                v-model="nodeData.parameter['tryCount']"
-                inputId="integeronly"
-                :min="0"
-                showButtons
-              />
+              <InputText v-model="nodeData.parameter['tryCount']" />
             </div>
             <div class="inline-flex items-center ml-2">
               <span> 间隔(s) </span>
@@ -148,12 +151,7 @@
                 size="20"
                 class="mr-2"
               />
-              <InputNumber
-                v-model="nodeData.parameter['tryInterval']"
-                inputId="integeronly"
-                :min="0"
-                showButtons
-              />
+              <InputText v-model="nodeData.parameter['tryInterval']" />
             </div>
           </div>
         </div>
@@ -167,6 +165,7 @@
 </template>
 <script setup>
 import { getIconPath } from "@/utils/helper";
+import InputSwitch from "primevue/inputswitch";
 import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
 import Divider from "primevue/divider";
@@ -227,7 +226,6 @@ function findComponent(name) {
 const toDoTypes = [
   { value: "error", name: "抛出错误" },
   { value: "continue", name: "继续执行" },
-  { value: "retry", name: "重试" },
 ];
 const nodeData = reactive({
   label: "",

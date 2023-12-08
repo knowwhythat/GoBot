@@ -13,9 +13,9 @@ export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
 
-export function Greet(arg1:string):Promise<string>;
-
 export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any}>;
+
+export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activitiy>>;
 

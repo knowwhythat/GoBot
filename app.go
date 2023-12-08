@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"gobot/dao"
 	"gobot/forms"
 	"gobot/models"
@@ -47,9 +46,17 @@ func (a *App) beforeClose(ctx context.Context) bool {
 	return dialog != "Yes"
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+func (a *App) OpenDialog(option map[string]string) string {
+	if option["type"] == "file" {
+		fileter := runtime.FileFilter{DisplayName: option["display"], Pattern: option["pattern"]}
+		filePath, _ := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{Title: "选择文件", Filters: []runtime.FileFilter{fileter}})
+		return filePath
+	} else if option["type"] == "directory" {
+		filePath, _ := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{Title: "选择目录"})
+		return filePath
+	}
+
+	return ""
 }
 
 func (a *App) ListProject(query string, pageNum int) (result map[string]interface{}, err error) {

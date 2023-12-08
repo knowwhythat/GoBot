@@ -42,8 +42,12 @@
                 "type": "str",
                 "default_value": "0:",
                 "required": true,
-                "options": null,
-                "editor_type": "ExpressionTextInput",
+                "options": {
+                  "type": "file",
+                  "pattern": "*.exe",
+                  "display": "可执行文件"
+                },
+                "editor_type": "FileDialogInput",
                 "show_if": null
               },
               {
@@ -65,8 +69,10 @@
                 "type": "str",
                 "default_value": "0:",
                 "required": true,
-                "options": null,
-                "editor_type": "ExpressionTextInput",
+                "options": {
+                  "type": "directory"
+                },
+                "editor_type": "FileDialogInput",
                 "show_if": null
               },
               {
@@ -76,8 +82,10 @@
                 "type": "str",
                 "default_value": "0:",
                 "required": true,
-                "options": null,
-                "editor_type": "ExpressionTextInput",
+                "options": {
+                  "type": "directory"
+                },
+                "editor_type": "FileDialogInput",
                 "show_if": null
               },
               {

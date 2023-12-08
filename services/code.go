@@ -240,6 +240,20 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				}
 			}
 		}
+		if activity.ParameterDefine.Error {
+			if retry, ok := activity.Parameter["retry"]; ok {
+				code += "retry=" + retry + ","
+			}
+			if exception, ok := activity.Parameter["exception"]; ok {
+				code += "exception=\"" + exception + "\","
+			}
+			if tryCount, ok := activity.Parameter["tryCount"]; ok {
+				code += "tryCount=" + tryCount + ","
+			}
+			if tryInterval, ok := activity.Parameter["tryInterval"]; ok {
+				code += "tryInterval=" + tryInterval + ","
+			}
+		}
 		code += "code_map_id=\"" + activity.ID + "\"" + ")\n"
 	}
 	if len(activity.Children) > 0 {
