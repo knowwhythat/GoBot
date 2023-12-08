@@ -5,6 +5,8 @@ import {models} from '../models';
 
 export function CreateProject(arg1:string):Promise<void>;
 
+export function DebugSubFlow(arg1:string,arg2:string):Promise<void>;
+
 export function DeleteProject(arg1:string):Promise<void>;
 
 export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
@@ -24,5 +26,7 @@ export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SelectProject(arg1:string):Promise<models.Project>;
+
+export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function UpdateProject(arg1:string,arg2:string):Promise<void>;

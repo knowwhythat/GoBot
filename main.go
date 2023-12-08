@@ -15,6 +15,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed services/appicon.ico
+var icon []byte
+
 func main() {
 	if err := config.InitConfig("./config.yml"); err != nil {
 		println("Init config error:" + err.Error())
@@ -24,7 +27,6 @@ func main() {
 	dao.InitKvDB()
 	// Create an instance of the app structure
 	app := NewApp()
-
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "GoBot",

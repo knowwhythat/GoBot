@@ -6,6 +6,10 @@ export function CreateProject(arg1) {
   return window['go']['main']['App']['CreateProject'](arg1);
 }
 
+export function DebugSubFlow(arg1, arg2) {
+  return window['go']['main']['App']['DebugSubFlow'](arg1, arg2);
+}
+
 export function DeleteProject(arg1) {
   return window['go']['main']['App']['DeleteProject'](arg1);
 }
@@ -44,6 +48,10 @@ export function SaveSubFlow(arg1, arg2, arg3) {
 
 export function SelectProject(arg1) {
   return window['go']['main']['App']['SelectProject'](arg1);
+}
+
+export function TerminateSubFlow(arg1, arg2) {
+  return window['go']['main']['App']['TerminateSubFlow'](arg1, arg2);
 }
 
 export function UpdateProject(arg1, arg2) {

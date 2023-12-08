@@ -52,6 +52,7 @@ export namespace plugin {
 	export class Output {
 	    key: string;
 	    label: string;
+	    placeholder: string;
 	    type: string;
 	    default_value: string;
 	    required: boolean;
@@ -65,6 +66,7 @@ export namespace plugin {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.key = source["key"];
 	        this.label = source["label"];
+	        this.placeholder = source["placeholder"];
 	        this.type = source["type"];
 	        this.default_value = source["default_value"];
 	        this.required = source["required"];
@@ -74,6 +76,7 @@ export namespace plugin {
 	export class Input {
 	    key: string;
 	    label: string;
+	    placeholder: string;
 	    category?: string;
 	    type: string;
 	    default_value: string;
@@ -90,6 +93,7 @@ export namespace plugin {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.key = source["key"];
 	        this.label = source["label"];
+	        this.placeholder = source["placeholder"];
 	        this.category = source["category"];
 	        this.type = source["type"];
 	        this.default_value = source["default_value"];

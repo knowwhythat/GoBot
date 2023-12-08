@@ -25,13 +25,13 @@
                 "label": "变量类型",
                 "required": true,
                 "type": "str",
-                "default_value": "0:str",
+                "default_value": "0:any",
                 "options": [
+                  { "label": "任意类型", "value": "any" },
                   { "label": "字符串", "value": "str" },
                   { "label": "整数", "value": "int" },
                   { "label": "小数", "value": "float" },
-                  { "label": "布尔值", "value": "bool" },
-                  { "label": "任意类型", "value": "any" }
+                  { "label": "布尔值", "value": "bool" }
                 ],
                 "editor_type": "SelectDefine",
                 "show_if": null

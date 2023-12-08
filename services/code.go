@@ -206,32 +206,41 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			code = code + outputValue + " = "
 		}
 		code = code + activity.Namespace + "." + activity.Method + "("
-		inputStr := ""
 		if len(activity.ParameterDefine.Inputs) > 0 {
 			for _, i := range activity.ParameterDefine.Inputs {
 				if inputValue, ok := activity.Parameter[i.Key]; !ok {
 					if i.DefaultValue[0] == '0' {
-						inputStr = inputStr + i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
+						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
 					} else {
-						inputStr = inputStr + i.Key + "=" + i.DefaultValue[2:] + ","
+						code += i.Key + "=" + i.DefaultValue[2:] + ","
 					}
 				} else if len(inputValue) > 1 && inputValue[1] == ':' {
 					if inputValue[0] == '0' {
-						inputStr = inputStr + i.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
+						code += i.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
 					} else {
-						inputStr = inputStr + i.Key + "=" + inputValue[2:] + ","
+						code += i.Key + "=" + inputValue[2:] + ","
 					}
 				}
 			}
 		}
-		if len(inputStr) > 0 && inputStr[len(inputStr)-1] == ',' {
-			inputStr = strings.TrimRight(inputStr, ",")
+		if len(activity.ParameterDefine.Extra) > 0 {
+			for _, i := range activity.ParameterDefine.Extra {
+				if inputValue, ok := activity.Parameter[i.Key]; !ok {
+					if i.DefaultValue[0] == '0' {
+						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
+					} else {
+						code += i.Key + "=" + i.DefaultValue[2:] + ","
+					}
+				} else if len(inputValue) > 1 && inputValue[1] == ':' {
+					if inputValue[0] == '0' {
+						code += i.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
+					} else {
+						code += i.Key + "=" + inputValue[2:] + ","
+					}
+				}
+			}
 		}
-
-		if len(inputStr) > 0 {
-			code = code + inputStr
-		}
-		code = code + ")\n"
+		code += "code_map_id=\"" + activity.ID + "\"" + ")\n"
 	}
 	if len(activity.Children) > 0 {
 		for _, child := range activity.Children {

@@ -16,11 +16,7 @@
         @node-select="selectedNode($event)"
       ></Tree>
     </OverlayPanel>
-    <InputText
-      placeholder="提示内容"
-      :modelValue="content"
-      @update:modelValue="updateValue($event)"
-    />
+    <InputText :placeholder="input.placeholder" v-model="content" />
     <Button
       :severity="isExpression ? 'Primary' : 'secondary'"
       @click="changeValueType"
@@ -37,7 +33,7 @@ import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import OverlayPanel from "primevue/overlaypanel";
 import Button from "primevue/button";
-import { reactive, onMounted, ref, watch } from "vue";
+import { ref, computed } from "vue";
 const props = defineProps({
   value: {
     type: String,
@@ -49,23 +45,32 @@ const props = defineProps({
   },
 });
 
-const isExpression = ref(false);
-const content = ref("");
 const emit = defineEmits(["update"]);
+const isExpression = ref(false);
 
-watch(
-  () => props.value,
-  (value, oldValue) => {
-    if (value.split(":").length > 1) {
-      isExpression.value = value.split(":")[0] === "1";
-      content.value = value.substring(2);
+const content = computed({
+  get() {
+    if (props.value.split(":").length > 1) {
+      isExpression.value = props.value.split(":")[0] === "1";
+      return props.value.substring(2);
     } else {
       isExpression.value = false;
-      content.value = value;
+      return props.value;
     }
   },
-  { immediate: true }
-);
+  set(value) {
+    emit("update", (isExpression.value ? "1:" : "0:") + value);
+  },
+});
+
+function changeValueType() {
+  isExpression.value = !isExpression.value;
+  if (isExpression.value) {
+    emit("update", "1:" + content.value);
+  } else {
+    emit("update", "0:" + content.value);
+  }
+}
 const nodes = ref([
   {
     key: "0-0",
@@ -102,24 +107,6 @@ const nodes = ref([
     ],
   },
 ]);
-function changeValueType() {
-  isExpression.value = !isExpression.value;
-  if (isExpression.value) {
-    emit("update", "1:" + content.value);
-  } else {
-    emit("update", "0:" + content.value);
-  }
-}
-
-function updateValue(data) {
-  content.value = data;
-  if (isExpression.value) {
-    emit("update", "1:" + data);
-  } else {
-    emit("update", "0:" + data);
-  }
-}
-
 const op = ref();
 const toggle = (event) => {
   op.value.toggle(event);
@@ -128,6 +115,6 @@ const toggle = (event) => {
 function selectedNode(node) {
   op.value.toggle(false);
   isExpression.value = true;
-  updateValue(node.label);
+  emit("update", "1:" + node.label);
 }
 </script>

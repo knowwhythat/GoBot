@@ -18,7 +18,7 @@
     </OverlayPanel>
     <InputText
       :editable="true"
-      v-model="props.value"
+      :model-value="props.value"
       @update:modelValue="$emit('update', $event)"
     ></InputText>
   </InputGroup>
@@ -29,8 +29,7 @@ import Tree from "primevue/tree";
 import OverlayPanel from "primevue/overlaypanel";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
-import { reactive, onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 const props = defineProps({
   value: {
     type: String,

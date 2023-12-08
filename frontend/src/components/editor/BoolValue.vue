@@ -1,16 +1,14 @@
 <template>
-  <InputGroup>
-    <Dropdown
-      v-model="content"
-      :options="props.input.options"
-      optionLabel="label"
-      optionValue="value"
-    ></Dropdown>
-  </InputGroup>
+  <Checkbox
+    class="pt-3"
+    v-model="content"
+    trueValue="True"
+    falseValue="False"
+    :binary="true"
+  ></Checkbox>
 </template>
 <script setup>
-import InputGroup from "primevue/inputgroup";
-import Dropdown from "primevue/dropdown";
+import Checkbox from "primevue/checkbox";
 import { computed } from "vue";
 const props = defineProps({
   value: {
@@ -33,7 +31,7 @@ const content = computed({
     }
   },
   set(value) {
-    emit("update", "0:" + value);
+    emit("update", "1:" + value);
   },
 });
 </script>

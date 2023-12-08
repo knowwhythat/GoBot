@@ -26,6 +26,7 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	services.CreateTray(ctx, icon)
 }
 
 func (a *App) shutdown(ctx context.Context) {
@@ -104,6 +105,14 @@ func (a *App) SaveSubFlow(id, subId, data string) error {
 
 func (a *App) RunSubFlow(id, subId string) error {
 	return services.RunSubFlow(a.ctx, id, subId)
+}
+
+func (a *App) DebugSubFlow(id, subId string) error {
+	return services.DeubugSubFlow(a.ctx, id, subId)
+}
+
+func (a *App) TerminateSubFlow(id, subId string) error {
+	return services.TerminateSubFlow(id, subId)
 }
 
 func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {

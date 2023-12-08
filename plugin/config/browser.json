@@ -1,0 +1,121 @@
+{
+  "id": "browser",
+  "name": "浏览器自动化",
+  "description": "浏览器自动化",
+  "version": "1.0.0",
+  "activities": [
+    {
+      "key": "browser",
+      "label": "浏览器自动化",
+      "icon_path": "riChromeLine",
+      "description": "浏览器自动化",
+      "children": [
+        {
+          "key": "browser",
+          "label": "打开网页",
+          "icon_path": "riCommandLine",
+          "description": "打开浏览器并跳转到指定的网址",
+          "namespace": "robot_browser",
+          "method": "open_browser",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "browser_type",
+                "label": "浏览器类型",
+                "required": true,
+                "type": "str",
+                "default_value": "0:chrome",
+                "options": [
+                  { "label": "Google Chrome 浏览器", "value": "chrome" },
+                  { "label": "Microsoft Edge 浏览器", "value": "edge" },
+                  { "label": "Mozilla Firefox 浏览器", "value": "firefox" },
+                  { "label": "Internet Explore 浏览器", "value": "ie" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": null
+              },
+              {
+                "key": "executable_path",
+                "label": "浏览器路径",
+                "placeholder": "浏览器执行文件所在路径",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              },
+              {
+                "key": "url",
+                "label": "网址",
+                "type": "str",
+                "default_value": "0:http://",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              }
+            ],
+            "extra": [
+              {
+                "key": "user_data_dir",
+                "label": "浏览器缓存目录",
+                "placeholder": "浏览器缓存目录",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              },
+              {
+                "key": "download_path",
+                "label": "下载文件地址",
+                "placeholder": "下载文件的缓存目录",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              },
+              {
+                "key": "timeout",
+                "label": "超时时间",
+                "type": "number",
+                "default_value": "1:3000",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              },
+              {
+                "key": "is_headless",
+                "label": "是否无头模式",
+                "type": "number",
+                "default_value": "1:False",
+                "required": true,
+                "options": null,
+                "editor_type": "BoolValue",
+                "show_if": null
+              }
+            ],
+            "outputs": [
+              {
+                "key": "browser_instance",
+                "label": "浏览器对象",
+                "type": "condition",
+                "default_value": "browser_instance",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ],
+            "error": true
+          },
+          "component": "BasicActivity"
+        }
+      ]
+    }
+  ]
+}

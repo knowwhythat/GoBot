@@ -2,26 +2,12 @@
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
     <Toolbar class="p-2">
       <template #start>
-        <Button @click="router.back()" v-tooltip="'返回'" class="mr-2">
+        <Button @click="router.back()" lable="返回" class="mr-2">
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-      </template>
-
-      <template #center>
-        <span class="flex">
-          <p class="pt-3 pr-2 text-xl font-serif font-semibold">{{ label }}</p>
-        </span>
-      </template>
-
-      <template #end>
-        <Button v-tooltip="'运行'" class="mr-2" @click="run" :loading="running">
-          <template #icon>
-            <v-remixicon name="riPlayLine" />
-          </template>
-        </Button>
-        <Button v-tooltip="'保存'" @click="save">
+        <Button label="保存" class="mr-2" @click="save">
           <template #icon>
             <span>
               <span
@@ -39,6 +25,62 @@
             </span>
           </template>
         </Button>
+        <Button
+          label="停止"
+          :disabled="!(running || debuging)"
+          class="mr-2"
+          @click="terminate"
+        >
+          <template #icon>
+            <v-remixicon name="riStopLine" />
+          </template>
+        </Button>
+        <Button
+          label="运行"
+          :disabled="debuging"
+          class="mr-2"
+          @click="run"
+          :loading="running"
+        >
+          <template #icon>
+            <v-remixicon name="riPlayLine" />
+          </template>
+        </Button>
+        <Button
+          label="调试"
+          :disabled="running"
+          class="mr-2"
+          @click="debug"
+          :loading="debuging"
+        >
+          <template #icon>
+            <v-remixicon name="riBugLine" />
+          </template>
+        </Button>
+        <Button label="单行调试" class="mr-2" @click="debug" v-if="debuging">
+          <template #icon>
+            <v-remixicon name="riSpeedMiniLine" />
+          </template>
+        </Button>
+        <Button label="下个断点" class="mr-2" @click="debug" v-if="debuging">
+          <template #icon>
+            <v-remixicon name="riSkipForwardMiniLine" />
+          </template>
+        </Button>
+      </template>
+
+      <template #center>
+        <span class="flex">
+          <p class="pt-3 pr-2 text-xl font-serif font-semibold">{{ label }}</p>
+        </span>
+      </template>
+
+      <template #end>
+        <SelectButton
+          v-model="activeSidePanel"
+          :options="sidePanels"
+          aria-labelledby="basic"
+        />
       </template>
     </Toolbar>
     <Splitter id="sequence-designer" class="mb-5" stateStorage="local">
@@ -79,10 +121,21 @@
           <SequenceActivity :element="mainActivity.sequence" @update="update" />
         </div>
       </SplitterPanel>
+      <SplitterPanel v-show="activeSidePanel" :size="20">
+        <Listbox
+          v-if="activeSidePanel == '日志'"
+          :filter="true"
+          emptyMessage="当前没有日志"
+          :options="logs"
+          class="w-full md:w-14rem"
+        />
+      </SplitterPanel>
     </Splitter>
   </div>
 </template>
 <script setup>
+import SelectButton from "primevue/selectbutton";
+import Listbox from "primevue/listbox";
 import Button from "primevue/button";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
@@ -97,6 +150,8 @@ import {
   GetSubFlow,
   SaveSubFlow,
   RunSubFlow,
+  DebugSubFlow,
+  TerminateSubFlow,
 } from "@back/go/main/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime";
 import { getIconPath } from "@/utils/helper";
@@ -180,6 +235,9 @@ function isLeaf(data) {
   return !(data.node.children && data.node.children.length > 0);
 }
 
+const activeSidePanel = ref("");
+const sidePanels = ref(["日志", "参数", "元素库"]);
+
 async function save() {
   try {
     await SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity));
@@ -200,11 +258,12 @@ async function save() {
   }
 }
 const running = ref(false);
+const logs = ref([]);
 async function run() {
   await save();
   running.value = true;
   EventsOn("log_event", (data) => {
-    console.log(data);
+    logs.value.push(data);
   });
   try {
     await RunSubFlow(props.id, props.subflowId);
@@ -224,6 +283,23 @@ async function run() {
   running.value = false;
   EventsOff("log_event");
 }
+const debuging = ref(false);
+async function debug() {
+  debuging.value = true;
+  EventsOn("log_event", (data) => {
+    logs.value.push(data);
+  });
+  await DebugSubFlow(props.id, props.subflowId);
+  debuging.value = false;
+  EventsOff("log_event");
+}
+
+async function terminate() {
+  await TerminateSubFlow(props.id, props.subflowId);
+  debuging.value = false;
+  running.value = false;
+}
+
 onBeforeRouteLeave(onBeforeLeave);
 
 function onBeforeLeave() {
@@ -239,5 +315,8 @@ function onBeforeLeave() {
 }
 :deep(.p-splitter-panel) {
   overflow: auto;
+}
+:deep(.p-listbox-list) {
+  height: calc(100vh - 148px);
 }
 </style>

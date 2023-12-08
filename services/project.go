@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -14,8 +15,10 @@ import (
 	"gobot/models"
 	"gobot/services/sys_exec"
 	"gobot/utils"
+	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -25,6 +28,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+var processMap = make(map[string]*exec.Cmd)
 
 func QueryProjectPage(page forms.QueryForm) (total int, resultList []*models.Project, err error) {
 	if err := dao.ReadTx(dao.MainDB, func(tx dao.Tx) error {
@@ -256,8 +261,9 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
-	log.Logger.Debug(base64Param)
+	log.Logger.Info(base64Param)
 	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-m", "robot_core.robot_interpreter", base64Param)
+	processMap[subId] = command
 	var stderr bytes.Buffer
 	command.Stderr = &stderr
 	background, cancle := context.WithCancel(context.Background())
@@ -265,6 +271,7 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 		monitorLog(ctx, background, logPath)
 	}()
 	_, err = command.Output()
+	delete(processMap, subId)
 	cancle()
 	if err != nil {
 		errStr := stderr.String()
@@ -274,6 +281,103 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 		return errors.New(errStr)
 	}
 	return nil
+}
+
+func DeubugSubFlow(ctx context.Context, id string, subId string) error {
+	params := make(map[string]interface{})
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	logDir := project.Path + string(os.PathSeparator) + constants.LogDir
+	logPath := logDir + string(os.PathSeparator) + uuid.New().String() + ".log"
+	if !utils.PathExist(logDir) {
+		if err = os.MkdirAll(logDir, fs.ModeDir); err != nil {
+			return err
+		}
+	}
+	params["sys_path_list"] = []string{projectPath}
+	params["log_path"] = logPath
+	params["log_level"] = "DEBUG"
+	params["debug"] = true
+	params["mod"] = subId
+	params["environment_variables"] = make(map[string]string)
+	marshalParam, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
+	log.Logger.Info(base64Param)
+	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-m", "robot_core.robot_interpreter", base64Param)
+	processMap[subId] = command
+	var stderr bytes.Buffer
+	command.Stderr = &stderr
+	inPipe, err := command.StdinPipe()
+	if err != nil {
+		return err
+	}
+	outPipe, err := command.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	go dealDebug(ctx, subId, inPipe, outPipe)
+	background, cancle := context.WithCancel(context.Background())
+	go monitorLog(ctx, background, logPath)
+	err = command.Run()
+	delete(processMap, subId)
+	cancle()
+	if err != nil {
+		errStr := stderr.String()
+		_, errStr, founded := strings.Cut(errStr, projectPath)
+		log.Logger.Error(fmt.Sprintf("%t", founded))
+		log.Logger.Error(errStr)
+		return errors.New(errStr)
+	}
+	return nil
+}
+
+func TerminateSubFlow(id string, subId string) error {
+	if command, ok := processMap[subId]; ok {
+		err := command.Process.Kill()
+		return err
+	}
+	return nil
+}
+
+func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outPipe io.ReadCloser) {
+	defer inPipe.Close()
+	defer outPipe.Close()
+	reader := bufio.NewReader(outPipe)
+	writer := bufio.NewWriter(inPipe)
+	output := ""
+	first := true
+	for {
+		line, err := reader.ReadString(')')
+		if err != nil || io.EOF == err {
+			break
+		}
+		output += string(line)
+		if strings.HasSuffix(line, "\n(Pdb)") {
+			log.Logger.Info(output)
+			if first {
+				first = false
+				_, err = writer.WriteString("b " + filename + ".py:3\n")
+			} else if strings.Contains(output, "--Return--") {
+				_, err = writer.WriteString("c\n")
+			} else {
+				_, err = writer.WriteString("n\n")
+			}
+			if err != nil {
+				break
+			}
+			err = writer.Flush()
+			if err != nil {
+				break
+			}
+			output = ""
+		}
+	}
 }
 
 func monitorLog(ctx, background context.Context, logPath string) {
