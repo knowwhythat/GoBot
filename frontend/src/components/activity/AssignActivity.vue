@@ -13,7 +13,7 @@
   >
     <div class="flex mx-2">
       <InputText
-        v-model="variableName"
+        :model-value="variableName"
         @update:model-value="chageName($event)"
         class="w-32"
         placeholder="变量名称"
@@ -21,7 +21,7 @@
       <span class="mx-1 my-auto"> = </span>
       <InputGroup>
         <InputText
-          v-model="variableValue"
+          :model-value="variableValue"
           @update:model-value="chageValue($event)"
           class="w-32"
           placeholder="变量值"

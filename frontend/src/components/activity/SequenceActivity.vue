@@ -17,6 +17,7 @@
       item-key="id"
       group="sequence"
       class="flex flex-col items-center p-x-4 mb-8 overflow-auto nowheel scroll text-sm p-2"
+      handle=".handle"
       @mousedown.stop
       @dragover.prevent
       @drop="handleDrop"

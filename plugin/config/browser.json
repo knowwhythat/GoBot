@@ -122,6 +122,441 @@
             "error": true
           },
           "component": "BasicActivity"
+        },
+        {
+          "key": "browser",
+          "label": "关闭浏览器",
+          "icon_path": "riCloseCircleLine",
+          "description": "关闭打开的浏览器",
+          "namespace": "robot_browser",
+          "method": "browser_close",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "browser",
+                "label": "浏览器对象",
+                "type": "browser",
+                "default_value": "1:browser_instance",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": null
+              }
+            ],
+            "error": true
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "browser.page",
+          "label": "页面操作",
+          "icon_path": "riPagesLine",
+          "description": "浏览器页面相关的操作",
+          "children": [
+            {
+              "key": "browser",
+              "label": "新建页面",
+              "icon_path": "riMenuAddLine",
+              "description": "在新的Tab中打开页面",
+              "namespace": "robot_browser",
+              "method": "new_page",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "url",
+                    "label": "网址",
+                    "type": "str",
+                    "default_value": "0:http://",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "跳转到连接",
+              "icon_path": "riLink",
+              "description": "在当前页面跳转到新的连接",
+              "namespace": "robot_browser",
+              "method": "goto_url",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "url",
+                    "label": "网址",
+                    "type": "str",
+                    "default_value": "0:http://",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "刷新当前页面",
+              "icon_path": "riRefreshLine",
+              "description": "在当前页面跳转到新的连接",
+              "namespace": "robot_browser",
+              "method": "reload_page",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "页面前进",
+              "icon_path": "riArrowRightCircleLine",
+              "description": "在当前页面向前",
+              "namespace": "robot_browser",
+              "method": "page_forward",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "页面后退",
+              "icon_path": "riArrowLeftCircleLine",
+              "description": "在当前页面后退",
+              "namespace": "robot_browser",
+              "method": "page_go_back",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "关闭当前页面",
+              "icon_path": "riCloseCircleLine",
+              "description": "关闭当前页面",
+              "namespace": "robot_browser",
+              "method": "page_close",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "切换页面",
+              "icon_path": "riSwitchLine",
+              "description": "切换页面",
+              "namespace": "robot_browser",
+              "method": "switch_page",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "match_strategy",
+                    "label": "匹配方式",
+                    "required": true,
+                    "type": "str",
+                    "default_value": "0:equals",
+                    "options": [
+                      { "label": "相等", "value": "equals" },
+                      { "label": "包含", "value": "contains" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": null
+                  },
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "url",
+                    "label": "页面链接",
+                    "type": "str",
+                    "default_value": "0:http://",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "title",
+                    "label": "页面标题",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser",
+              "label": "页面截图",
+              "icon_path": "riScreenshotLine",
+              "description": "页面截图",
+              "namespace": "robot_browser",
+              "method": "page_screenshot",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "save_path",
+                    "label": "保存路径",
+                    "placeholder": "保存路径",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": {
+                      "type": "file",
+                      "pattern": "*.png",
+                      "display": "图片"
+                    },
+                    "editor_type": "FileDialogInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "full_page",
+                    "label": "是否截全屏",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            }
+          ]
+        },
+        {
+          "key": "browser.element",
+          "label": "元素操作",
+          "icon_path": "riShapeLine",
+          "description": "页面元素相关的操作",
+          "children": [
+            {
+              "key": "browser",
+              "label": "查找元素",
+              "icon_path": "riSearch2Line",
+              "description": "查找元素",
+              "namespace": "robot_browser",
+              "method": "find_element",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "highlight",
+                    "label": "是否高亮",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "element_instance",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "element_instance",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            }
+          ]
         }
       ]
     }

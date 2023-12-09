@@ -278,6 +278,7 @@ async function run() {
       severity: "error",
       summary: "运行失败",
       detail: err,
+      life: 10000,
     });
   }
   running.value = false;

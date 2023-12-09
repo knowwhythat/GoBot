@@ -6,6 +6,11 @@
     style="cursor: grab"
     @update:collapsed="panelToggle"
     @dblclick.stop="dialogShow = true"
+    :pt="{
+      header: (options) => ({
+        class: ['handle'],
+      }),
+    }"
   >
     <template #header>
       <div class="flex align-items-center gap-2">
