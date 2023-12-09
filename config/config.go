@@ -40,11 +40,11 @@ func (c *Config) Init() error {
 	}
 	exePath := filepath.Dir(ex)
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		viper.SetDefault("kvdb.path", exePath+string(os.PathSeparator)+"data"+string(os.PathListSeparator))
-		viper.SetDefault("log.path", exePath+string(os.PathSeparator)+"log"+string(os.PathListSeparator))
+		viper.SetDefault("kvdb.path", exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
+		viper.SetDefault("log.path", exePath+string(os.PathSeparator)+"log"+string(os.PathSeparator))
 		viper.SetDefault("log.level", "Info")
-		viper.SetDefault("data.path", exePath+string(os.PathSeparator)+"data"+string(os.PathListSeparator))
-		viper.SetDefault("python.path", exePath+string(os.PathSeparator)+"python"+string(os.PathListSeparator)+"python.exe")
+		viper.SetDefault("data.path", exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
+		viper.SetDefault("python.path", exePath+string(os.PathSeparator)+"python"+string(os.PathSeparator)+"python.exe")
 		viper.WriteConfig()
 	}
 
