@@ -555,6 +555,169 @@
                 "error": true
               },
               "component": "WebElementActivity"
+            },
+            {
+              "key": "browser",
+              "label": "查找相似元素",
+              "icon_path": "riSearch2Line",
+              "description": "查找相似元素",
+              "namespace": "robot_browser",
+              "method": "find_elements",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "highlight",
+                    "label": "是否高亮",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "element_array",
+                    "label": "web元素列表",
+                    "type": "array",
+                    "default_value": "element_array",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser",
+              "label": "点击元素",
+              "icon_path": "riCursorLine",
+              "description": "点击元素",
+              "namespace": "robot_browser",
+              "method": "element_click",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": "element_selector == None"
+                  },
+                  {
+                    "key": "button_type",
+                    "label": "按键",
+                    "required": true,
+                    "type": "str",
+                    "default_value": "0:left",
+                    "options": [
+                      { "label": "左键", "value": "left" },
+                      { "label": "中键", "value": "middle" },
+                      { "label": "右键", "value": "right" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": null
+                  }
+                ],
+                "extra": [
+                  {
+                    "key": "modifiers",
+                    "label": "修饰键",
+                    "type": "str",
+                    "default_value": "",
+                    "required": true,
+                    "options": [
+                      { "label": "Alt", "value": "Alt" },
+                      { "label": "Control", "value": "Control" },
+                      { "label": "Meta", "value": "Meta" },
+                      { "label": "Shift", "value": "Shift" }
+                    ],
+                    "editor_type": "MultiSelectDefine",
+                    "show_if": null
+                  },
+                  {
+                    "key": "position",
+                    "label": "点击位置",
+                    "type": "str",
+                    "default_value": "0:center-center",
+                    "required": true,
+                    "options": [
+                      { "label": "上左", "value": "top-left" },
+                      { "label": "上中", "value": "top-center" },
+                      { "label": "上右", "value": "top-right" },
+                      { "label": "中左", "value": "center-left" },
+                      { "label": "正中", "value": "center-center" },
+                      { "label": "中右", "value": "center-right" },
+                      { "label": "下左", "value": "bottom-left" },
+                      { "label": "下中", "value": "bottom-center" },
+                      { "label": "下右", "value": "bottom-right" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": null
+                  },
+                  {
+                    "key": "force",
+                    "label": "是否强制",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
             }
           ]
         }
