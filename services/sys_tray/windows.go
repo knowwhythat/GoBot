@@ -1,4 +1,7 @@
-package services
+//go:build windows
+// +build windows
+
+package sys_tray
 
 import (
 	"context"

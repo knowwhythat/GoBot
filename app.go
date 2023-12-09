@@ -7,6 +7,7 @@ import (
 	"gobot/models"
 	"gobot/plugin"
 	"gobot/services"
+	"gobot/services/sys_tray"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -25,7 +26,7 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	services.CreateTray(ctx, icon)
+	sys_tray.CreateTray(ctx, icon)
 }
 
 func (a *App) shutdown(ctx context.Context) {
