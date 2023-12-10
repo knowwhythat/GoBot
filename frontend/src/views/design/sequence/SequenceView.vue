@@ -324,6 +324,7 @@ async function debug() {
   });
   try {
     await DebugSubFlow(props.id, props.subflowId);
+    debugingId.value = nanoid(16);
     toast.add({
       severity: "success",
       summary: "提示",
@@ -341,7 +342,6 @@ async function debug() {
   debuging.value = false;
   EventsOff("log_event");
   EventsOff("debug");
-  debugingId.value = nanoid(16);
 }
 function dealDebug(command) {
   breakpointHit.value = false;

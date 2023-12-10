@@ -186,6 +186,25 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				code += activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
 			}
 			needPass = true
+		} else if activity.Method == "raise" {
+			code += strings.Repeat(" ", indent*4)
+			code += activity.Method + " Exception("
+			expression := ""
+			if _, ok := activity.Parameter["expression"]; ok {
+				expression = activity.Parameter["expression"]
+			} else {
+				expression = activity.ParameterDefine.Inputs[0].DefaultValue
+			}
+			if expression[0] == '0' {
+				code += "\"" + jsonEscape(expression[2:]) + "\")\n"
+			} else {
+				if len(expression[2:]) > 0 {
+					code += expression[2:] + ")\n"
+				} else {
+					code += "None)\n"
+				}
+			}
+			needPass = false
 		}
 	} else {
 		code = code + strings.Repeat(" ", indent*4)

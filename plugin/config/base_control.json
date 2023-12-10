@@ -265,7 +265,7 @@
                 "inputs": [
                   {
                     "category": null,
-                    "key": "exception",
+                    "key": "expression",
                     "label": "异常说明",
                     "type": "str",
                     "default_value": "0:未知异常",
