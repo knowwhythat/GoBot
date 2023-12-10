@@ -117,23 +117,34 @@
         </Tree>
       </SplitterPanel>
       <SplitterPanel class="h-full" :size="75">
-        <div class="flex justify-around">
-          <SequenceActivity :element="mainActivity.sequence" @update="update" />
-        </div>
-      </SplitterPanel>
-      <SplitterPanel v-show="activeSidePanel" :size="20">
-        <Listbox
-          v-if="activeSidePanel == '日志'"
-          :filter="true"
-          emptyMessage="当前没有日志"
-          :options="logs"
-          class="w-full md:w-14rem"
-        />
+        <Splitter>
+          <SplitterPanel :size="50">
+            <div class="flex justify-around">
+              <SequenceActivity
+                :element="mainActivity.sequence"
+                @update="update"
+              />
+            </div>
+          </SplitterPanel>
+          <SplitterPanel v-show="activeSidePanel" :size="50">
+            <Listbox
+              v-if="activeSidePanel == '日志'"
+              :filter="true"
+              emptyMessage="当前没有日志"
+              :options="logs"
+              @contextmenu="onImageRightClick"
+              class="w-full md:w-14rem"
+            >
+            </Listbox>
+            <ContextMenu ref="menu" :model="items" />
+          </SplitterPanel>
+        </Splitter>
       </SplitterPanel>
     </Splitter>
   </div>
 </template>
 <script setup>
+import ContextMenu from "primevue/contextmenu";
 import SelectButton from "primevue/selectbutton";
 import Listbox from "primevue/listbox";
 import Button from "primevue/button";
@@ -278,7 +289,7 @@ async function run() {
       severity: "error",
       summary: "运行失败",
       detail: err,
-      life: 10000,
+      life: 80000,
     });
   }
   running.value = false;
@@ -290,7 +301,22 @@ async function debug() {
   EventsOn("log_event", (data) => {
     logs.value.push(data);
   });
-  await DebugSubFlow(props.id, props.subflowId);
+  try {
+    await DebugSubFlow(props.id, props.subflowId);
+    toast.add({
+      severity: "success",
+      summary: "提示",
+      detail: "运行成功",
+      life: 3000,
+    });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "运行失败",
+      detail: err,
+      life: 80000,
+    });
+  }
   debuging.value = false;
   EventsOff("log_event");
 }
@@ -309,6 +335,19 @@ function onBeforeLeave() {
     if (!confirm) return false;
   }
 }
+const menu = ref();
+const items = ref([
+  {
+    label: "清空",
+    icon: "pi pi-trash",
+    command: () => {
+      logs.value.splice(0, logs.value.length);
+    },
+  },
+]);
+const onImageRightClick = (event) => {
+  menu.value.show(event);
+};
 </script>
 <style scoped>
 #sequence-designer {
@@ -319,5 +358,11 @@ function onBeforeLeave() {
 }
 :deep(.p-listbox-list) {
   height: calc(100vh - 148px);
+}
+:deep(.p-tree-wrapper) {
+  height: calc(100vh - 152px);
+}
+:deep(.p-tree) {
+  padding: 0.25rem;
 }
 </style>

@@ -99,7 +99,6 @@ function deleteNode({ id }) {
 
 function update({ id, children }) {
   if (id) {
-    console.log(id);
     let target = props.element.children.filter((element) => element.id === id);
     target[0].children = children;
   } else {
@@ -121,6 +120,7 @@ function handleDrop(event) {
       shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
     );
   } else {
+    console.log(event.target);
     const ancestorElement = event.target.closest(".activity-node");
     if (ancestorElement && ancestorElement.getAttribute("index") > -1) {
       let index = ancestorElement.getAttribute("index");

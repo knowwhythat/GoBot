@@ -511,6 +511,16 @@
               "parameter_define": {
                 "inputs": [
                   {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
                     "key": "frame_selector",
                     "label": "frame选择器",
                     "type": "str",
@@ -566,6 +576,16 @@
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
                   {
                     "key": "frame_selector",
                     "label": "frame选择器",
@@ -623,6 +643,16 @@
               "parameter_define": {
                 "inputs": [
                   {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
                     "key": "frame_selector",
                     "label": "frame选择器",
                     "type": "str",
@@ -654,7 +684,7 @@
                     "show_if": "element_selector == None"
                   },
                   {
-                    "key": "button_type",
+                    "key": "button",
                     "label": "按键",
                     "required": true,
                     "type": "str",
@@ -673,7 +703,7 @@
                     "key": "modifiers",
                     "label": "修饰键",
                     "type": "str",
-                    "default_value": "",
+                    "default_value": "0:",
                     "required": true,
                     "options": [
                       { "label": "Alt", "value": "Alt" },
@@ -712,6 +742,104 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser",
+              "label": "元素中输入",
+              "icon_path": "riText",
+              "description": "元素中输入",
+              "namespace": "robot_browser",
+              "method": "element_fill",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": null
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": "element_selector == None"
+                  },
+                  {
+                    "key": "content",
+                    "label": "输入内容",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ""
+                  },
+                  {
+                    "key": "clear",
+                    "label": "是否清空",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  }
+                ],
+                "extra": [
+                  {
+                    "key": "simulate",
+                    "label": "是否模拟输入",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": null
+                  },
+                  {
+                    "key": "delay",
+                    "label": "输入延时",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],

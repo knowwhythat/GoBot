@@ -141,7 +141,7 @@
                 size="20"
                 class="mr-2"
               />
-              <InputText v-model="nodeData.parameter['tryCount']" />
+              <InputText v-model="nodeData.parameter['retry_count']" />
             </div>
             <div class="inline-flex items-center ml-2">
               <span> 间隔(s) </span>
@@ -151,7 +151,7 @@
                 size="20"
                 class="mr-2"
               />
-              <InputText v-model="nodeData.parameter['tryInterval']" />
+              <InputText v-model="nodeData.parameter['retry_interval']" />
             </div>
           </div>
         </div>

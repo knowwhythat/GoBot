@@ -212,7 +212,11 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 					if i.DefaultValue[0] == '0' {
 						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
 					} else {
-						code += i.Key + "=" + i.DefaultValue[2:] + ","
+						if len(i.DefaultValue[2:]) > 0 {
+							code += i.Key + "=" + i.DefaultValue[2:] + ","
+						} else {
+							code += i.Key + "=None,"
+						}
 					}
 				} else if len(inputValue) > 1 && inputValue[1] == ':' {
 					if inputValue[0] == '0' {
@@ -229,7 +233,11 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 					if i.DefaultValue[0] == '0' {
 						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
 					} else {
-						code += i.Key + "=" + i.DefaultValue[2:] + ","
+						if len(i.DefaultValue[2:]) > 0 {
+							code += i.Key + "=" + i.DefaultValue[2:] + ","
+						} else {
+							code += i.Key + "=None,"
+						}
 					}
 				} else if len(inputValue) > 1 && inputValue[1] == ':' {
 					if inputValue[0] == '0' {
