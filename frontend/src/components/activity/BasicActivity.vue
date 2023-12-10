@@ -2,6 +2,8 @@
   <ActivityBase
     :toggleable="false"
     :collapsed="true"
+    :id="props.element.id"
+    :breakpoint="props.element.breakpoint"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
     :icon="props.element.icon_path"

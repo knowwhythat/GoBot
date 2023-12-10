@@ -9,6 +9,10 @@ import (
 )
 
 func BuildCmd(cmdStr ...string) *exec.Cmd {
+	return exec.Command(cmdStr[0], cmdArr[1:]...)
+}
+
+func BuildBashCmd(cmdStr ...string) *exec.Cmd {
 	cmdArr := []string{"-c"}
 	cmdArr = append(cmdArr, cmdStr...)
 	return exec.Command("sh", cmdArr...)

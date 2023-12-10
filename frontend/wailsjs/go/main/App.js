@@ -6,6 +6,10 @@ export function CreateProject(arg1) {
   return window['go']['main']['App']['CreateProject'](arg1);
 }
 
+export function DealDebugSignal(arg1) {
+  return window['go']['main']['App']['DealDebugSignal'](arg1);
+}
+
 export function DebugSubFlow(arg1, arg2) {
   return window['go']['main']['App']['DebugSubFlow'](arg1, arg2);
 }

@@ -57,12 +57,24 @@
             <v-remixicon name="riBugLine" />
           </template>
         </Button>
-        <Button label="单行调试" class="mr-2" @click="debug" v-if="debuging">
+        <Button
+          label="单行调试"
+          class="mr-2"
+          :disabled="!breakpointHit"
+          @click="dealDebug('n')"
+          v-if="debuging"
+        >
           <template #icon>
             <v-remixicon name="riSpeedMiniLine" />
           </template>
         </Button>
-        <Button label="下个断点" class="mr-2" @click="debug" v-if="debuging">
+        <Button
+          label="下个断点"
+          class="mr-2"
+          :disabled="!breakpointHit"
+          @click="dealDebug('c')"
+          v-if="debuging"
+        >
           <template #icon>
             <v-remixicon name="riSkipForwardMiniLine" />
           </template>
@@ -163,6 +175,7 @@ import {
   RunSubFlow,
   DebugSubFlow,
   TerminateSubFlow,
+  DealDebugSignal,
 } from "@back/go/main/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime";
 import { getIconPath } from "@/utils/helper";
@@ -296,10 +309,18 @@ async function run() {
   EventsOff("log_event");
 }
 const debuging = ref(false);
+const debugingId = ref(nanoid(16));
+const breakpointHit = ref(false);
+provide("debugingId", { debugingId });
 async function debug() {
+  await save();
   debuging.value = true;
   EventsOn("log_event", (data) => {
     logs.value.push(data);
+  });
+  EventsOn("debug", (data) => {
+    debugingId.value = data;
+    breakpointHit.value = true;
   });
   try {
     await DebugSubFlow(props.id, props.subflowId);
@@ -319,8 +340,13 @@ async function debug() {
   }
   debuging.value = false;
   EventsOff("log_event");
+  EventsOff("debug");
+  debugingId.value = nanoid(16);
 }
-
+function dealDebug(command) {
+  breakpointHit.value = false;
+  DealDebugSignal(command);
+}
 async function terminate() {
   await TerminateSubFlow(props.id, props.subflowId);
   debuging.value = false;
@@ -329,7 +355,15 @@ async function terminate() {
 
 onBeforeRouteLeave(onBeforeLeave);
 
-function onBeforeLeave() {
+async function onBeforeLeave() {
+  if (debuging.value || running.value) {
+    const confirm = window.confirm("退出将停止正在运行的流程，是否退出");
+    if (!confirm) {
+      return false;
+    } else {
+      await terminate();
+    }
+  }
   if (dataChanged.value) {
     const confirm = window.confirm("有修改尚未保存，是否退出");
     if (!confirm) return false;

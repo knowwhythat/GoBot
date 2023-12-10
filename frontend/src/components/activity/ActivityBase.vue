@@ -8,15 +8,19 @@
     @dblclick.stop="dialogShow = true"
     :pt="{
       header: (options) => ({
-        class: ['handle'],
+        style: {
+          padding: '0.75rem',
+        },
+        class: ['handle', props.id === debugingId ? 'bg-red-200' : ''],
       }),
     }"
   >
     <template #header>
       <div class="flex align-items-center gap-2">
         <span
-          :class="props.color"
-          class="inline-block rounded-lg dark:text-black p-1"
+          :class="[props.color, props.breakpoint ? 'bg-red-600' : '']"
+          class="inline-block rounded-lg dark:text-black p-1 hover:bg-red-600 cursor-auto"
+          @click="$emit('update', { breakpoint: !props.breakpoint })"
         >
           <v-remixicon v-bind="getIconPath(props?.icon)" />
         </span>
@@ -65,6 +69,10 @@ import ParamEditorDialog from "@/components/editor/ParamEditorDialog.vue";
 import { reactive, onMounted, inject, ref } from "vue";
 
 const props = defineProps({
+  id: {
+    type: String,
+    default: "",
+  },
   label: {
     type: String,
     default: "",
@@ -90,6 +98,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  breakpoint: {
+    type: Boolean,
+    default: false,
+  },
   parameter_define: {
     type: Object,
     default: () => ({}),
@@ -102,6 +114,7 @@ const props = defineProps({
 
 const emit = defineEmits(["delete", "update"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
+const { debugingId } = inject("debugingId");
 
 const nodeData = reactive({
   collapsed: false,

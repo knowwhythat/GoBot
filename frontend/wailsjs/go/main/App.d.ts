@@ -5,6 +5,8 @@ import {models} from '../models';
 
 export function CreateProject(arg1:string):Promise<void>;
 
+export function DealDebugSignal(arg1:string):Promise<void>;
+
 export function DebugSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function DeleteProject(arg1:string):Promise<void>;

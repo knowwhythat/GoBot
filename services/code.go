@@ -36,6 +36,7 @@ type ParameterDefine struct {
 }
 type Activity struct {
 	ID              string            `json:"id,omitempty"`
+	Breakpoint      bool              `json:"breakpoint,omitempty"`
 	Key             string            `json:"key,omitempty"`
 	Label           string            `json:"label,omitempty"`
 	IconPath        string            `json:"icon_path,omitempty"`

@@ -123,6 +123,10 @@ func (a *App) TerminateSubFlow(id, subId string) error {
 	return services.TerminateSubFlow(id, subId)
 }
 
+func (a *App) DealDebugSignal(command string) error {
+	return services.DealDebugSignal(command)
+}
+
 func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
 	return plugin.ParseAllPlugin()
 }
