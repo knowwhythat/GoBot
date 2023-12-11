@@ -87,6 +87,10 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
 			}
 			needPass = true
+		} else if activity.Key == "base.control.group" {
+			code += strings.Repeat(" ", indent*4)
+			indent = indent - 1
+			code += "#" + activity.Label + "\n"
 		} else if activity.Method == "else" {
 			indent = indent - 1
 			code += strings.Repeat(" ", indent*4)

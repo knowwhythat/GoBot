@@ -48,7 +48,7 @@
                     "default_value": "1:list",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],
@@ -61,7 +61,7 @@
                     "default_value": "1:loop_value",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ]
@@ -86,7 +86,7 @@
                     "default_value": "1:map",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],
@@ -99,7 +99,7 @@
                     "default_value": "1:key",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   },
                   {
@@ -110,7 +110,7 @@
                     "default_value": "1:value",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ]
@@ -135,7 +135,7 @@
                     "default_value": "1:1",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   },
                   {
@@ -146,7 +146,7 @@
                     "default_value": "1:10",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   },
                   {
@@ -157,7 +157,7 @@
                     "default_value": "1:1",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],
@@ -170,7 +170,7 @@
                     "default_value": "1:loop_index",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ]
@@ -195,7 +195,7 @@
                     "default_value": "1:True",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],
@@ -271,7 +271,7 @@
                     "default_value": "0:未知异常",
                     "required": true,
                     "options": null,
-                    "editor_type": "text",
+                    "editor_type": "ExpressionTextInput",
                     "show_if": null
                   }
                 ],
@@ -293,19 +293,33 @@
             "inputs": [
               {
                 "category": null,
-                "key": "duration",
+                "key": "expression",
                 "label": "等待时间(s)",
                 "type": "number",
-                "default_value": "1:10",
+                "default_value": "1:1",
                 "required": true,
                 "options": null,
-                "editor_type": "text",
+                "editor_type": "ExpressionTextInput",
                 "show_if": null
               }
             ],
             "outputs": []
           },
-          "component": "BasicActivity"
+          "component": "ExpressionActivity"
+        },
+        {
+          "key": "base.control.group",
+          "label": "方法组",
+          "icon_path": "riFridgeLine",
+          "description": "把多个组件放到一个方法组里面",
+          "namespace": null,
+          "method": null,
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [],
+            "outputs": []
+          },
+          "component": "SequenceActivity"
         },
         {
           "key": "base.control.log",
@@ -334,19 +348,19 @@
               },
               {
                 "category": null,
-                "key": "content",
+                "key": "expression",
                 "label": "日志内容",
                 "type": "str",
                 "default_value": "0:",
                 "required": true,
                 "options": null,
-                "editor_type": "text",
+                "editor_type": "ExpressionTextInput",
                 "show_if": null
               }
             ],
             "outputs": []
           },
-          "component": "BasicActivity"
+          "component": "ExpressionActivity"
         }
       ]
     }
