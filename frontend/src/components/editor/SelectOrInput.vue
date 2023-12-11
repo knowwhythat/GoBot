@@ -9,7 +9,7 @@
     />
     <OverlayPanel ref="op" appendTo="body" :unstyled="true">
       <Tree
-        :value="nodes"
+        :value="contextVariable"
         selectionMode="single"
         :filter="true"
         filterPlaceholder="搜索变量"
@@ -29,7 +29,7 @@ import Tree from "primevue/tree";
 import OverlayPanel from "primevue/overlaypanel";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
-import { ref } from "vue";
+import { ref, inject } from "vue";
 const props = defineProps({
   value: {
     type: String,
@@ -43,42 +43,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update"]);
 
-const nodes = ref([
-  {
-    key: "0-0",
-    label: "Work",
-    data: "Work Folder",
-    icon: "pi pi-fw pi-cog",
-    children: [
-      {
-        key: "0-0-0",
-        label: "Expenses.doc",
-        icon: "pi pi-fw pi-file",
-        data: "Expenses Document",
-      },
-      {
-        key: "0-0-1",
-        label: "Resume.doc",
-        icon: "pi pi-fw pi-file",
-        data: "Resume Document",
-      },
-    ],
-  },
-  {
-    key: "0-1",
-    label: "Home",
-    data: "Home Folder",
-    icon: "pi pi-fw pi-home",
-    children: [
-      {
-        key: "0-1-0",
-        label: "Invoices.txt",
-        icon: "pi pi-fw pi-file",
-        data: "Invoices for this month",
-      },
-    ],
-  },
-]);
+const { contextVariable } = inject("contextVariable");
 const op = ref();
 const toggle = (event) => {
   op.value.toggle(event);

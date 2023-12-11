@@ -54,7 +54,14 @@
   </ActivityBase>
 </template>
 <script setup>
-import { ref, onMounted, computed, shallowReactive, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  computed,
+  shallowReactive,
+  inject,
+  provide,
+} from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import draggable from "vuedraggable";
 import { nanoid } from "nanoid";
@@ -145,6 +152,41 @@ function updateData(data) {
       props.element[key] = data[key];
     }
   }
-  console.log(props.element.parameter);
 }
+const { contextVariable } = inject("contextVariable");
+const currentContextVariable = computed({
+  get() {
+    let child = props.element.children;
+    let variables = [];
+    child.forEach((element) => {
+      element.parameter_define.outputs?.forEach((pd) => {
+        variables.push({
+          label:
+            pd.key in element.parameter
+              ? element.parameter[pd.key]
+              : pd.default_value,
+          type: pd.type,
+          key: nanoid(8),
+        });
+      });
+    });
+    if (contextVariable.value) {
+      contextVariable.value.forEach((variable) => {
+        if (
+          !variables.some((v) => {
+            if (v.label === variable.label) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+        ) {
+          variables.push(variable);
+        }
+      });
+    }
+    return variables;
+  },
+});
+provide("contextVariable", { contextVariable: currentContextVariable });
 </script>

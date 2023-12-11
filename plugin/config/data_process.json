@@ -51,7 +51,7 @@
               {
                 "key": "variable_name",
                 "label": "变量名",
-                "type": "condition",
+                "type": "any",
                 "default_value": "variable",
                 "required": true,
                 "editor_type": "SelectOrInput"

@@ -199,6 +199,7 @@ const nodes = ref(null);
 const router = useRouter();
 const dataChanged = ref(false);
 provide("dataChanged", { dataChanged, updateDataChanged });
+provide("contextVariable", { contextVariable: [] });
 
 function updateDataChanged() {
   dataChanged.value = true;
