@@ -41,7 +41,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { inject, ref, watch } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -67,14 +67,19 @@ watch(
       isExpression.value = value["variable_value"].split(":")[0] === "1";
       variableValue.value = value["variable_value"].substring(2);
     } else {
-      isExpression.value = false;
-      variableValue.value = value["variable_value"];
+      const defaultValue = props.element.parameter_define.inputs.filter(
+        (pd) => pd.key === "variable_value"
+      )[0].default_value;
+      isExpression.value = defaultValue.split(":")[0] === "1";
+      variableValue.value = defaultValue.substring(2);
     }
   },
   { immediate: true, deep: true }
 );
+const { dataChanged, updateDataChanged } = inject("dataChanged");
 function chageName(data) {
   props.element.parameter["variable_name"] = data;
+  updateDataChanged();
 }
 function chageValue(data) {
   if (isExpression.value) {
@@ -82,6 +87,7 @@ function chageValue(data) {
   } else {
     props.element.parameter["variable_value"] = "0:" + data;
   }
+  updateDataChanged();
 }
 function changeValueType() {
   isExpression.value = !isExpression.value;
@@ -90,6 +96,7 @@ function changeValueType() {
   } else {
     props.element.parameter["variable_value"] = "0:" + variableValue.value;
   }
+  updateDataChanged();
 }
 function updateData(data) {
   for (const key in data) {

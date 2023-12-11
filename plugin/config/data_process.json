@@ -52,7 +52,7 @@
                 "key": "variable_name",
                 "label": "变量名",
                 "type": "any",
-                "default_value": "variable",
+                "default_value": "",
                 "required": true,
                 "editor_type": "SelectOrInput"
               }

@@ -65,6 +65,7 @@ import {
 import ActivityBase from "./ActivityBase.vue";
 import draggable from "vuedraggable";
 import { nanoid } from "nanoid";
+import { typeBuilder } from "@/utils/shared";
 
 const props = defineProps({
   element: {
@@ -166,6 +167,7 @@ const currentContextVariable = computed({
               ? element.parameter[pd.key]
               : pd.default_value,
           type: pd.type,
+          icon: typeBuilder[pd.type] ? typeBuilder[pd.type] : "pi pi-building",
           key: nanoid(8),
         });
       });

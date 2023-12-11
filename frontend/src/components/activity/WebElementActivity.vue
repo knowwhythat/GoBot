@@ -59,7 +59,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { inject, ref, watch } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -87,8 +87,11 @@ watch(
         value["frame_selector"].split(":")[0] === "1";
       frameSelector.value = value["frame_selector"].substring(2);
     } else {
-      frameSelectorExpression.value = false;
-      frameSelector.value = value["frame_selector"];
+      const defaultValue = props.element.parameter_define.inputs.filter(
+        (pd) => pd.key === "frame_selector"
+      )[0].default_value;
+      frameSelectorExpression.value = defaultValue.split(":")[0] === "1";
+      frameSelector.value = defaultValue.substring(2);
     }
     if (
       "element_selector" in value &&
@@ -98,19 +101,23 @@ watch(
         value["element_selector"].split(":")[0] === "1";
       elementSelector.value = value["element_selector"].substring(2);
     } else {
-      elementSelectorExpression.value = false;
-      elementSelector.value = value["element_selector"];
+      const defaultValue = props.element.parameter_define.inputs.filter(
+        (pd) => pd.key === "element_selector"
+      )[0].default_value;
+      elementSelectorExpression.value = defaultValue.split(":")[0] === "1";
+      elementSelector.value = defaultValue.substring(2);
     }
   },
   { immediate: true, deep: true }
 );
-
+const { dataChanged, updateDataChanged } = inject("dataChanged");
 function chageFrameSelector(data) {
   if (frameSelectorExpression.value) {
     props.element.parameter["frame_selector"] = "1:" + data;
   } else {
     props.element.parameter["frame_selector"] = "0:" + data;
   }
+  updateDataChanged();
 }
 function chageFrameSelectorExpression() {
   frameSelectorExpression.value = !frameSelectorExpression.value;
@@ -119,6 +126,7 @@ function chageFrameSelectorExpression() {
   } else {
     props.element.parameter["frame_selector"] = "0:" + frameSelector.value;
   }
+  updateDataChanged();
 }
 
 function chageElementSelector(data) {
@@ -127,6 +135,7 @@ function chageElementSelector(data) {
   } else {
     props.element.parameter["element_selector"] = "0:" + data;
   }
+  updateDataChanged();
 }
 function chageElementSelectorExpression() {
   elementSelectorExpression.value = !elementSelectorExpression.value;
@@ -135,6 +144,7 @@ function chageElementSelectorExpression() {
   } else {
     props.element.parameter["element_selector"] = "0:" + elementSelector.value;
   }
+  updateDataChanged();
 }
 
 function updateData(data) {
