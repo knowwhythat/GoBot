@@ -13,30 +13,45 @@
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
   >
-    <InputGroup class="mb-2">
+    <InputGroup class="mb-2" v-if="!showElement">
       <InputText
         :model-value="frameSelector"
-        @update:model-value="chageFrameSelector($event)"
+        @update:model-value="changeFrameSelector($event)"
         placeholder="Frame选择器"
       />
       <Button
         :severity="frameSelectorExpression ? 'Primary' : 'secondary'"
-        @click="chageFrameSelectorExpression"
+        @click="changeFrameSelectorExpression"
       >
         <template #icon>
           <v-remixicon name="riReactjsFill" size="24" />
         </template>
       </Button>
     </InputGroup>
-    <InputGroup class="mb-2">
+    <InputGroup class="mb-2" v-if="!showElement">
       <InputText
         :model-value="elementSelector"
-        @update:model-value="chageElementSelector($event)"
+        @update:model-value="changeElementSelector($event)"
         placeholder="元素选择器"
       />
       <Button
         :severity="elementSelectorExpression ? 'Primary' : 'secondary'"
-        @click="chageElementSelectorExpression"
+        @click="changeElementSelectorExpression"
+      >
+        <template #icon>
+          <v-remixicon name="riReactjsFill" size="24" />
+        </template>
+      </Button>
+    </InputGroup>
+    <InputGroup class="mb-2" v-if="showElement">
+      <InputText
+        :model-value="webElement"
+        @update:model-value="changeWebElement($event)"
+        placeholder="Web元素"
+      />
+      <Button
+        :severity="webElementExpression ? 'Primary' : 'secondary'"
+        @click="changeWebElementExpression"
       >
         <template #icon>
           <v-remixicon name="riReactjsFill" size="24" />
@@ -59,7 +74,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import { inject, ref, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -76,6 +91,8 @@ const frameSelectorExpression = ref(false);
 const frameSelector = ref("");
 const elementSelectorExpression = ref(false);
 const elementSelector = ref("");
+const webElementExpression = ref(false);
+const webElement = ref("");
 watch(
   () => props.element.parameter,
   (value, oldValue) => {
@@ -93,6 +110,7 @@ watch(
       frameSelectorExpression.value = defaultValue.split(":")[0] === "1";
       frameSelector.value = defaultValue.substring(2);
     }
+
     if (
       "element_selector" in value &&
       value["element_selector"].split(":").length > 1
@@ -107,11 +125,22 @@ watch(
       elementSelectorExpression.value = defaultValue.split(":")[0] === "1";
       elementSelector.value = defaultValue.substring(2);
     }
+
+    if ("element" in value && value["element"].split(":").length > 1) {
+      webElementExpression.value = value["element"].split(":")[0] === "1";
+      webElement.value = value["element"].substring(2);
+    } else {
+      const defaultValue = props.element.parameter_define.inputs.filter(
+        (pd) => pd.key === "element"
+      )[0].default_value;
+      webElementExpression.value = defaultValue.split(":")[0] === "1";
+      webElement.value = defaultValue.substring(2);
+    }
   },
   { immediate: true, deep: true }
 );
 const { dataChanged, updateDataChanged } = inject("dataChanged");
-function chageFrameSelector(data) {
+function changeFrameSelector(data) {
   if (frameSelectorExpression.value) {
     props.element.parameter["frame_selector"] = "1:" + data;
   } else {
@@ -119,7 +148,7 @@ function chageFrameSelector(data) {
   }
   updateDataChanged();
 }
-function chageFrameSelectorExpression() {
+function changeFrameSelectorExpression() {
   frameSelectorExpression.value = !frameSelectorExpression.value;
   if (frameSelectorExpression.value) {
     props.element.parameter["frame_selector"] = "1:" + frameSelector.value;
@@ -129,7 +158,7 @@ function chageFrameSelectorExpression() {
   updateDataChanged();
 }
 
-function chageElementSelector(data) {
+function changeElementSelector(data) {
   if (elementSelectorExpression.value) {
     props.element.parameter["element_selector"] = "1:" + data;
   } else {
@@ -137,7 +166,7 @@ function chageElementSelector(data) {
   }
   updateDataChanged();
 }
-function chageElementSelectorExpression() {
+function changeElementSelectorExpression() {
   elementSelectorExpression.value = !elementSelectorExpression.value;
   if (elementSelectorExpression.value) {
     props.element.parameter["element_selector"] = "1:" + elementSelector.value;
@@ -146,6 +175,28 @@ function chageElementSelectorExpression() {
   }
   updateDataChanged();
 }
+
+function changeWebElement(data) {
+  if (elementSelectorExpression.value) {
+    props.element.parameter["element"] = "1:" + data;
+  } else {
+    props.element.parameter["element"] = "0:" + data;
+  }
+  updateDataChanged();
+}
+function changeWebElementExpression() {
+  webElementExpression.value = !webElementExpression.value;
+  if (webElementExpression.value) {
+    props.element.parameter["element"] = "1:" + webElement.value;
+  } else {
+    props.element.parameter["element"] = "0:" + webElement.value;
+  }
+  updateDataChanged();
+}
+
+const showElement = computed(
+  () => props.element.parameter["element_type"] === "0:element"
+);
 
 function updateData(data) {
   for (const key in data) {

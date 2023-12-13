@@ -9,7 +9,7 @@ import (
 )
 
 func BuildCmd(cmdStr ...string) *exec.Cmd {
-	return exec.Command(cmdStr[0], cmdArr[1:]...)
+	return exec.Command(cmdStr[0], cmdStr[1:]...)
 }
 
 func BuildBashCmd(cmdStr ...string) *exec.Cmd {
