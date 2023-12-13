@@ -74,7 +74,7 @@ onMounted(() => {
             required: true,
             options: null,
             editor_type: "text",
-            show_if: null,
+            show_if: [],
           },
         ],
         outputs: [],

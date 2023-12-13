@@ -18,6 +18,10 @@ export function DeleteProject(arg1) {
   return window['go']['main']['App']['DeleteProject'](arg1);
 }
 
+export function DeleteSubFlow(arg1, arg2) {
+  return window['go']['main']['App']['DeleteSubFlow'](arg1, arg2);
+}
+
 export function GetMainFlow(arg1) {
   return window['go']['main']['App']['GetMainFlow'](arg1);
 }

@@ -240,6 +240,28 @@ func SaveSubFlow(id string, subId string, data string) error {
 	return err
 }
 
+func DeleteSubFlow(id string, subId string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
+	if utils.PathExist(devPath + string(os.PathSeparator) + subId + ".flow") {
+		err = os.Remove(devPath + string(os.PathSeparator) + subId + ".flow")
+		if err != nil {
+			return err
+		}
+	}
+	if utils.PathExist(projectPath + string(os.PathSeparator) + subId + ".py") {
+		err = os.Remove(projectPath + string(os.PathSeparator) + subId + ".py")
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func RunSubFlow(ctx context.Context, id string, subId string) error {
 	params := make(map[string]interface{})
 	project, err := QueryProjectById(id)

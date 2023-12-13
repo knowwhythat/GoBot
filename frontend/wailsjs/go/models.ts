@@ -83,7 +83,7 @@ export namespace plugin {
 	    required: boolean;
 	    options: any;
 	    editor_type: string;
-	    show_if?: string;
+	    show_if?: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Input(source);

@@ -111,6 +111,10 @@ func (a *App) SaveSubFlow(id, subId, data string) error {
 	return services.SaveSubFlow(id, subId, data)
 }
 
+func (a *App) DeleteSubFlow(id, subId string) error {
+	return services.DeleteSubFlow(id, subId)
+}
+
 func (a *App) RunSubFlow(id, subId string) error {
 	return services.RunSubFlow(a.ctx, id, subId)
 }

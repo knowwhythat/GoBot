@@ -33,7 +33,7 @@
                   { "label": "Internet Explore 浏览器", "value": "ie" }
                 ],
                 "editor_type": "SelectDefine",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "executable_path",
@@ -48,7 +48,7 @@
                   "display": "可执行文件"
                 },
                 "editor_type": "FileDialogInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "url",
@@ -58,7 +58,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               }
             ],
             "extra": [
@@ -73,7 +73,7 @@
                   "type": "directory"
                 },
                 "editor_type": "FileDialogInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "download_path",
@@ -86,7 +86,7 @@
                   "type": "directory"
                 },
                 "editor_type": "FileDialogInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "extension_path",
@@ -99,7 +99,7 @@
                   "type": "directory"
                 },
                 "editor_type": "FileDialogInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "timeout",
@@ -109,7 +109,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "is_headless",
@@ -119,7 +119,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "BoolValue",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "is_stealth",
@@ -129,7 +129,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "BoolValue",
-                "show_if": null
+                "show_if": []
               }
             ],
             "outputs": [
@@ -165,7 +165,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "timeout",
@@ -175,7 +175,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               }
             ],
             "outputs": [
@@ -210,7 +210,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               }
             ],
             "error": true
@@ -241,7 +241,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "url",
@@ -251,7 +251,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -261,7 +261,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -286,7 +286,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "url",
@@ -296,7 +296,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -306,7 +306,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -331,7 +331,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -341,7 +341,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -366,7 +366,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -376,7 +376,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -401,7 +401,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -411,7 +411,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -436,7 +436,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -464,7 +464,7 @@
                       { "label": "包含", "value": "contains" }
                     ],
                     "editor_type": "SelectDefine",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "browser",
@@ -474,7 +474,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "url",
@@ -484,7 +484,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "title",
@@ -494,7 +494,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -519,7 +519,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "timeout",
@@ -529,7 +529,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "save_path",
@@ -544,7 +544,7 @@
                       "display": "图片"
                     },
                     "editor_type": "FileDialogInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "full_page",
@@ -554,7 +554,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -579,7 +579,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -612,7 +612,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -622,7 +622,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -633,7 +633,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "highlight",
@@ -643,7 +643,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "outputs": [
@@ -678,7 +678,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -688,7 +688,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -699,7 +699,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "highlight",
@@ -709,7 +709,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "outputs": [
@@ -737,6 +737,19 @@
               "parameter_define": {
                 "inputs": [
                   {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
                     "key": "browser",
                     "label": "浏览器对象",
                     "type": "browser",
@@ -744,7 +757,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "frame_selector",
@@ -754,7 +767,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element_selector",
@@ -765,7 +778,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element",
@@ -775,7 +788,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": "element_selector == None"
+                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "button",
@@ -789,7 +802,7 @@
                       { "label": "右键", "value": "right" }
                     ],
                     "editor_type": "SelectDefine",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "extra": [
@@ -806,7 +819,7 @@
                       { "label": "Shift", "value": "Shift" }
                     ],
                     "editor_type": "MultiSelectDefine",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "position",
@@ -826,7 +839,7 @@
                       { "label": "下右", "value": "bottom-right" }
                     ],
                     "editor_type": "SelectDefine",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "force",
@@ -836,7 +849,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -861,7 +874,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -871,7 +884,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -882,7 +895,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element",
@@ -892,7 +905,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": "element_selector == None"
+                    "show_if": []
                   },
                   {
                     "key": "content",
@@ -902,7 +915,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ""
+                    "show_if": []
                   },
                   {
                     "key": "clear",
@@ -912,7 +925,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "extra": [
@@ -924,7 +937,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "delay",
@@ -934,7 +947,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -959,7 +972,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -969,7 +982,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -980,7 +993,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element",
@@ -990,7 +1003,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": "element_selector == None"
+                    "show_if": []
                   }
                 ],
                 "outputs": [
@@ -1025,7 +1038,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -1035,7 +1048,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -1046,7 +1059,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element",
@@ -1056,7 +1069,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": "element_selector == None"
+                    "show_if": []
                   },
                   {
                     "key": "save_path",
@@ -1070,7 +1083,7 @@
                       "display": "图片文件"
                     },
                     "editor_type": "FileDialogInput",
-                    "show_if": ""
+                    "show_if": []
                   }
                 ],
                 "outputs": [],
@@ -1096,7 +1109,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "frame_selector",
@@ -1106,7 +1119,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element_selector",
@@ -1117,7 +1130,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": null
+                    "show_if": []
                   },
                   {
                     "key": "element",
@@ -1127,7 +1140,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": "element_selector == None"
+                    "show_if": []
                   }
                 ],
                 "outputs": [

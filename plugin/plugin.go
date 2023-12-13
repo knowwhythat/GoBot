@@ -44,16 +44,16 @@ type ParameterDefine struct {
 }
 
 type Input struct {
-	Key          string `json:"key"`
-	Label        string `json:"label"`
-	Placeholder  string `json:"placeholder"`
-	Category     string `json:"category,omitempty"`
-	Type         string `json:"type"`
-	DefaultValue string `json:"default_value"`
-	Required     bool   `json:"required"`
-	Options      any    `json:"options"`
-	EditorType   string `json:"editor_type"`
-	ShowIf       string `json:"show_if,omitempty"`
+	Key          string   `json:"key"`
+	Label        string   `json:"label"`
+	Placeholder  string   `json:"placeholder"`
+	Category     string   `json:"category,omitempty"`
+	Type         string   `json:"type"`
+	DefaultValue string   `json:"default_value"`
+	Required     bool     `json:"required"`
+	Options      any      `json:"options"`
+	EditorType   string   `json:"editor_type"`
+	ShowIf       []string `json:"show_if,omitempty"`
 }
 type Output struct {
 	Key          string `json:"key"`

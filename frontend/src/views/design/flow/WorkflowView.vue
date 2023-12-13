@@ -63,7 +63,7 @@
       @update:flow="state.dataChanged = true"
       @update:node="state.dataChanged = true"
       @update:settings="state.dataChanged = true"
-      @delete:node="state.dataChanged = true"
+      @delete:node="deleteNode"
     />
   </div>
 </template>
@@ -75,7 +75,7 @@ import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { useToast } from "primevue/usetoast";
-import { GetMainFlow, SaveMainFlow } from "@back/go/main/App";
+import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/main/App";
 import { WindowMaximise } from "@back/runtime/runtime";
 import { trim } from "lodash-es";
 const toast = useToast();
@@ -165,6 +165,10 @@ async function editBlock(data) {
       `design/sequence?id=${props.id}&subflowId=${data.blockId}&label=${data.data.label}`
     );
   }
+}
+async function deleteNode(nodeId) {
+  state.dataChanged = true;
+  await DeleteSubFlow(props.id, nodeId);
 }
 </script>
 <style scoped>

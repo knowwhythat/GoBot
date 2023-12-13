@@ -11,6 +11,8 @@ export function DebugSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function DeleteProject(arg1:string):Promise<void>;
 
+export function DeleteSubFlow(arg1:string,arg2:string):Promise<void>;
+
 export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;

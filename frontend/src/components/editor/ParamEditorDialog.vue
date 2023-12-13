@@ -8,47 +8,72 @@
     header="参数设置"
     :style="{ width: '60rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    :pt="{
+      header: (options) => ({
+        style: {
+          padding: '0.75rem',
+        },
+      }),
+    }"
   >
     <template #header>
       <div class="flex align-items-center gap-2">
         <span
           :class="props.color"
-          class="inline-block rounded-lg dark:text-black p-3"
+          class="inline-block rounded-lg dark:text-black"
         >
           <v-remixicon v-bind="getIconPath(props.icon)" />
         </span>
-        <InputText type="text" v-model="nodeData.label" />
+        <p>{{ nodeData.label }}</p>
       </div>
     </template>
 
     <TabView>
       <TabPanel header="常规">
         <div class="px-2">
-          <Divider align="left" type="solid">
-            <b>输入参数</b>
-          </Divider>
-          <div
-            class="flex mb-4"
-            v-for="input in props.parameter_define?.inputs"
-            :key="input.key"
-          >
-            <span class="mr-2 w-32 truncate my-auto" :title="input.label">
-              {{ input.label }}
-            </span>
-            <component
-              :is="findComponent(input.editor_type)"
-              :value="
-                nodeData.parameter?.hasOwnProperty(input.key)
-                  ? nodeData.parameter[input.key]
-                  : input.default_value
-              "
-              :input="input"
-              @update="updateInnerValue(input.key, $event)"
+          <div class="flex mb-4">
+            <span class="mr-2 w-32 truncate my-auto"> 组件名称 </span>
+            <InputText
+              class="w-full mr-2"
+              type="text"
+              v-model="nodeData.label"
             />
             <a title="提示" target="_blank" rel="noopener" class="my-auto p-4">
               <v-remixicon name="riInformationLine" size="18" />
             </a>
           </div>
+          <Divider align="left" type="solid">
+            <b>输入参数</b>
+          </Divider>
+          <template
+            v-for="input in props.parameter_define?.inputs"
+            :key="input.key"
+          >
+            <div class="flex mb-4" v-if="show(input)">
+              <span class="mr-2 w-32 truncate my-auto" :title="input.label">
+                {{ input.label }}
+              </span>
+              <component
+                :is="findComponent(input.editor_type)"
+                :value="
+                  nodeData.parameter?.hasOwnProperty(input.key)
+                    ? nodeData.parameter[input.key]
+                    : input.default_value
+                "
+                :input="input"
+                @update="updateInnerValue(input.key, $event)"
+              />
+              <a
+                title="提示"
+                target="_blank"
+                rel="noopener"
+                class="my-auto p-4"
+              >
+                <v-remixicon name="riInformationLine" size="18" />
+              </a>
+            </div>
+          </template>
+
           <Divider align="left" type="solid">
             <b>输出参数</b>
           </Divider>
@@ -113,7 +138,11 @@
           <div class="flex mb-4">
             <span class="mr-2 w-32 truncate my-auto"> 异常处理策略 </span>
             <Dropdown
-              v-model="nodeData.parameter['exception']"
+              :model-value="
+                nodeData.parameter.hasOwnProperty('exception')
+                  ? nodeData.parameter['exception']
+                  : 'error'
+              "
               update:modelValue="updateInnerValue('exception', $event)"
               :options="toDoTypes"
               optionLabel="name"
@@ -174,7 +203,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
-import { reactive, watch, ref, Comment } from "vue";
+import { reactive, watch, ref, Comment, computed } from "vue";
 const props = defineProps({
   icon: {
     type: String,
@@ -223,6 +252,25 @@ function findComponent(name) {
   }
   return editorMap["ExpressionTextInput"];
 }
+function show(input) {
+  if (!input.show_if || input.show_if.length == 0) {
+    return true;
+  }
+  const result = input.show_if.every((si) => {
+    const [key, value] = si.split("=");
+    if (key in nodeData.parameter) {
+      const v = nodeData.parameter[key];
+      return v.substring(2) === value;
+    } else {
+      return (
+        props.parameter_define.inputs
+          .filter((pd) => pd.key === key)[0]
+          .default_value.substring(2) === value
+      );
+    }
+  });
+  return result;
+}
 const toDoTypes = [
   { value: "error", name: "抛出错误" },
   { value: "continue", name: "继续执行" },
@@ -242,7 +290,6 @@ function updateInnerValue(key, value) {
 }
 
 function updateData() {
-  console.log(nodeData);
   emit("update", { ...nodeData });
 }
 </script>

@@ -34,7 +34,7 @@
                   { "label": "布尔值", "value": "bool" }
                 ],
                 "editor_type": "SelectDefine",
-                "show_if": null
+                "show_if": []
               },
               {
                 "key": "variable_value",
@@ -44,7 +44,7 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": null
+                "show_if": []
               }
             ],
             "outputs": [
