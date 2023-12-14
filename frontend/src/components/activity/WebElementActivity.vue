@@ -130,11 +130,14 @@ watch(
       webElementExpression.value = value["element"].split(":")[0] === "1";
       webElement.value = value["element"].substring(2);
     } else {
-      const defaultValue = props.element.parameter_define.inputs.filter(
+      let defaultValue = props.element.parameter_define.inputs.filter(
         (pd) => pd.key === "element"
-      )[0].default_value;
-      webElementExpression.value = defaultValue.split(":")[0] === "1";
-      webElement.value = defaultValue.substring(2);
+      );
+      if (defaultValue && defaultValue.length > 0) {
+        defaultValue = defaultValue[0].default_value;
+        webElementExpression.value = defaultValue.split(":")[0] === "1";
+        webElement.value = defaultValue.substring(2);
+      }
     }
   },
   { immediate: true, deep: true }

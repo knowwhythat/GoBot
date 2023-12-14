@@ -284,6 +284,7 @@ async function save() {
 }
 const running = ref(false);
 const logs = ref([]);
+var reg = /code_map_id="([^"]*)/;
 async function run() {
   await save();
   running.value = true;
@@ -299,6 +300,11 @@ async function run() {
       life: 3000,
     });
   } catch (err) {
+    const match = err.match(reg);
+    if (match.length > 1) {
+      debugingId.value = match[1];
+      document.getElementById(match[1]).scrollIntoView();
+    }
     toast.add({
       severity: "error",
       summary: "运行失败",
@@ -307,7 +313,9 @@ async function run() {
     });
   }
   running.value = false;
-  EventsOff("log_event");
+  setTimeout(function () {
+    EventsOff("log_event");
+  }, 1000);
 }
 const debuging = ref(false);
 const debugingId = ref(nanoid(16));
@@ -399,5 +407,8 @@ const onImageRightClick = (event) => {
 }
 :deep(.p-tree) {
   padding: 0.25rem;
+}
+:deep(.p-splitter) {
+  margin: 0;
 }
 </style>

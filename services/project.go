@@ -297,7 +297,9 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	}()
 	_, err = command.Output()
 	delete(processMap, subId)
-	cancle()
+	time.AfterFunc(2*time.Second, func() {
+		cancle()
+	})
 	if err != nil {
 		errStr := stderr.String()
 		_, errStr, founded := strings.Cut(errStr, projectPath)
@@ -503,7 +505,9 @@ loop:
 				time.Sleep(time.Second)
 				continue
 			}
-			runtime.EventsEmit(ctx, "log_event", line.Text)
+			if !strings.Contains(line.Text, "DEBUG") {
+				runtime.EventsEmit(ctx, "log_event", line.Text)
+			}
 		}
 	}
 }

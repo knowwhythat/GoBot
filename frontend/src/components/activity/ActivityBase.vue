@@ -1,5 +1,6 @@
 <template>
   <Panel
+    :id="props.id"
     :toggleable="props.toggleable"
     :collapsed="nodeData.collapsed"
     class="activity-node min-w-[400px] m-2"

@@ -11,7 +11,7 @@
       "description": "浏览器自动化",
       "children": [
         {
-          "key": "browser",
+          "key": "browser.open_browser",
           "label": "打开网页",
           "icon_path": "riCommandLine",
           "description": "打开浏览器并跳转到指定的网址",
@@ -147,7 +147,7 @@
           "component": "BasicActivity"
         },
         {
-          "key": "browser",
+          "key": "browser.connect_browser",
           "label": "连接浏览器",
           "icon_path": "riLink",
           "description": "连接一个已经已调试模式打开的浏览器,只支持chrome内核浏览器",
@@ -193,7 +193,7 @@
           "component": "BasicActivity"
         },
         {
-          "key": "browser",
+          "key": "browser.browser_close",
           "label": "关闭浏览器",
           "icon_path": "riCloseCircleLine",
           "description": "关闭打开的浏览器",
@@ -224,7 +224,7 @@
           "description": "浏览器页面相关的操作",
           "children": [
             {
-              "key": "browser",
+              "key": "browser.page.new_page",
               "label": "新建页面",
               "icon_path": "riMenuAddLine",
               "description": "在新的Tab中打开页面",
@@ -269,7 +269,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.goto_url",
               "label": "跳转到连接",
               "icon_path": "riLink",
               "description": "在当前页面跳转到新的连接",
@@ -314,7 +314,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.reload_page",
               "label": "刷新当前页面",
               "icon_path": "riRefreshLine",
               "description": "在当前页面跳转到新的连接",
@@ -349,7 +349,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.page_forward",
               "label": "页面前进",
               "icon_path": "riArrowRightCircleLine",
               "description": "在当前页面向前",
@@ -384,7 +384,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.page_go_back",
               "label": "页面后退",
               "icon_path": "riArrowLeftCircleLine",
               "description": "在当前页面后退",
@@ -419,7 +419,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.page_close",
               "label": "关闭当前页面",
               "icon_path": "riCloseCircleLine",
               "description": "关闭当前页面",
@@ -444,7 +444,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.switch_page",
               "label": "切换页面",
               "icon_path": "riSwitchLine",
               "description": "切换页面",
@@ -495,6 +495,16 @@
                     "options": null,
                     "editor_type": "ExpressionTextInput",
                     "show_if": []
+                  },
+                  {
+                    "key": "bring_to_front",
+                    "label": "是否将页面激活",
+                    "type": "number",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": []
                   }
                 ],
                 "error": true
@@ -502,7 +512,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.page_screenshot",
               "label": "页面截图",
               "icon_path": "riScreenshotLine",
               "description": "页面截图",
@@ -562,7 +572,7 @@
               "component": "BasicActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.page.page_pause",
               "label": "页面暂停",
               "icon_path": "riPauseLine",
               "description": "在当前页面暂停,仅用于调试",
@@ -661,7 +671,7 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.element.find_elements",
               "label": "查找相似元素",
               "icon_path": "riSearch2Line",
               "description": "查找相似元素",
@@ -727,7 +737,7 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.element.element_click",
               "label": "点击元素",
               "icon_path": "riCursorLine",
               "description": "点击元素",
@@ -857,7 +867,7 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.element.element_fill",
               "label": "元素中输入",
               "icon_path": "riText",
               "description": "元素中输入",
@@ -867,6 +877,19 @@
               "parameter_define": {
                 "inputs": [
                   {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
                     "key": "browser",
                     "label": "浏览器对象",
                     "type": "browser",
@@ -874,7 +897,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "frame_selector",
@@ -884,7 +907,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element_selector",
@@ -895,7 +918,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element",
@@ -905,7 +928,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "content",
@@ -955,15 +978,28 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
-              "label": "获取元素文本",
-              "icon_path": "riTranslate2",
-              "description": "获取元素文本",
+              "key": "browser.element.element_fill",
+              "label": "输入密码",
+              "icon_path": "riLockPasswordLine",
+              "description": "元素中输入密码",
               "namespace": "robot_browser",
-              "method": "element_content",
+              "method": "element_fill",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
                   {
                     "key": "browser",
                     "label": "浏览器对象",
@@ -972,7 +1008,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "frame_selector",
@@ -982,7 +1018,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element_selector",
@@ -993,7 +1029,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element",
@@ -1003,6 +1039,131 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
+                  },
+                  {
+                    "key": "content",
+                    "label": "输入内容",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "PasswordTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "clear",
+                    "label": "是否清空",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": []
+                  }
+                ],
+                "extra": [
+                  {
+                    "key": "simulate",
+                    "label": "是否模拟输入",
+                    "type": "bool",
+                    "default_value": "1:False",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": []
+                  },
+                  {
+                    "key": "delay",
+                    "label": "输入延时",
+                    "type": "number",
+                    "default_value": "1:3000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser.element.element_content",
+              "label": "获取元素文本",
+              "icon_path": "riTranslate2",
+              "description": "获取元素文本",
+              "namespace": "robot_browser",
+              "method": "element_content",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
+                  },
+                  {
+                    "key": "content_type",
+                    "label": "获取类型",
+                    "type": "str",
+                    "default_value": "0:text",
+                    "required": true,
+                    "options": [
+                      { "label": "文本", "value": "text" },
+                      { "label": "HTML", "value": "html" },
+                      { "label": "Value", "value": "value" }
+                    ],
+                    "editor_type": "SelectDefine",
                     "show_if": []
                   }
                 ],
@@ -1021,7 +1182,7 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
+              "key": "browser.element.element_capture",
               "label": "元素截图",
               "icon_path": "riScreenshotLine",
               "description": "元素截图",
@@ -1031,6 +1192,19 @@
               "parameter_define": {
                 "inputs": [
                   {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
                     "key": "browser",
                     "label": "浏览器对象",
                     "type": "browser",
@@ -1038,7 +1212,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "frame_selector",
@@ -1048,7 +1222,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element_selector",
@@ -1059,7 +1233,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element",
@@ -1069,7 +1243,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "save_path",
@@ -1092,15 +1266,28 @@
               "component": "WebElementActivity"
             },
             {
-              "key": "browser",
-              "label": "文本验证码识别",
-              "icon_path": "riCharacterRecognitionLine",
-              "description": "文本验证码识别",
+              "key": "browser.element.get_element_attribute",
+              "label": "获取元素属性",
+              "icon_path": "riChatSettingsLine",
+              "description": "获取元素属性",
               "namespace": "robot_browser",
-              "method": "verification_code_identification",
+              "method": "get_element_attribute",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
                   {
                     "key": "browser",
                     "label": "浏览器对象",
@@ -1109,7 +1296,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "frame_selector",
@@ -1119,7 +1306,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element_selector",
@@ -1130,7 +1317,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["element_type=locator"]
                   },
                   {
                     "key": "element",
@@ -1140,7 +1327,266 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
+                  },
+                  {
+                    "key": "attribute_name",
+                    "label": "属性名称",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "attribute_value",
+                    "label": "属性值",
+                    "type": "str",
+                    "default_value": "",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser.element.set_element_attribute",
+              "label": "设置元素属性",
+              "icon_path": "riChatNewLine",
+              "description": "设置元素属性",
+              "namespace": "robot_browser",
+              "method": "set_element_attribute",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
+                  },
+                  {
+                    "key": "attribute_name",
+                    "label": "属性名称",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "attribute_value",
+                    "label": "属性值",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser.element.remove_element_attribute",
+              "label": "删除元素属性",
+              "icon_path": "riChatDeleteLine",
+              "description": "删除元素属性",
+              "namespace": "robot_browser",
+              "method": "remove_element_attribute",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
+                  },
+                  {
+                    "key": "attribute_name",
+                    "label": "属性名称",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser.element.verification_code_identification",
+              "label": "文本验证码识别",
+              "icon_path": "riCharacterRecognitionLine",
+              "description": "文本验证码识别",
+              "namespace": "robot_browser",
+              "method": "verification_code_identification",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "element_type",
+                    "label": "定位方式",
+                    "type": "str",
+                    "default_value": "0:locator",
+                    "required": true,
+                    "options": [
+                      { "label": "选择器", "value": "locator" },
+                      { "label": "元素", "value": "element" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=locator"]
+                  },
+                  {
+                    "key": "element",
+                    "label": "web元素",
+                    "type": "web_ellement",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["element_type=element"]
                   }
                 ],
                 "outputs": [
