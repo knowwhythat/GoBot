@@ -94,8 +94,8 @@ func (t *Tx) DeleteSchedule(id uuid.UUID) (err error) {
 	return nil
 }
 
-// 根据爬虫 ID 删除所有定时调度
-func (t *Tx) DeleteAllSchedulesWhereSpiderId(spiderId uuid.UUID) (err error) {
+// 根据项目 ID 删除所有定时调度
+func (t *Tx) DeleteAllSchedulesWhereSpiderId(ProjectId uuid.UUID) (err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
 		return nil
@@ -106,7 +106,7 @@ func (t *Tx) DeleteAllSchedulesWhereSpiderId(spiderId uuid.UUID) (err error) {
 		if err = json.Unmarshal(v, &schedule); err != nil {
 			return err
 		}
-		if schedule.SpiderId == spiderId {
+		if schedule.ProjectId == ProjectId {
 			if err = b.Delete([]byte(schedule.Id.String())); err != nil {
 				return err
 			}

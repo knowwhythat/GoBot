@@ -31,7 +31,7 @@
     <TabView>
       <TabPanel header="常规">
         <div class="px-2">
-          <div class="flex mb-4">
+          <div class="flex mt-4">
             <span class="mr-2 w-32 truncate my-auto"> 组件名称 </span>
             <InputText
               class="w-full mr-2"
@@ -110,7 +110,7 @@
       >
         <div class="px-2">
           <div
-            class="flex mb-4"
+            class="flex my-4"
             v-for="input in props.parameter_define?.extra"
             :key="input.key"
           >
@@ -135,7 +135,7 @@
       </TabPanel>
       <TabPanel header="错误处理" v-if="props.parameter_define?.error">
         <div class="px-2">
-          <div class="flex mb-4">
+          <div class="flex my-4">
             <span class="mr-2 w-32 truncate my-auto"> 异常处理策略 </span>
             <Dropdown
               :model-value="

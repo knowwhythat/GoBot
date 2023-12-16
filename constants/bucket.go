@@ -1,9 +1,8 @@
 package constants
 
 const (
-	ProjectBucket       = "projects"
-	SpiderVersionBucket = "spider-versions"
-	TaskBucket          = "tasks"
-	TaskLogBucket       = "task-log-"
-	ScheduleBucket      = "schedules"
+	ProjectBucket      = "projects"
+	ScheduleBucket     = "schedules"
+	ExecutionBucket    = "executions"
+	ExecutionLogBucket = "execution-logs-"
 )

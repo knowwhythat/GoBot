@@ -88,45 +88,55 @@
       </template>
 
       <template #end>
-        <SelectButton
+        <ToggleButton
           v-model="activeSidePanel"
-          :options="sidePanels"
-          aria-labelledby="basic"
-        />
+          on-label=""
+          off-label=""
+          on-icon="pi pi-chevron-right"
+          off-icon="pi pi-chevron-left"
+        >
+        </ToggleButton>
       </template>
     </Toolbar>
     <Splitter id="sequence-designer" class="mb-5" stateStorage="local">
       <SplitterPanel :size="25">
-        <Tree
-          :value="nodes"
-          :filter="true"
-          selectionMode="single"
-          filterMode="lenient"
-          filterPlaceholder="输入组件名称进行搜索"
-          class="w-full h-full"
-        >
-          <template #default="slotProps">
-            <div class="flex">
-              <p class="pr-2">
-                <v-remixicon v-bind="getIconPath(slotProps.node.icon_path)" />
-              </p>
-              <div
-                v-if="isLeaf(slotProps)"
-                draggable="true"
-                class="transform select-none cursor-move text-ellipsis max-w-xs"
-                @dragstart="
-                  $event.dataTransfer.setData(
-                    'activity',
-                    JSON.stringify(slotProps.node)
-                  )
-                "
-              >
-                {{ slotProps.node.label }}
-              </div>
-              <b v-else>{{ slotProps.node.label }}</b>
-            </div>
-          </template>
-        </Tree>
+        <TabView>
+          <TabPanel header="组件库">
+            <Tree
+              :value="nodes"
+              :filter="true"
+              selectionMode="single"
+              filterMode="lenient"
+              filterPlaceholder="输入组件名称进行搜索"
+              class="w-full h-full"
+            >
+              <template #default="slotProps">
+                <div class="flex">
+                  <p class="pr-2">
+                    <v-remixicon
+                      v-bind="getIconPath(slotProps.node.icon_path)"
+                    />
+                  </p>
+                  <div
+                    v-if="isLeaf(slotProps)"
+                    draggable="true"
+                    class="transform select-none cursor-move text-ellipsis max-w-xs"
+                    @dragstart="
+                      $event.dataTransfer.setData(
+                        'activity',
+                        JSON.stringify(slotProps.node)
+                      )
+                    "
+                  >
+                    {{ slotProps.node.label }}
+                  </div>
+                  <b v-else>{{ slotProps.node.label }}</b>
+                </div>
+              </template>
+            </Tree>
+          </TabPanel>
+          <TabPanel header="项目树"></TabPanel>
+        </TabView>
       </SplitterPanel>
       <SplitterPanel class="h-full" :size="75">
         <Splitter>
@@ -139,16 +149,21 @@
             </div>
           </SplitterPanel>
           <SplitterPanel v-show="activeSidePanel" :size="50">
-            <Listbox
-              v-if="activeSidePanel == '日志'"
-              :filter="true"
-              emptyMessage="当前没有日志"
-              :options="logs"
-              @contextmenu="onImageRightClick"
-              class="w-full md:w-14rem"
-            >
-            </Listbox>
-            <ContextMenu ref="menu" :model="items" />
+            <TabView>
+              <TabPanel header="运行日志">
+                <Listbox
+                  :filter="true"
+                  emptyMessage="当前没有日志"
+                  :options="logs"
+                  @contextmenu="onImageRightClick"
+                  class="w-full md:w-14rem"
+                >
+                </Listbox>
+                <ContextMenu ref="menu" :model="items" />
+              </TabPanel>
+              <TabPanel header="参数库"></TabPanel>
+              <TabPanel header="元素库"></TabPanel>
+            </TabView>
           </SplitterPanel>
         </Splitter>
       </SplitterPanel>
@@ -156,6 +171,9 @@
   </div>
 </template>
 <script setup>
+import ToggleButton from "primevue/togglebutton";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 import ContextMenu from "primevue/contextmenu";
 import SelectButton from "primevue/selectbutton";
 import Listbox from "primevue/listbox";
@@ -260,8 +278,7 @@ function isLeaf(data) {
   return !(data.node.children && data.node.children.length > 0);
 }
 
-const activeSidePanel = ref("");
-const sidePanels = ref(["日志", "参数", "元素库"]);
+const activeSidePanel = ref(false);
 
 async function save() {
   try {
@@ -399,11 +416,17 @@ const onImageRightClick = (event) => {
 :deep(.p-splitter-panel) {
   overflow: auto;
 }
+:deep(.p-tabview-panels) {
+  padding: 0rem;
+}
+:deep(.p-tabview-nav-link) {
+  padding: 0.75rem;
+}
 :deep(.p-listbox-list) {
-  height: calc(100vh - 148px);
+  height: calc(100vh - 190px);
 }
 :deep(.p-tree-wrapper) {
-  height: calc(100vh - 152px);
+  height: calc(100vh - 182px);
 }
 :deep(.p-tree) {
   padding: 0.25rem;
