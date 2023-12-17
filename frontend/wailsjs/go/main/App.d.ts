@@ -31,6 +31,10 @@ export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SelectProject(arg1:string):Promise<models.Project>;
 
+export function StartCheck(arg1:string,arg2:string):Promise<string>;
+
+export function StartPick():Promise<string>;
+
 export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function UpdateProject(arg1:string,arg2:string):Promise<void>;

@@ -58,6 +58,14 @@ export function SelectProject(arg1) {
   return window['go']['main']['App']['SelectProject'](arg1);
 }
 
+export function StartCheck(arg1, arg2) {
+  return window['go']['main']['App']['StartCheck'](arg1, arg2);
+}
+
+export function StartPick() {
+  return window['go']['main']['App']['StartPick']();
+}
+
 export function TerminateSubFlow(arg1, arg2) {
   return window['go']['main']['App']['TerminateSubFlow'](arg1, arg2);
 }

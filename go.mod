@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.21.3
 
 require (
+	github.com/gorilla/websocket v1.5.1
 	github.com/hpcloud/tail v1.0.0
 	github.com/rs/zerolog v1.31.0
 	github.com/wailsapp/wails/v2 v2.7.0

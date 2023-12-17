@@ -14,6 +14,20 @@
     @update="updateData($event)"
   >
     <InputGroup class="mb-2" v-if="!showElement">
+      <Button
+        icon="pi pi-chevron-right"
+        severity="Primary"
+        @click="toggleFrame"
+        aria-haspopup="true"
+        aria-controls="overlay_panel"
+      />
+      <OverlayPanel ref="frameOp" appendTo="body" :unstyled="true">
+        <Tree
+          :value="framePaths"
+          selectionMode="single"
+          @node-select="selectedNode('frame', $event)"
+        ></Tree>
+      </OverlayPanel>
       <InputText
         :model-value="frameSelector"
         @update:model-value="changeFrameSelector($event)"
@@ -29,6 +43,20 @@
       </Button>
     </InputGroup>
     <InputGroup class="mb-2" v-if="!showElement">
+      <Button
+        icon="pi pi-chevron-right"
+        severity="Primary"
+        @click="toggleEle"
+        aria-haspopup="true"
+        aria-controls="overlay_panel"
+      />
+      <OverlayPanel ref="eleOp" appendTo="body" :unstyled="true">
+        <Tree
+          :value="elementPaths"
+          selectionMode="single"
+          @node-select="selectedNode('element', $event)"
+        ></Tree>
+      </OverlayPanel>
       <InputText
         :model-value="elementSelector"
         @update:model-value="changeElementSelector($event)"
@@ -74,11 +102,17 @@
   </ActivityBase>
 </template>
 <script setup>
+import { StartPick, StartCheck } from "@back/go/main/App";
 import { computed, inject, ref, watch } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
+import Tree from "primevue/tree";
+import OverlayPanel from "primevue/overlaypanel";
+import { nanoid } from "nanoid";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 const props = defineProps({
   element: {
     type: Object,
@@ -208,8 +242,122 @@ function updateData(data) {
     }
   }
 }
+const framePaths = ref([]);
+const frameOp = ref();
+const toggleFrame = (event) => {
+  frameOp.value.toggle(event);
+};
 
-function pickElement() {}
+const elementPaths = ref([]);
+const eleOp = ref();
+const toggleEle = (event) => {
+  eleOp.value.toggle(event);
+};
 
-function checkElement() {}
+function selectedNode(type, node) {
+  if (type === "frame") {
+    frameOp.value.toggle(false);
+    frameSelectorExpression.value = false;
+    frameSelector.value = node.label;
+    props.element.parameter["frame_selector"] = "0:" + node.label;
+  } else {
+    eleOp.value.toggle(false);
+    elementSelectorExpression.value = false;
+    elementSelector.value = node.label;
+    props.element.parameter["element_selector"] = "0:" + node.label;
+  }
+  updateDataChanged();
+}
+
+async function pickElement() {
+  try {
+    const resp = await StartPick();
+    const result = JSON.parse(resp);
+    framePaths.value = [];
+    result.message.framePath.forEach((path) => {
+      framePaths.value.push({
+        label: path,
+        icon: "pi pi-building",
+        key: nanoid(8),
+      });
+    });
+    elementPaths.value = [];
+    result.message.elementPath.forEach((path) => {
+      elementPaths.value.push({
+        label: path,
+        icon: "pi pi-building",
+        key: nanoid(8),
+      });
+    });
+    if (result.message.framePath && result.message.framePath.length > 0) {
+      frameSelectorExpression.value = false;
+      props.element.parameter["frame_selector"] =
+        "0:" + result.message.framePath[0];
+      frameSelector.value = result.message.framePath[0];
+    }
+    elementSelectorExpression.value = false;
+    props.element.parameter["element_selector"] =
+      "0:" + result.message.elementPath[0];
+    elementSelector.value = result.message.elementPath[0];
+    updateDataChanged();
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "拾取失败",
+      detail: err,
+      life: 3000,
+    });
+  }
+}
+
+async function checkElement() {
+  try {
+    let framePath = "";
+    if (
+      props.element.parameter["frame_selector"] &&
+      props.element.parameter["frame_selector"].length > 2
+    ) {
+      framePath = props.element.parameter["frame_selector"].substring(2);
+    }
+    let elementPath = "";
+    if (
+      props.element.parameter["element_selector"] &&
+      props.element.parameter["element_selector"].length > 2
+    ) {
+      elementPath = props.element.parameter["element_selector"].substring(2);
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "校验失败",
+        detail: "元素选择器不能为空",
+        life: 3000,
+      });
+      return;
+    }
+    const resp = await StartCheck(framePath, elementPath);
+    const result = JSON.parse(resp);
+    if (result["message"] === "ok") {
+      toast.add({
+        severity: "success",
+        summary: "校验成功",
+        detail: "找到元素",
+        life: 3000,
+      });
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "校验失败",
+        detail: "元素未找到",
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "校验失败",
+      detail: err,
+      life: 3000,
+    });
+  }
+}
 </script>

@@ -134,3 +134,11 @@ func (a *App) DealDebugSignal(command string) error {
 func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
 	return plugin.ParseAllPlugin()
 }
+
+func (a *App) StartPick() (string, error) {
+	return services.StartPick(a.ctx)
+}
+
+func (a *App) StartCheck(frame, selector string) (string, error) {
+	return services.StartCheck(a.ctx, frame, selector)
+}
