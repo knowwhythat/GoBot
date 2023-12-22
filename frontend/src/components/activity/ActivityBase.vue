@@ -52,12 +52,14 @@
       <slot></slot>
     </div>
     <ParamEditorDialog
+      :runnable="props.runnable"
       :icon="props.icon"
       :color="props.color"
       :dialogShow="dialogShow"
       :parameter_define="props.parameter_define"
       :nodeData="nodeData"
       @hide="dialogShow = false"
+      @run="$emit('run')"
       @update="updateData($event)"
     ></ParamEditorDialog>
   </Panel>
@@ -99,6 +101,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  runnable: {
+    type: Boolean,
+    default: false,
+  },
   breakpoint: {
     type: Boolean,
     default: false,
@@ -113,7 +119,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["delete", "update"]);
+const emit = defineEmits(["delete", "update", "run"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
 const { debugingId } = inject("debugingId");
 

@@ -142,3 +142,11 @@ func (a *App) StartPick() (string, error) {
 func (a *App) StartCheck(frame, selector string) (string, error) {
 	return services.StartCheck(a.ctx, frame, selector)
 }
+
+func (a *App) RunActivity(id, req string) error {
+	return services.RunActivity(a.ctx, id, req)
+}
+
+func (a *App) RestartReplCommand(id string) error {
+	return services.RestartReplCommand(id)
+}

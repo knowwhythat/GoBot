@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :runnable="true"
     :toggleable="true"
     :id="props.element.id"
     :breakpoint="props.element.breakpoint"
@@ -12,6 +13,7 @@
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
+    @run="runActivity"
   >
     <InputGroup class="mb-2" v-if="!showElement">
       <Button
@@ -102,7 +104,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import { StartPick, StartCheck } from "@back/go/main/App";
+import { StartPick, StartCheck, RunActivity } from "@back/go/main/App";
 import { computed, inject, ref, watch } from "vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
@@ -111,6 +113,7 @@ import ActivityBase from "./ActivityBase.vue";
 import Tree from "primevue/tree";
 import OverlayPanel from "primevue/overlaypanel";
 import { nanoid } from "nanoid";
+import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 const props = defineProps({
@@ -359,5 +362,26 @@ async function checkElement() {
       life: 3000,
     });
   }
+}
+const { projectId } = inject("projectId");
+async function runActivity() {
+  EventsOn("repl", (data, out) => {
+    if (out) {
+      toast.add({
+        severity: "error",
+        summary: "执行失败",
+        detail: out,
+        life: 3000,
+      });
+    } else {
+      toast.add({
+        severity: "success",
+        summary: "执行成功",
+        life: 3000,
+      });
+    }
+    EventsOff("repl");
+  });
+  await RunActivity(projectId, JSON.stringify(props.element));
 }
 </script>

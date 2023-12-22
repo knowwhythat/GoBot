@@ -79,6 +79,13 @@
             <v-remixicon name="riSkipForwardMiniLine" />
           </template>
         </Button>
+        <Button
+          label="重启Repl"
+          icon="pi pi-replay"
+          class="mr-2"
+          @click="restartRepl"
+        >
+        </Button>
       </template>
 
       <template #center>
@@ -155,7 +162,7 @@
                   :filter="true"
                   emptyMessage="当前没有日志"
                   :options="logs"
-                  @contextmenu="onImageRightClick"
+                  @contextmenu="onLogRightClick"
                   class="w-full md:w-14rem"
                 >
                 </Listbox>
@@ -175,7 +182,6 @@ import ToggleButton from "primevue/togglebutton";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import ContextMenu from "primevue/contextmenu";
-import SelectButton from "primevue/selectbutton";
 import Listbox from "primevue/listbox";
 import Button from "primevue/button";
 import Splitter from "primevue/splitter";
@@ -194,8 +200,14 @@ import {
   DebugSubFlow,
   TerminateSubFlow,
   DealDebugSignal,
+  RestartReplCommand,
 } from "@back/go/main/App";
-import { EventsOn, EventsOff } from "@back/runtime/runtime";
+import {
+  EventsOn,
+  EventsOff,
+  WindowMinimise,
+  WindowMaximise,
+} from "@back/runtime/runtime";
 import { getIconPath } from "@/utils/helper";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
@@ -218,6 +230,7 @@ const router = useRouter();
 const dataChanged = ref(false);
 provide("dataChanged", { dataChanged, updateDataChanged });
 provide("contextVariable", { contextVariable: [] });
+provide("projectId", { projectId: props.id });
 
 function updateDataChanged() {
   dataChanged.value = true;
@@ -309,6 +322,7 @@ async function run() {
     logs.value.push(data);
   });
   try {
+    WindowMinimise();
     await RunSubFlow(props.id, props.subflowId);
     toast.add({
       severity: "success",
@@ -333,6 +347,7 @@ async function run() {
   setTimeout(function () {
     EventsOff("log_event");
   }, 1000);
+  WindowMaximise();
 }
 const debuging = ref(false);
 const debugingId = ref(nanoid(16));
@@ -349,6 +364,7 @@ async function debug() {
     breakpointHit.value = true;
   });
   try {
+    WindowMinimise();
     await DebugSubFlow(props.id, props.subflowId);
     debugingId.value = nanoid(16);
     toast.add({
@@ -368,6 +384,7 @@ async function debug() {
   debuging.value = false;
   EventsOff("log_event");
   EventsOff("debug");
+  WindowMaximise();
 }
 function dealDebug(command) {
   breakpointHit.value = false;
@@ -405,9 +422,13 @@ const items = ref([
     },
   },
 ]);
-const onImageRightClick = (event) => {
+const onLogRightClick = (event) => {
   menu.value.show(event);
 };
+
+async function restartRepl() {
+  await RestartReplCommand(props.id);
+}
 </script>
 <style scoped>
 #sequence-designer {

@@ -5,6 +5,7 @@
       :options="props.input.options"
       optionLabel="label"
       optionValue="value"
+      :filter="props.input.options.length > 8"
     ></Dropdown>
   </InputGroup>
 </template>

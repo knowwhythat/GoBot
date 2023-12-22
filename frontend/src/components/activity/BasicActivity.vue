@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :runnable="true"
     :toggleable="false"
     :collapsed="true"
     :id="props.element.id"
@@ -12,10 +13,16 @@
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
+    @run="runActivity"
   />
 </template>
 <script setup>
 import ActivityBase from "./ActivityBase.vue";
+import { inject } from "vue";
+import { RunActivity } from "@back/go/main/App";
+import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 const props = defineProps({
   element: {
     type: Object,
@@ -30,5 +37,27 @@ function updateData(data) {
       props.element[key] = data[key];
     }
   }
+}
+const { projectId } = inject("projectId");
+
+async function runActivity() {
+  EventsOn("repl", (data, out) => {
+    if (out) {
+      toast.add({
+        severity: "error",
+        summary: "执行失败",
+        detail: out,
+        life: 3000,
+      });
+    } else {
+      toast.add({
+        severity: "success",
+        summary: "执行成功",
+        life: 3000,
+      });
+    }
+    EventsOff("repl");
+  });
+  await RunActivity(projectId, JSON.stringify(props.element));
 }
 </script>

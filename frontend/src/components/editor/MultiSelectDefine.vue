@@ -6,6 +6,7 @@
       :options="props.input.options"
       optionLabel="label"
       optionValue="value"
+      :filter="props.input.options.length > 8"
     ></MultiSelect>
   </InputGroup>
 </template>

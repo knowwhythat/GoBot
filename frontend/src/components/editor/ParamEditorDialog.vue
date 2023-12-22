@@ -188,6 +188,12 @@
     </TabView>
     <template #footer>
       <Button label="取消" icon="pi pi-times" @click="$emit('hide')" text />
+      <Button
+        v-if="props.runnable"
+        label="运行"
+        icon="pi pi-play"
+        @click="$emit('run')"
+      />
       <Button label="确认" icon="pi pi-check" @click="updateData" />
     </template>
   </Dialog>
@@ -195,7 +201,6 @@
 <script setup>
 import { getIconPath } from "@/utils/helper";
 import InputSwitch from "primevue/inputswitch";
-import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
 import Divider from "primevue/divider";
 import Dialog from "primevue/dialog";
@@ -226,8 +231,12 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  runnable: {
+    type: Boolean,
+    default: false,
+  },
 });
-const emit = defineEmits(["hide", "update"]);
+const emit = defineEmits(["hide", "update", "run"]);
 
 const visible = ref(false);
 watch(

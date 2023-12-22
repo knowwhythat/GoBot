@@ -23,6 +23,10 @@ export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activitiy>>;
 
+export function RestartReplCommand(arg1:string):Promise<void>;
+
+export function RunActivity(arg1:string,arg2:string):Promise<void>;
+
 export function RunSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
