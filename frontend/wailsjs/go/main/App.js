@@ -22,12 +22,20 @@ export function DeleteSubFlow(arg1, arg2) {
   return window['go']['main']['App']['DeleteSubFlow'](arg1, arg2);
 }
 
+export function GetElementImage(arg1, arg2) {
+  return window['go']['main']['App']['GetElementImage'](arg1, arg2);
+}
+
 export function GetMainFlow(arg1) {
   return window['go']['main']['App']['GetMainFlow'](arg1);
 }
 
 export function GetSubFlow(arg1, arg2) {
   return window['go']['main']['App']['GetSubFlow'](arg1, arg2);
+}
+
+export function GetWindowsElement(arg1, arg2) {
+  return window['go']['main']['App']['GetWindowsElement'](arg1, arg2);
 }
 
 export function ListProject(arg1, arg2) {
@@ -62,6 +70,10 @@ export function SaveSubFlow(arg1, arg2, arg3) {
   return window['go']['main']['App']['SaveSubFlow'](arg1, arg2, arg3);
 }
 
+export function SaveWindowsElement(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SaveWindowsElement'](arg1, arg2, arg3);
+}
+
 export function SelectProject(arg1) {
   return window['go']['main']['App']['SelectProject'](arg1);
 }
@@ -70,8 +82,16 @@ export function StartCheck(arg1, arg2) {
   return window['go']['main']['App']['StartCheck'](arg1, arg2);
 }
 
+export function StartCheckWindowsElement(arg1) {
+  return window['go']['main']['App']['StartCheckWindowsElement'](arg1);
+}
+
 export function StartPick() {
   return window['go']['main']['App']['StartPick']();
+}
+
+export function StartPickWindowsElement(arg1) {
+  return window['go']['main']['App']['StartPickWindowsElement'](arg1);
 }
 
 export function TerminateSubFlow(arg1, arg2) {

@@ -13,6 +13,7 @@ var file_list []string = []string{
 	"base_control.json",
 	"data_process.json",
 	"browser.json",
+	"desktop_application.json",
 }
 
 type PluginConfig struct {

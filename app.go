@@ -32,6 +32,7 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) shutdown(ctx context.Context) {
 	dao.MainDB.Close()
 	dao.LogDB.Close()
+	services.StopWindowsInspectCommand()
 }
 
 func (a *App) beforeClose(ctx context.Context) bool {
@@ -149,4 +150,24 @@ func (a *App) RunActivity(id, req string) error {
 
 func (a *App) RestartReplCommand(id string) error {
 	return services.RestartReplCommand(id)
+}
+
+func (a *App) GetElementImage(id, elementId string) (string, error) {
+	return services.GetElementImage(id, elementId)
+}
+
+func (a *App) StartPickWindowsElement(id string) (string, error) {
+	return services.StartPickWindowsElement(a.ctx, id)
+}
+
+func (a *App) StartCheckWindowsElement(paths string) (string, error) {
+	return services.StartCheckWindowsElement(a.ctx, paths)
+}
+
+func (a *App) SaveWindowsElement(id, elementId, data string) error {
+	return services.SaveWindowsElement(id, elementId, data)
+}
+
+func (a *App) GetWindowsElement(id, elementId string) (string, error) {
+	return services.GetWindowsElement(id, elementId)
 }

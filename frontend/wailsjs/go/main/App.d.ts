@@ -13,9 +13,13 @@ export function DeleteProject(arg1:string):Promise<void>;
 
 export function DeleteSubFlow(arg1:string,arg2:string):Promise<void>;
 
+export function GetElementImage(arg1:string,arg2:string):Promise<string>;
+
 export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
+
+export function GetWindowsElement(arg1:string,arg2:string):Promise<string>;
 
 export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any}>;
 
@@ -33,11 +37,17 @@ export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function SaveWindowsElement(arg1:string,arg2:string,arg3:string):Promise<void>;
+
 export function SelectProject(arg1:string):Promise<models.Project>;
 
 export function StartCheck(arg1:string,arg2:string):Promise<string>;
 
+export function StartCheckWindowsElement(arg1:string):Promise<string>;
+
 export function StartPick():Promise<string>;
+
+export function StartPickWindowsElement(arg1:string):Promise<string>;
 
 export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
 
