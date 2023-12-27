@@ -30,12 +30,20 @@ export function GetMainFlow(arg1) {
   return window['go']['main']['App']['GetMainFlow'](arg1);
 }
 
+export function GetSelectedWindowsElement(arg1, arg2) {
+  return window['go']['main']['App']['GetSelectedWindowsElement'](arg1, arg2);
+}
+
 export function GetSubFlow(arg1, arg2) {
   return window['go']['main']['App']['GetSubFlow'](arg1, arg2);
 }
 
 export function GetWindowsElement(arg1, arg2) {
   return window['go']['main']['App']['GetWindowsElement'](arg1, arg2);
+}
+
+export function GetWindowsElementList(arg1) {
+  return window['go']['main']['App']['GetWindowsElementList'](arg1);
 }
 
 export function ListProject(arg1, arg2) {

@@ -171,3 +171,11 @@ func (a *App) SaveWindowsElement(id, elementId, data string) error {
 func (a *App) GetWindowsElement(id, elementId string) (string, error) {
 	return services.GetWindowsElement(id, elementId)
 }
+
+func (a *App) GetWindowsElementList(parentId string) (string, error) {
+	return services.GetWindowsElementList(parentId)
+}
+
+func (a *App) GetSelectedWindowsElement(projectId, controlId string) (string, error) {
+	return services.GetSelectedWindowsElement(a.ctx, projectId, controlId)
+}

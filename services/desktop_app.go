@@ -162,6 +162,109 @@ func StartCheckWindowsElement(ctx context.Context, paths string) (string, error)
 	return "", errors.New("连接服务失败")
 }
 
+func GetWindowsElementList(parentId string) (string, error) {
+	if windowsInspectCommand == nil {
+		go startWindowsInspectCommand()
+	}
+	for retry := 1; retry < 10; retry++ {
+		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
+		if err != nil {
+			time.Sleep(time.Second)
+			continue
+		}
+		defer conn.Close()
+		messageId := uuid.New().String()
+		sendMessage := make(map[string]interface{})
+		sendMessage["message_id"] = messageId
+		data := make(map[string]interface{})
+		if parentId == "" {
+			sendMessage["method"] = "get_root"
+		} else {
+			sendMessage["method"] = "get_children"
+			data["control_id"] = parentId
+		}
+		sendMessage["data"] = data
+		request, err := json.Marshal(sendMessage)
+		log.Logger.Info(string(request))
+		if err != nil {
+			return "", err
+		}
+		if err := conn.WriteMessage(1, request); err != nil {
+			return "", err
+		}
+		for {
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				return "", nil
+			}
+			resp := make(map[string]interface{})
+			if err = json.Unmarshal(message, &resp); err != nil {
+				return "", nil
+			}
+			if resp["message_id"] == messageId {
+				return string(message), nil
+			}
+		}
+	}
+	return "", errors.New("连接服务失败")
+}
+
+func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string) (string, error) {
+	project, err := QueryProjectById(projectId)
+	if err != nil {
+		return "", err
+	}
+	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir
+	if !utils.PathExist(imagePath) {
+		if err = os.MkdirAll(imagePath, fs.ModeDir); err != nil {
+			return "", err
+		}
+	}
+	if windowsInspectCommand == nil {
+		go startWindowsInspectCommand()
+	}
+	for retry := 1; retry < 10; retry++ {
+		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
+		if err != nil {
+			time.Sleep(time.Second)
+			continue
+		}
+		defer conn.Close()
+		messageId := uuid.New().String()
+		sendMessage := make(map[string]interface{})
+		sendMessage["message_id"] = messageId
+		data := make(map[string]interface{})
+		sendMessage["method"] = "get_select_control"
+		data["image_path"] = imagePath
+		data["control_id"] = controlId
+		sendMessage["data"] = data
+		request, err := json.Marshal(sendMessage)
+		log.Logger.Info(string(request))
+		if err != nil {
+			return "", err
+		}
+		if err := conn.WriteMessage(1, request); err != nil {
+			return "", err
+		}
+		runtime.WindowMinimise(ctx)
+		for {
+			_, message, err := conn.ReadMessage()
+			runtime.WindowMaximise(ctx)
+			if err != nil {
+				return "", nil
+			}
+			resp := make(map[string]interface{})
+			if err = json.Unmarshal(message, &resp); err != nil {
+				return "", nil
+			}
+			if resp["message_id"] == messageId {
+				return string(message), nil
+			}
+		}
+	}
+	return "", errors.New("连接服务失败")
+}
+
 func SaveWindowsElement(id, elementId, selector string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {

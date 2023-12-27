@@ -27,11 +27,16 @@
       <div class="text-center my-auto" v-else>元素图片</div>
     </div>
     <div class="flex gap-4 justify-center">
-      <Button severity="Primary" label="拾取" @click="pickElement">
+      <SplitButton
+        severity="Primary"
+        label="拾取"
+        @click="pickElement"
+        :model="pickItems"
+      >
         <template #icon>
           <v-remixicon name="riCursorLine" size="24" />
         </template>
-      </Button>
+      </SplitButton>
       <Button
         severity="info"
         label="编辑"
@@ -57,11 +62,17 @@
         @check="checkElement($event)"
         @update="saveElement($event)"
       />
+      <ElementTreeDialog
+        :dialogShow="treeDialogShow"
+        @hide="treeDialogShow = false"
+        @confirm="selectElement($event)"
+      />
     </div>
   </ActivityBase>
 </template>
 <script setup>
 import Image from "primevue/image";
+import SplitButton from "primevue/splitbutton";
 import {
   StartPickWindowsElement,
   StartCheckWindowsElement,
@@ -69,12 +80,14 @@ import {
   SaveWindowsElement,
   GetWindowsElement,
   GetElementImage,
+  GetSelectedWindowsElement,
 } from "@back/go/main/App";
 import { inject, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import ElementOptionDialog from "../element/ElementOptionDialog.vue";
+import ElementTreeDialog from "../element/ElementTreeDialog.vue";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 const props = defineProps({
@@ -102,6 +115,45 @@ function updateData(data) {
     if (Object.hasOwnProperty.call(data, key)) {
       props.element[key] = data[key];
     }
+  }
+}
+
+const treeDialogShow = ref(false);
+
+const pickItems = [
+  {
+    label: "深度拾取",
+    icon: "pi pi-filter-slash",
+    command: () => {
+      treeDialogShow.value = true;
+    },
+  },
+];
+
+async function selectElement(id) {
+  try {
+    const resp = await GetSelectedWindowsElement(projectId, id);
+    const result = JSON.parse(resp);
+    if (result.result === "ok") {
+      needInit.value = true;
+      pathOption.value = JSON.parse(result.data);
+      treeDialogShow.value = false;
+      dialogShow.value = true;
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "拾取失败",
+        detail: result.reason,
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "拾取失败",
+      detail: err,
+      life: 3000,
+    });
   }
 }
 

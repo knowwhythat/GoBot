@@ -17,9 +17,13 @@ export function GetElementImage(arg1:string,arg2:string):Promise<string>;
 
 export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
+export function GetSelectedWindowsElement(arg1:string,arg2:string):Promise<string>;
+
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
 
 export function GetWindowsElement(arg1:string,arg2:string):Promise<string>;
+
+export function GetWindowsElementList(arg1:string):Promise<string>;
 
 export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any}>;
 
