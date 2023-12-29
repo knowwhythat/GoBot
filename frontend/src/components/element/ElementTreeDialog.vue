@@ -128,6 +128,7 @@ const onNodeExpand = async (node) => {
   }
 };
 async function show() {
+  nodes.value = [];
   loading.value = true;
   try {
     const resp = await GetWindowsElementList("");

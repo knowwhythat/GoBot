@@ -127,6 +127,9 @@ function show() {
           } else if (key != "index" && key !== "processName" && value) {
             enable = true;
           }
+          if (key === "index" && path["name"] === "") {
+            enable = true;
+          }
           attrs.push({
             enable: enable,
             key: key,

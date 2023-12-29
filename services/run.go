@@ -45,7 +45,9 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	params["log_path"] = logPath
 	params["log_level"] = "DEBUG"
 	params["mod"] = subId
-	params["environment_variables"] = make(map[string]string)
+	env := make(map[string]string)
+	env["project_path"] = projectPath
+	params["environment_variables"] = env
 	marshalParam, err := json.Marshal(params)
 	if err != nil {
 		return err

@@ -332,7 +332,7 @@ async function run() {
     });
   } catch (err) {
     const match = err.match(reg);
-    if (match.length > 1) {
+    if (match && match.length > 1) {
       debugingId.value = match[1];
       document.getElementById(match[1]).scrollIntoView();
     }

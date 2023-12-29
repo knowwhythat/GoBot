@@ -36,7 +36,9 @@ func startReplCommand(id string) error {
 
 	params["sys_path_list"] = []string{projectPath}
 	params["log_level"] = "Error"
-	params["environment_variables"] = make(map[string]string)
+	env := make(map[string]string)
+	env["project_path"] = projectPath
+	params["environment_variables"] = env
 	marshalParam, err := json.Marshal(params)
 	if err != nil {
 		return err

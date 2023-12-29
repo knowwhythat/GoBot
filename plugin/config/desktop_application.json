@@ -11,12 +11,12 @@
       "description": "桌面软件自动化",
       "children": [
         {
-          "key": "desktop_application.open_application",
+          "key": "desktop_application.open_app",
           "label": "打开程序",
           "icon_path": "riCommandLine",
           "description": "打开浏览器并跳转到指定的网址",
           "namespace": "robot_desktop",
-          "method": "open_application",
+          "method": "open_app",
           "isPseudo": false,
           "parameter_define": {
             "inputs": [
@@ -59,6 +59,31 @@
                 "options": null,
                 "editor_type": "ExpressionTextInput",
                 "show_if": []
+              },
+              {
+                "key": "style",
+                "label": "窗口大小",
+                "type": "str",
+                "default_value": "0:default",
+                "required": true,
+                "options": [
+                  { "label": "默认", "value": "default" },
+                  { "label": "最大化", "value": "max" },
+                  { "label": "最小化", "value": "min" },
+                  { "label": "隐藏", "value": "hide" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "is_admin",
+                "label": "是否管理员权限",
+                "type": "bool",
+                "default_value": "1:False",
+                "required": true,
+                "options": null,
+                "editor_type": "BoolValue",
+                "show_if": []
               }
             ],
             "outputs": [],
@@ -67,15 +92,38 @@
           "component": "BasicActivity"
         },
         {
-          "key": "desktop_application.close_application",
+          "key": "desktop_application.close_app",
           "label": "关闭程序",
           "icon_path": "riCloseCircleLine",
           "description": "关闭程序",
           "namespace": "robot_desktop",
-          "method": "close_application",
+          "method": "close_app",
           "isPseudo": false,
           "parameter_define": {
             "inputs": [
+              {
+                "key": "window_type",
+                "label": "定位方式",
+                "type": "str",
+                "default_value": "0:windows_element",
+                "required": true,
+                "options": [
+                  { "label": "程序名称", "value": "process_name" },
+                  { "label": "应用标识", "value": "windows_element" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "pname",
+                "label": "程序名称",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": ["window_type=process_name"]
+              },
               {
                 "key": "windows_element",
                 "label": "应用标识",
@@ -84,9 +132,10 @@
                 "required": true,
                 "options": null,
                 "editor_type": "ExpressionTextInput",
-                "show_if": []
+                "show_if": ["window_type=windows_element"]
               }
             ],
+            "outputs": [],
             "error": true
           },
           "component": "WindowsElementActivity"
@@ -94,9 +143,266 @@
         {
           "key": "desktop_application.window",
           "label": "窗口操作",
-          "icon_path": "riPagesLine",
+          "icon_path": "riTerminalWindowLine",
           "description": "桌面应用的窗口操作",
-          "children": []
+          "children": [
+            {
+              "key": "desktop_application.window.window_activate",
+              "label": "激活窗口",
+              "icon_path": "riFocusLine",
+              "description": "激活窗口",
+              "namespace": "robot_desktop",
+              "method": "window_activate",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.set_window_visual_state",
+              "label": "设置窗口状态",
+              "icon_path": "riLayoutBottomLine",
+              "description": "设置窗口状态",
+              "namespace": "robot_desktop",
+              "method": "set_window_visual_state",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "state",
+                    "label": "窗口状态",
+                    "type": "str",
+                    "default_value": "0:normal",
+                    "required": true,
+                    "options": [
+                      { "label": "默认", "value": "normal" },
+                      { "label": "最大化", "value": "max" },
+                      { "label": "最小化", "value": "min" },
+                      { "label": "隐藏", "value": "hide" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.set_window_topmost",
+              "label": "设置窗口是否置前",
+              "icon_path": "riUninstallLine",
+              "description": "设置窗口是否置前",
+              "namespace": "robot_desktop",
+              "method": "set_window_topmost",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "topmost",
+                    "label": "是否置前",
+                    "type": "bool",
+                    "default_value": "1:True",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.move_window",
+              "label": "移动窗口位置",
+              "icon_path": "riDragDropLine",
+              "description": "移动窗口位置",
+              "namespace": "robot_desktop",
+              "method": "move_window",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "x",
+                    "label": "X坐标",
+                    "type": "number",
+                    "default_value": "1:0",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "y",
+                    "label": "Y坐标",
+                    "type": "number",
+                    "default_value": "1:0",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.resize_window",
+              "label": "调整窗口大小",
+              "icon_path": "riCrop2Line",
+              "description": "调整窗口大小",
+              "namespace": "robot_desktop",
+              "method": "resize_window",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "width",
+                    "label": "宽度",
+                    "type": "number",
+                    "default_value": "500",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "height",
+                    "label": "高度",
+                    "type": "number",
+                    "default_value": "1:500",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.close_window",
+              "label": "关闭窗口",
+              "icon_path": "riCloseLine",
+              "description": "关闭窗口",
+              "namespace": "robot_desktop",
+              "method": "close_window",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.window.get_window_text",
+              "label": "获取窗口标题",
+              "icon_path": "riText",
+              "description": "获取窗口标题",
+              "namespace": "robot_desktop",
+              "method": "get_window_text",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "应用标识",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "window_title",
+                    "label": "窗口标题",
+                    "type": "str",
+                    "default_value": "",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            }
+          ]
         },
         {
           "key": "desktop_application.element",

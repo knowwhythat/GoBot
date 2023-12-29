@@ -243,13 +243,12 @@ func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string)
 		if err != nil {
 			return "", err
 		}
+		runtime.WindowMinimise(ctx)
 		if err := conn.WriteMessage(1, request); err != nil {
 			return "", err
 		}
-		runtime.WindowMinimise(ctx)
 		for {
 			_, message, err := conn.ReadMessage()
-			runtime.WindowMaximise(ctx)
 			if err != nil {
 				return "", nil
 			}
@@ -258,6 +257,7 @@ func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string)
 				return "", nil
 			}
 			if resp["message_id"] == messageId {
+				runtime.WindowMaximise(ctx)
 				return string(message), nil
 			}
 		}

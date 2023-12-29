@@ -104,7 +104,7 @@ onMounted(async () => {
   if ("windows_element" in props.element.parameter) {
     const image = await GetElementImage(
       projectId,
-      props.element.parameter["windows_element"]
+      props.element.parameter["windows_element"].substring(2)
     );
     imagePath.value = "data:image/png;base64," + image;
   }
@@ -114,6 +114,19 @@ function updateData(data) {
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {
       props.element[key] = data[key];
+      if (key === "parameter") {
+        console.log(data[key]);
+        if (data[key]["windows_element"]) {
+          GetElementImage(
+            projectId,
+            data[key]["windows_element"].substring(2)
+          ).then((data) => {
+            imagePath.value = "data:image/png;base64," + data;
+          });
+        } else {
+          imagePath.value = null;
+        }
+      }
     }
   }
 }
@@ -189,10 +202,10 @@ async function pickElement() {
 async function editElement() {
   const paths = await GetWindowsElement(
     projectId,
-    props.element.parameter["windows_element"]
+    props.element.parameter["windows_element"].substring(2)
   );
   pathOption.value = {
-    id: props.element.parameter["windows_element"],
+    id: props.element.parameter["windows_element"].substring(2),
     paths: JSON.parse(paths),
   };
   needInit.value = false;
@@ -205,10 +218,10 @@ async function saveElement(paths) {
     pathOption.value.id,
     JSON.stringify(paths)
   );
-  props.element.parameter["windows_element"] = pathOption.value.id;
+  props.element.parameter["windows_element"] = "0:" + pathOption.value.id;
   const image = await GetElementImage(
     projectId,
-    props.element.parameter["windows_element"]
+    props.element.parameter["windows_element"].substring(2)
   );
   imagePath.value = "data:image/png;base64," + image;
   dialogShow.value = false;
@@ -222,7 +235,7 @@ async function checkElement(paths) {
     } else {
       const paths = await GetWindowsElement(
         projectId,
-        props.element.parameter["windows_element"]
+        props.element.parameter["windows_element"].substring(2)
       );
       resp = await StartCheckWindowsElement(paths);
     }
