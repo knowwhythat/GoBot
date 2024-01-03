@@ -127,7 +127,7 @@
               {
                 "key": "windows_element",
                 "label": "应用标识",
-                "type": "str",
+                "type": "windows_element",
                 "default_value": "0:",
                 "required": true,
                 "options": null,
@@ -159,7 +159,7 @@
                   {
                     "key": "windows_element",
                     "label": "应用标识",
-                    "type": "str",
+                    "type": "windows_element",
                     "default_value": "0:",
                     "required": true,
                     "options": null,
@@ -185,7 +185,7 @@
                   {
                     "key": "windows_element",
                     "label": "应用标识",
-                    "type": "str",
+                    "type": "windows_element",
                     "default_value": "0:",
                     "required": true,
                     "options": null,
@@ -421,58 +421,14 @@
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
                     "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "button",
@@ -487,58 +443,57 @@
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []
-                  }
-                ],
-                "extra": [
+                  },
                   {
-                    "key": "modifiers",
-                    "label": "修饰键",
-                    "type": "str",
-                    "default_value": "0:",
+                    "key": "click_type",
+                    "label": "按键",
                     "required": true,
+                    "type": "str",
+                    "default_value": "0:single",
                     "options": [
-                      { "label": "Alt", "value": "Alt" },
-                      { "label": "Control", "value": "Control" },
-                      { "label": "Meta", "value": "Meta" },
-                      { "label": "Shift", "value": "Shift" }
+                      { "label": "单击", "value": "single" },
+                      { "label": "双击", "value": "double" }
                     ],
-                    "editor_type": "MultiSelectDefine",
+                    "editor_type": "SelectDefine",
                     "show_if": []
                   },
                   {
                     "key": "position",
                     "label": "点击位置",
                     "type": "str",
-                    "default_value": "0:center-center",
+                    "default_value": "0:center",
                     "required": true,
                     "options": [
-                      { "label": "上左", "value": "top-left" },
-                      { "label": "上中", "value": "top-center" },
-                      { "label": "上右", "value": "top-right" },
-                      { "label": "中左", "value": "center-left" },
-                      { "label": "正中", "value": "center-center" },
-                      { "label": "中右", "value": "center-right" },
-                      { "label": "下左", "value": "bottom-left" },
-                      { "label": "下中", "value": "bottom-center" },
-                      { "label": "下右", "value": "bottom-right" }
+                      { "label": "正中心", "value": "center" },
+                      { "label": "随机位置", "value": "random" },
+                      { "label": "指定位置", "value": "normal" }
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []
                   },
-
                   {
-                    "key": "click_count",
-                    "label": "点击次数",
+                    "key": "x",
+                    "label": "X方向偏移量",
                     "type": "number",
-                    "default_value": "1:1",
+                    "default_value": "1:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["position=normal"]
                   },
                   {
-                    "key": "force",
-                    "label": "是否强制",
+                    "key": "y",
+                    "label": "Y方向偏移量",
+                    "type": "number",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["position=normal"]
+                  },
+                  {
+                    "key": "simulate",
+                    "label": "是否模拟鼠标移动",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -547,114 +502,68 @@
                     "show_if": []
                   }
                 ],
+                "extra": [],
                 "error": true
               },
               "component": "WindowsElementActivity"
             },
             {
-              "key": "desktop_application.element.element_tap",
-              "label": "敲击元素",
-              "icon_path": "path:M441.399323 865.06998h353.102066c39.001868 0 70.619616 31.617748 70.619616 70.619616v88.276514h-494.341298v-88.276514c0-39.001868 31.617748-70.619616 70.619616-70.619616z M379.960018 776.793467a34.249238 34.249238 0 0 1 16.418901 29.30722v45.903548a16.313243 16.313243 0 0 0 0 1.766288c-3.177723 2.472006 429.020546 1.94172 425.665396 0v-47.845268a158.981852 158.981852 0 0 1 4.413726-37.076096l14.124322-58.086149a367.381886 367.381886 0 0 0 8.474593-123.586322l-16.243468-106.989994c-6.502969-48.879922-47.970862-85.531391-97.279398-85.97994h-11.652316a15.703216 15.703216 0 0 0-5.827155 1.236003 80.67709 80.67709 0 0 0-66.20589-35.309808h-10.063455a47.6499 47.6499 0 0 0-21.185486 4.944011 81.564221 81.564221 0 0 0-68.502463-38.84039h-8.297167a47.127589 47.127589 0 0 0-16.418901 3.177723V157.274992c0.590092-36.791018-28.711148-67.118937-65.500172-67.796745h-2.824865c-35.172253 0.612021-63.831568 28.420089-65.500172 63.558452L360.893678 551.689454a143.184939 143.184939 0 0 1-52.964711-35.309808l-14.83004-15.360324c-30.607017-31.982568-81.34493-33.096964-113.327499-2.489948a81.456569 81.456569 0 0 0-2.489947 2.489948l-9.180311 9.357737a35.305821 35.305821 0 0 0-3.177723 44.13726l30.896082 43.078683a267.973373 267.973373 0 0 1 16.066042 25.07092l3.35515 6.002588c36.188965 66.38531 98.68884 108.580849 164.719297 148.126957z M476.709131 953.346494h-35.309808a17.654904 17.654904 0 0 0 0 35.309808h35.309808a17.654904 17.654904 0 0 0 0-35.309808z M345.53136 193.115085a17.654904 17.654904 0 0 0 12.005175-21.893197c-16.466746-56.138448 15.695242-114.996102 71.83369-131.462849s114.996102 15.695242 131.462849 71.83369a105.945372 105.945372 0 0 1-0.263149 60.512303 17.654904 17.654904 0 1 0 33.720946 10.240881c22.67467-74.636625-19.447108-153.523504-94.085726-176.200168s-153.523504 19.447108-176.200168 94.085726a141.231258 141.231258 0 0 0-0.368808 80.878439 17.662878 17.662878 0 0 0 21.895191 12.005175z M847.468095 866.481416V816.166136a159.801202 159.801202 0 0 1 4.766585-39.370676l15.182898-60.556161a370.729061 370.729061 0 0 0 9.180311-127.822621l-17.654904-111.40372c-8.476587-51.200418-52.797253-88.721076-104.695415-88.629372h-12.710893a17.65291 17.65291 0 0 0-6.180013 1.236003 88.27452 88.27452 0 0 0-70.619616-36.545811h-11.476884a52.962718 52.962718 0 0 0-22.774348 5.119444 88.278507 88.278507 0 0 0-73.799332-40.431245h-9.357737a52.970693 52.970693 0 0 0-17.654904 3.177723V141.20895c0-39.001868-31.617748-70.619616-70.619616-70.619616h-3.35515c-37.277445-0.079742-68.197449 28.830761-70.619615 66.030457l-25.42378 400.419043a154.841243 154.841243 0 0 1-57.555864-36.54581l-15.89061-15.89061c-34.450587-34.342935-90.194311-34.342935-124.644898 0l-10.063454 9.710596c-12.306202 12.369995-13.731592 31.874916-3.35515 45.903548l33.368088 44.667545a277.506543 277.506543 0 0 1 16.77176 25.776638l3.530582 6.180014a472.452088 472.452088 0 0 0 168.959584 169.842728c10.914702 6.301621 17.642943 17.941976 17.654904 30.543223v47.845268c-0.037878 0.645911-0.037878 1.295809 0 1.94172-23.482059 17.654904-35.309808 45.903548-35.309808 86.3328v52.964712a17.654904 17.654904 0 0 0 35.309808 0V953.346494c0-50.847559 19.774051-70.619616 70.619616-70.619616h317.792258c52.964712 0 70.619616 17.654904 70.619616 70.619616H547.33074a17.654904 17.654904 0 0 0 0 35.309808h300.137355v17.654904a17.654904 17.654904 0 0 0 35.309808 0V953.346494c0-41.314389-12.005175-70.621609-35.309808-86.865078z m-388.413868-19.06634a153.902279 153.902279 0 0 0-35.309808 4.060867v-34.073805a70.625597 70.625597 0 0 0-35.309808-61.616731 436.079716 436.079716 0 0 1-156.071265-155.54098l-2.824864-6.355446a308.795355 308.795355 0 0 0-19.421192-28.954362l-33.545514-45.373262 9.886029-9.886029c20.679124-20.653207 54.178786-20.653207 74.857909 0l15.89061 15.89061a189.0845 189.0845 0 0 0 80.154779 48.022694l-2.472006 37.251529a17.654904 17.654904 0 0 0 15.89061 18.890906h1.058577a17.654904 17.654904 0 0 0 17.654904-16.596327l30.36779-474.216383c1.21208-18.599848 16.672082-33.0551 35.309808-33.015228h3.883441c19.500934 0 35.309808 15.808874 35.309808 35.309808v300.137354a17.654904 17.654904 0 0 0 35.309808 0V370.730676a17.654904 17.654904 0 0 1 17.654904-17.654904h9.357737c26.586021-0.261155 49.244742 19.225824 52.964712 45.550688l8.297167 62.852734a17.65291 17.65291 0 0 0 17.654904 15.182899h2.472005a17.654904 17.654904 0 0 0 15.182899-20.12691l-9.004879-63.028166v-1.941721a17.650917 17.650917 0 0 1 9.004879-3.177723h10.769172c26.181329-0.350865 48.690535 18.482228 52.964712 44.314686l6.889719 46.956144a17.656898 17.656898 0 0 0 17.654903 14.654607h3.002291a17.656898 17.656898 0 0 0 14.654607-20.655201l-7.768875-46.962125v-3.177723h4.060867c35.098491-0.424627 65.183197 24.997159 70.619616 59.675011l17.654904 110.520576a334.243057 334.243057 0 0 1-8.297167 114.758869l-15.182899 60.556162a194.279699 194.279699 0 0 0-8.121734 47.13955v35.309808a159.954706 159.954706 0 0 0-35.309808-4.060867H459.054227v-0.001994z",
-              "description": "敲击元素",
+              "key": "desktop_application.element.element_hover",
+              "label": "鼠标移动到元素上",
+              "icon_path": "riDragDropLine",
+              "description": "点击元素",
               "namespace": "robot_desktop",
-              "method": "element_tap",
+              "method": "element_hover",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
                     "default_value": "0:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  }
-                ],
-                "extra": [
-                  {
-                    "key": "modifiers",
-                    "label": "修饰键",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": [
-                      { "label": "Alt", "value": "Alt" },
-                      { "label": "Control", "value": "Control" },
-                      { "label": "Meta", "value": "Meta" },
-                      { "label": "Shift", "value": "Shift" }
-                    ],
-                    "editor_type": "MultiSelectDefine",
                     "show_if": []
                   },
                   {
                     "key": "position",
-                    "label": "敲击位置",
+                    "label": "点击位置",
                     "type": "str",
-                    "default_value": "0:center-center",
+                    "default_value": "0:center",
                     "required": true,
                     "options": [
-                      { "label": "上左", "value": "top-left" },
-                      { "label": "上中", "value": "top-center" },
-                      { "label": "上右", "value": "top-right" },
-                      { "label": "中左", "value": "center-left" },
-                      { "label": "正中", "value": "center-center" },
-                      { "label": "中右", "value": "center-right" },
-                      { "label": "下左", "value": "bottom-left" },
-                      { "label": "下中", "value": "bottom-center" },
-                      { "label": "下右", "value": "bottom-right" }
+                      { "label": "正中心", "value": "center" },
+                      { "label": "随机位置", "value": "random" },
+                      { "label": "指定位置", "value": "normal" }
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []
                   },
                   {
-                    "key": "force",
-                    "label": "是否强制",
+                    "key": "x",
+                    "label": "X方向偏移量",
+                    "type": "number",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["position=normal"]
+                  },
+                  {
+                    "key": "y",
+                    "label": "Y方向偏移量",
+                    "type": "number",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["position=normal"]
+                  },
+                  {
+                    "key": "simulate",
+                    "label": "是否模拟鼠标移动",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -663,73 +572,30 @@
                     "show_if": []
                   }
                 ],
+                "extra": [],
                 "error": true
               },
               "component": "WindowsElementActivity"
             },
             {
-              "key": "desktop_application.element.element_fill",
+              "key": "desktop_application.element.element_input",
               "label": "元素中输入",
               "icon_path": "riText",
               "description": "元素中输入",
               "namespace": "robot_desktop",
-              "method": "element_fill",
+              "method": "element_input",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
                     "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "content",
@@ -742,8 +608,8 @@
                     "show_if": []
                   },
                   {
-                    "key": "clear",
-                    "label": "是否清空",
+                    "key": "append",
+                    "label": "是否追加",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -754,8 +620,8 @@
                 ],
                 "extra": [
                   {
-                    "key": "simulate",
-                    "label": "是否模拟输入",
+                    "key": "click",
+                    "label": "是否点击",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -764,13 +630,17 @@
                     "show_if": []
                   },
                   {
-                    "key": "delay",
-                    "label": "输入延时",
-                    "type": "number",
-                    "default_value": "1:3000",
+                    "key": "input_method",
+                    "label": "输入方式",
+                    "type": "str",
+                    "default_value": "0:direct",
                     "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "options": [
+                      { "label": "后台模式", "value": "direct" },
+                      { "label": "模拟输入", "value": "simulate" },
+                      { "label": "剪切板输入", "value": "paste" }
+                    ],
+                    "editor_type": "SelectDefine",
                     "show_if": []
                   }
                 ],
@@ -789,58 +659,14 @@
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
                     "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "content",
@@ -853,8 +679,8 @@
                     "show_if": []
                   },
                   {
-                    "key": "clear",
-                    "label": "是否清空",
+                    "key": "append",
+                    "label": "是否追加",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -865,8 +691,8 @@
                 ],
                 "extra": [
                   {
-                    "key": "simulate",
-                    "label": "是否模拟输入",
+                    "key": "click",
+                    "label": "是否点击",
                     "type": "bool",
                     "default_value": "1:False",
                     "required": true,
@@ -875,13 +701,17 @@
                     "show_if": []
                   },
                   {
-                    "key": "delay",
-                    "label": "输入延时",
-                    "type": "number",
-                    "default_value": "1:3000",
+                    "key": "input_method",
+                    "label": "输入方式",
+                    "type": "str",
+                    "default_value": "0:direct",
                     "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "options": [
+                      { "label": "后台模式", "value": "direct" },
+                      { "label": "模拟输入", "value": "simulate" },
+                      { "label": "剪切板输入", "value": "paste" }
+                    ],
+                    "editor_type": "SelectDefine",
                     "show_if": []
                   }
                 ],
@@ -890,81 +720,23 @@
               "component": "WindowsElementActivity"
             },
             {
-              "key": "desktop_application.element.element_content",
+              "key": "desktop_application.element.get_element_text",
               "label": "获取元素文本",
               "icon_path": "riTranslate2",
               "description": "获取元素文本",
               "namespace": "robot_desktop",
-              "method": "element_content",
+              "method": "get_element_text",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
                     "default_value": "0:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "content_type",
-                    "label": "获取类型",
-                    "type": "str",
-                    "default_value": "0:text",
-                    "required": true,
-                    "options": [
-                      { "label": "文本", "value": "text" },
-                      { "label": "HTML", "value": "html" },
-                      { "label": "Value", "value": "value" }
-                    ],
-                    "editor_type": "SelectDefine",
                     "show_if": []
                   }
                 ],
@@ -993,158 +765,72 @@
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
                     "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
                   },
                   {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
+                    "key": "save_to_clip",
+                    "label": "保存到剪切板",
+                    "type": "bool",
+                    "default_value": "1:True",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "editor_type": "BoolValue",
+                    "show_if": []
                   },
                   {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
+                    "key": "save_dir",
+                    "label": "保存到文件夹",
                     "type": "str",
                     "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "save_path",
-                    "label": "保存路径",
-                    "type": "str",
-                    "default_value": "1:",
                     "required": true,
                     "options": {
-                      "type": "file",
-                      "pattern": "*.png",
-                      "display": "图片文件"
+                      "type": "directory"
                     },
                     "editor_type": "FileDialogInput",
-                    "show_if": []
-                  }
-                ],
-                "outputs": [],
-                "error": true
-              },
-              "component": "WindowsElementActivity"
-            },
-            {
-              "key": "desktop_application.element.get_element_attribute",
-              "label": "获取元素属性",
-              "icon_path": "riChatSettingsLine",
-              "description": "获取元素属性",
-              "namespace": "robot_desktop",
-              "method": "get_element_attribute",
-              "isPseudo": false,
-              "parameter_define": {
-                "inputs": [
-                  {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
+                    "show_if": ["save_to_clip=False"]
                   },
                   {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
+                    "key": "random_name",
+                    "label": "是否随机生成文件名",
+                    "type": "bool",
+                    "default_value": "1:True",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "editor_type": "BoolValue",
+                    "show_if": ["save_to_clip=False"]
                   },
                   {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
+                    "key": "file_name",
+                    "label": "文件名",
+                    "type": "bool",
                     "default_value": "0:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["save_to_clip=False", "random_name=False"]
                   },
                   {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
+                    "key": "override",
+                    "label": "存在是否覆盖",
+                    "type": "bool",
+                    "default_value": "1:True",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "attribute_name",
-                    "label": "属性名称",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "editor_type": "BoolValue",
+                    "show_if": ["save_to_clip=False", "random_name=False"]
                   }
                 ],
                 "outputs": [
                   {
-                    "key": "attribute_value",
-                    "label": "属性值",
+                    "key": "save_path",
+                    "label": "图片保存路径",
                     "type": "str",
                     "default_value": "",
                     "required": true,
@@ -1156,247 +842,32 @@
               "component": "WindowsElementActivity"
             },
             {
-              "key": "desktop_application.element.set_element_attribute",
-              "label": "设置元素属性",
-              "icon_path": "riChatNewLine",
-              "description": "设置元素属性",
-              "namespace": "robot_desktop",
-              "method": "set_element_attribute",
-              "isPseudo": false,
-              "parameter_define": {
-                "inputs": [
-                  {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "attribute_name",
-                    "label": "属性名称",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  },
-                  {
-                    "key": "attribute_value",
-                    "label": "属性值",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  }
-                ],
-                "outputs": [],
-                "error": true
-              },
-              "component": "WindowsElementActivity"
-            },
-            {
-              "key": "desktop_application.element.remove_element_attribute",
-              "label": "删除元素属性",
-              "icon_path": "riChatDeleteLine",
-              "description": "删除元素属性",
-              "namespace": "robot_desktop",
-              "method": "remove_element_attribute",
-              "isPseudo": false,
-              "parameter_define": {
-                "inputs": [
-                  {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "attribute_name",
-                    "label": "属性名称",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  }
-                ],
-                "outputs": [],
-                "error": true
-              },
-              "component": "WindowsElementActivity"
-            },
-            {
-              "key": "desktop_application.element.select_option",
+              "key": "desktop_application.element.element_set_combox",
               "label": "下拉框选择",
               "icon_path": "path:M992.65 373.55H31.35V101.88c0-34.57 28.12-62.69 62.69-62.69h835.92c34.57 0 62.69 28.12 62.69 62.69v271.67zM73.14 331.76h877.71V101.88c0-11.52-9.37-20.9-20.9-20.9H94.04c-11.52 0-20.9 9.38-20.9 20.9v229.88zM929.96 984.82H94.04c-34.57 0-62.69-28.12-62.69-62.69V441.47h961.31v480.65c-0.01 34.57-28.13 62.7-62.7 62.7zM73.14 483.27v438.86c0 11.53 9.38 20.9 20.9 20.9h835.92c11.53 0 20.9-9.37 20.9-20.9V483.27H73.14z M825.47 269.06c-6.57 0-12.78-3.09-16.71-8.36l-62.69-83.59c-6.94-9.23-5.06-22.34 4.18-29.26 9.22-6.97 22.33-5.05 29.24 4.17l45.98 61.31 45.98-61.31c6.92-9.2 20.04-11.12 29.24-4.17 9.24 6.92 11.12 20.02 4.18 29.26l-62.69 83.59a20.862 20.862 0 0 1-16.71 8.36zM522.45 227.27H188.08c-11.54 0-20.9-9.36-20.9-20.9s9.36-20.9 20.9-20.9h334.37c11.55 0 20.9 9.36 20.9 20.9s-9.35 20.9-20.9 20.9zM658.29 629.55H156.73c-11.54 0-20.9-9.35-20.9-20.9s9.36-20.9 20.9-20.9h501.55c11.55 0 20.9 9.35 20.9 20.9s-9.34 20.9-20.89 20.9zM867.27 838.53H156.73c-11.54 0-20.9-9.35-20.9-20.9s9.36-20.9 20.9-20.9h710.53c11.55 0 20.9 9.35 20.9 20.9s-9.34 20.9-20.89 20.9z",
               "description": "下拉框选择",
               "namespace": "robot_desktop",
-              "method": "select_option",
+              "method": "element_set_combox",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
                     "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
                   },
                   {
                     "key": "select_type",
                     "label": "选择方式",
                     "type": "str",
-                    "default_value": "0:by_value",
+                    "default_value": "0:by_label",
                     "required": true,
                     "options": [
-                      { "label": "按值选择", "value": "by_value" },
                       { "label": "按标签选择", "value": "by_label" },
                       { "label": "按索引选择", "value": "by_index" }
                     ],
@@ -1404,13 +875,63 @@
                     "show_if": []
                   },
                   {
-                    "key": "select_value",
-                    "label": "选择内容",
+                    "key": "selected_value",
+                    "label": "选择标签",
                     "type": "str",
                     "default_value": "0:",
                     "required": true,
                     "options": [],
                     "editor_type": "ExpressionTextInput",
+                    "show_if": ["select_type=by_label"]
+                  },
+                  {
+                    "key": "selected_index",
+                    "label": "选择第几项",
+                    "type": "str",
+                    "default_value": "1:",
+                    "required": true,
+                    "options": [],
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["select_type=by_index"]
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "WindowsElementActivity"
+            },
+            {
+              "key": "desktop_application.element.element_set_checkbox",
+              "label": "设置复选框",
+              "icon_path": "riCheckboxLine",
+              "description": "设置复选框",
+              "namespace": "robot_desktop",
+              "method": "element_set_checkbox",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "operate",
+                    "label": "操作",
+                    "type": "str",
+                    "default_value": "0:checked",
+                    "required": true,
+                    "options": [
+                      { "label": "选中", "value": "checked" },
+                      { "label": "取消选中", "value": "unchecked" },
+                      { "label": "反选", "value": "toggle" }
+                    ],
+                    "editor_type": "SelectDefine",
                     "show_if": []
                   }
                 ],
@@ -1420,178 +941,41 @@
               "component": "WindowsElementActivity"
             },
             {
-              "key": "desktop_application.element.upload_file",
-              "label": "上传文件",
-              "icon_path": "path:M554.688 500.352v256H469.312v-256h-128L512 314.24l170.688 186.24h-128zM1024 640.192C1024 782.912 919.872 896 787.648 896h-512C123.904 896 0 761.6 0 597.504 0 451.968 94.656 331.52 226.432 302.976 284.16 195.456 391.808 128 512 128c152.32 0 282.112 108.416 323.392 261.12C941.888 413.44 1024 519.04 1024 640.192z m-259.2-205.312c-24.448-129.024-128.896-222.72-252.8-222.72-97.28 0-183.04 57.344-224.64 147.456l-9.28 20.224-20.928 2.944c-103.36 14.4-178.368 104.32-178.368 214.72 0 117.952 88.832 214.4 196.928 214.4h512c88.32 0 157.504-75.136 157.504-171.712 0-88.064-65.92-164.928-144.96-171.776l-29.504-2.56-5.888-30.976z",
-              "description": "上传文件",
+              "key": "desktop_application.element.wait_element",
+              "label": "等待元素",
+              "icon_path": "riTimerLine",
+              "description": "等待元素",
               "namespace": "robot_desktop",
-              "method": "upload_file",
+              "method": "wait_element",
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
                   {
-                    "key": "element_type",
-                    "label": "定位方式",
+                    "key": "windows_element",
+                    "label": "元素标识",
+                    "type": "windows_element",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "display",
+                    "label": "等待方式",
                     "type": "str",
-                    "default_value": "0:locator",
+                    "default_value": "0:display",
                     "required": true,
                     "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
+                      { "label": "等待元素出现", "value": "display" },
+                      { "label": "等待元素消失", "value": "hidden" }
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []
                   },
                   {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "file",
-                    "label": "文件地址",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": {
-                      "type": "file",
-                      "pattern": "*",
-                      "display": "所有文件"
-                    },
-                    "editor_type": "FileDialogInput",
-                    "show_if": []
-                  },
-                  {
-                    "key": "timeout",
-                    "label": "超时时间",
-                    "type": "number",
-                    "default_value": "1:30",
-                    "required": true,
-                    "options": [],
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  }
-                ],
-                "outputs": [],
-                "error": true
-              },
-              "component": "WindowsElementActivity"
-            },
-            {
-              "key": "desktop_application.element.down_file",
-              "label": "下载文件",
-              "icon_path": "path:M469.312 570.24v-256h85.376v256h128L512 756.288 341.312 570.24h128zM1024 640.128C1024 782.912 919.872 896 787.648 896h-512C123.904 896 0 761.6 0 597.504 0 451.968 94.656 331.52 226.432 302.976 284.16 195.456 391.808 128 512 128c152.32 0 282.112 108.416 323.392 261.12C941.888 413.44 1024 519.04 1024 640.192z m-259.2-205.312c-24.448-129.024-128.896-222.72-252.8-222.72-97.28 0-183.04 57.344-224.64 147.456l-9.28 20.224-20.928 2.944c-103.36 14.4-178.368 104.32-178.368 214.72 0 117.952 88.832 214.4 196.928 214.4h512c88.32 0 157.504-75.136 157.504-171.712 0-88.064-65.92-164.928-144.96-171.776l-29.504-2.56-5.888-30.976z",
-              "description": "下载文件",
-              "namespace": "robot_desktop",
-              "method": "down_file",
-              "isPseudo": false,
-              "parameter_define": {
-                "inputs": [
-                  {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  },
-                  {
-                    "key": "folder",
-                    "label": "保存目录",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": {
-                      "type": "directory"
-                    },
-                    "editor_type": "FileDialogInput",
-                    "show_if": []
-                  },
-                  {
-                    "key": "timeout",
-                    "label": "超时时间",
+                    "key": "wait_time",
+                    "label": "等待时间(秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -1602,87 +986,8 @@
                 ],
                 "outputs": [
                   {
-                    "key": "download_path",
-                    "label": "下载文件路径",
-                    "type": "str",
-                    "default_value": "download_path",
-                    "required": true,
-                    "editor_type": "SelectOrInput"
-                  }
-                ],
-                "error": true
-              },
-              "component": "WindowsElementActivity"
-            },
-            {
-              "key": "desktop_application.element.verification_code_identification",
-              "label": "文本验证码识别",
-              "icon_path": "riCharacterRecognitionLine",
-              "description": "文本验证码识别",
-              "namespace": "robot_desktop",
-              "method": "verification_code_identification",
-              "isPseudo": false,
-              "parameter_define": {
-                "inputs": [
-                  {
-                    "key": "element_type",
-                    "label": "定位方式",
-                    "type": "str",
-                    "default_value": "0:locator",
-                    "required": true,
-                    "options": [
-                      { "label": "选择器", "value": "locator" },
-                      { "label": "元素", "value": "element" }
-                    ],
-                    "editor_type": "SelectDefine",
-                    "show_if": []
-                  },
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "frame_selector",
-                    "label": "frame选择器",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element_selector",
-                    "label": "元素选择器",
-                    "placeholder": "支持xpath和css",
-                    "type": "str",
-                    "default_value": "0:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
-                  },
-                  {
-                    "key": "element",
-                    "label": "web元素",
-                    "type": "web_ellement",
-                    "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=element"]
-                  }
-                ],
-                "outputs": [
-                  {
-                    "key": "image_code",
-                    "label": "验证码结果",
+                    "key": "element_exist",
+                    "label": "元素是否存在",
                     "type": "str",
                     "default_value": "",
                     "required": true,
@@ -1699,7 +1004,7 @@
           "key": "desktop_application.mouse_keyboard",
           "label": "鼠标键盘操作",
           "icon_path": "path:M731.943 884.809H105.151c-39.945 0-72.323-32.378-72.323-72.323V523.197c0-39.941 32.378-72.323 72.323-72.323h626.792c39.945 0 72.323 32.382 72.323 72.323v289.289c0 39.945-32.378 72.323-72.323 72.323zM105.151 499.093c-13.317 0-24.109 10.792-24.109 24.105v289.289c0 13.317 10.793 24.109 24.109 24.109h626.792c13.317 0 24.109-10.793 24.109-24.109v-289.29c0-13.313-10.793-24.105-24.109-24.105H105.151z m0 0 M322.117 740.167h192.861v48.214H322.117v-48.214z m241.074 0h48.214v48.214h-48.214v-48.214z m96.433 0h48.214v48.214h-48.214v-48.214z m-433.935 0h48.214v48.214h-48.214v-48.214z m-96.433 0h48.219v48.214h-48.219v-48.214z m192.861-192.86h192.861v48.214H322.117v-48.214z m241.074 0h48.214v48.214h-48.214v-48.214z m96.433 0h48.214v48.214h-48.214v-48.214z m-433.935 0h48.214v48.214h-48.214v-48.214z m-96.433 0h48.219v48.214h-48.219v-48.214z m506.259 96.428h72.323v48.214h-72.323v-48.214z m-96.428 0h48.214v48.214h-48.214v-48.214z m-96.433 0h48.214v48.214h-48.214v-48.214z m-96.428 0h48.214v48.214h-48.214v-48.214z m-96.433 0h48.219v48.214h-48.219v-48.214z m-120.537 0h72.323v48.214h-72.323v-48.214zM394.44 330.336h48.214v144.647H394.44V330.336z m144.647-216.965h48.214v120.537h-48.214V113.371z m-96.433 216.965H394.44c0-39.941 32.378-72.319 72.323-72.319v48.214c-13.316 0.001-24.109 10.794-24.109 24.105z m72.323-24.104v-48.214c13.313 0 24.109-10.797 24.109-24.109H587.3c0.001 39.941-32.381 72.323-72.323 72.323z m-48.214-48.214h48.214v48.214h-48.214v-48.214z m0 0M896.771 494.116a46.517 46.517 0 0 0-12.543-31.857 40.768 40.768 0 0 0-33.385-10.435 17.283 17.283 0 0 1-13.709-2.694 14.284 14.284 0 0 1-1.079-10.648c1.699-6.114-1.88-12.447-7.994-14.146-6.114-1.699-12.447 1.882-14.146 7.994a36.893 36.893 0 0 0 5.457 31.416c7.024 8.563 18.239 12.277 33.309 11.055a19.257 19.257 0 0 1 15.438 3.905 23.144 23.144 0 0 1 5.6 14.513c-0.793 0.034-1.684 0.07-2.819 0.104v0.064c-57.433 4.21-103.377 53.984-103.377 114.827v95.392c0 63.437 51.425 114.863 114.863 114.863 63.436 0 114.861-51.426 114.861-114.863v-95.392c-0.262-57.606-42.861-106.246-99.93-114.098m-16.04-1.149c0.465 0 0.925 0.051 1.39 0.058-0.655 0-1.298-0.036-1.923-0.042 0.183-0.028 0.369-0.043 0.555-0.045l-0.022 0.029z m93.026 210.64c0 50.749-41.139 91.891-91.889 91.891-50.749 0-91.891-41.141-91.891-91.891V640.06h183.78v63.547z m-109.118-92.366v-26.896c0.478-7.578 6.764-13.477 14.357-13.477 7.593 0 13.878 5.9 14.358 13.477v26.896h-28.715z m109.118 5.743h-57.43v-32.661c-0.002-20.616-16.715-37.327-37.331-37.327-20.614 0-37.327 16.711-37.329 37.327v32.661h-51.69v-8.792a91.89 91.89 0 1 1 183.779 0v8.792z m0 0",
-          "description": "页面元素相关的操作",
+          "description": "鼠标键盘相关的操作",
           "children": [
             {
               "key": "desktop_application.mouse.move_mouse",
@@ -1711,16 +1016,6 @@
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  },
                   {
                     "key": "x",
                     "label": "横坐标",
@@ -1736,16 +1031,6 @@
                     "label": "纵坐标",
                     "type": "number",
                     "default_value": "1:",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  },
-                  {
-                    "key": "steps",
-                    "label": "移动步数",
-                    "type": "number",
-                    "default_value": "1:3",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
@@ -1767,16 +1052,6 @@
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  },
                   {
                     "key": "mouse_type",
                     "label": "(按下)抬起",
@@ -1803,16 +1078,6 @@
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []
-                  },
-                  {
-                    "key": "click_count",
-                    "label": "点击次数",
-                    "type": "number",
-                    "default_value": "1:1",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
                   }
                 ],
                 "outputs": [],
@@ -1830,16 +1095,6 @@
               "isPseudo": false,
               "parameter_define": {
                 "inputs": [
-                  {
-                    "key": "desktop_application",
-                    "label": "浏览器对象",
-                    "type": "desktop_application",
-                    "default_value": "1:desktop_application_instance",
-                    "required": true,
-                    "options": null,
-                    "editor_type": "ExpressionTextInput",
-                    "show_if": []
-                  },
                   {
                     "key": "click_type",
                     "label": "点击方式",

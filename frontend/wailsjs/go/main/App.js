@@ -46,6 +46,10 @@ export function GetWindowsElementList(arg1) {
   return window['go']['main']['App']['GetWindowsElementList'](arg1);
 }
 
+export function HighlightCurrentElement(arg1) {
+  return window['go']['main']['App']['HighlightCurrentElement'](arg1);
+}
+
 export function ListProject(arg1, arg2) {
   return window['go']['main']['App']['ListProject'](arg1, arg2);
 }

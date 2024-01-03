@@ -50,7 +50,10 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import { ref, watch } from "vue";
-import { GetWindowsElementList } from "@back/go/main/App";
+import {
+  GetWindowsElementList,
+  HighlightCurrentElement,
+} from "@back/go/main/App";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
@@ -86,6 +89,7 @@ const onNodeSelect = (node) => {
   }
   seletedNode.id = node.key;
   seletedNode.value.attrs = attrs;
+  HighlightCurrentElement(node.key);
 };
 const onNodeExpand = async (node) => {
   if (!node.leaf && node.children.length == 0) {

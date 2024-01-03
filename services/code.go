@@ -279,11 +279,11 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			if exception, ok := activity.Parameter["exception"]; ok {
 				code += "exception=\"" + exception + "\","
 			}
-			if tryCount, ok := activity.Parameter["tryCount"]; ok {
-				code += "tryCount=" + tryCount + ","
+			if tryCount, ok := activity.Parameter["retry_count"]; ok {
+				code += "retry_count=" + tryCount + ","
 			}
-			if tryInterval, ok := activity.Parameter["tryInterval"]; ok {
-				code += "tryInterval=" + tryInterval + ","
+			if tryInterval, ok := activity.Parameter["retry_interval"]; ok {
+				code += "retry_interval=" + tryInterval + ","
 			}
 		}
 		code += "code_map_id=\"" + activity.ID + "\"" + ")\n"

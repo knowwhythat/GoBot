@@ -138,12 +138,7 @@
           <div class="flex my-4">
             <span class="mr-2 w-32 truncate my-auto"> 异常处理策略 </span>
             <Dropdown
-              :model-value="
-                nodeData.parameter.hasOwnProperty('exception')
-                  ? nodeData.parameter['exception']
-                  : 'error'
-              "
-              update:modelValue="updateInnerValue('exception', $event)"
+              v-model="nodeData.parameter['exception']"
               :options="toDoTypes"
               optionLabel="name"
               option-value="value"
@@ -295,6 +290,7 @@ function setData() {
 }
 
 function updateInnerValue(key, value) {
+  console.log(key, value);
   nodeData.parameter[key] = value;
 }
 

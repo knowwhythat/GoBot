@@ -176,6 +176,10 @@ func (a *App) GetWindowsElementList(parentId string) (string, error) {
 	return services.GetWindowsElementList(parentId)
 }
 
+func (a *App) HighlightCurrentElement(controlId string) error {
+	return services.HighlightCurrentElement(controlId)
+}
+
 func (a *App) GetSelectedWindowsElement(projectId, controlId string) (string, error) {
 	return services.GetSelectedWindowsElement(a.ctx, projectId, controlId)
 }

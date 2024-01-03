@@ -25,6 +25,8 @@ export function GetWindowsElement(arg1:string,arg2:string):Promise<string>;
 
 export function GetWindowsElementList(arg1:string):Promise<string>;
 
+export function HighlightCurrentElement(arg1:string):Promise<void>;
+
 export function ListProject(arg1:string,arg2:number):Promise<{[key: string]: any}>;
 
 export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
