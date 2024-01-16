@@ -286,6 +286,7 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				code += "retry_interval=" + tryInterval + ","
 			}
 		}
+		code += "local_data=locals(),"
 		code += "code_map_id=\"" + activity.ID + "\"" + ")\n"
 	}
 	if len(activity.Children) > 0 {

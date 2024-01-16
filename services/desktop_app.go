@@ -224,7 +224,7 @@ func HighlightCurrentElement(controlId string) error {
 		sendMessage := make(map[string]interface{})
 		sendMessage["message_id"] = messageId
 		data := make(map[string]interface{})
-		sendMessage["method"] = "high_current_control"
+		sendMessage["method"] = "highlight_current_control"
 		data["control_id"] = controlId
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)

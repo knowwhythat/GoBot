@@ -213,6 +213,7 @@ async function editElement() {
 }
 const { dataChanged, updateDataChanged } = inject("dataChanged");
 async function saveElement(paths) {
+  console.log(paths);
   await SaveWindowsElement(
     projectId,
     pathOption.value.id,

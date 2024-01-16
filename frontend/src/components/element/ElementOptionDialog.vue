@@ -28,11 +28,18 @@
             <div class="text-center">元素节点</div>
           </template>
           <template #option="slotProps">
-            <p class="truncate">
-              {{ slotProps.option.localizeControlType }}
-              -
-              {{ slotProps.option.name }}
-            </p>
+            <div class="flex align-items-center">
+              <Checkbox
+                class="mr-2"
+                v-model="slotProps.option.enable"
+                :binary="true"
+              />
+              <div class="truncate">
+                {{ slotProps.option.localizeControlType }}
+                -
+                {{ slotProps.option.name }}
+              </div>
+            </div>
           </template>
         </Listbox>
       </SplitterPanel>
@@ -52,7 +59,7 @@
             />
           </Column>
           <Column field="value" header="属性值" #body="slotProps">
-            <InputText class="w-full" v-model="slotProps.data.value" />
+            <ElementValue class="w-full" v-model="slotProps.data.value" />
           </Column>
         </DataTable>
       </SplitterPanel>
@@ -76,6 +83,7 @@ import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
+import ElementValue from "@/components/element/ElementValue.vue";
 import { ref, watch } from "vue";
 
 const emit = defineEmits(["hide", "update", "check"]);
@@ -139,6 +147,7 @@ function show() {
         }
       }
       path.attrs = attrs;
+      path.enable = true;
       return path;
     });
   } else {
