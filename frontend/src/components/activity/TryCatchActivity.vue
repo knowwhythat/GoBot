@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :id="props.element.id"
     :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"

@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :id="props.element.id"
     :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
@@ -16,7 +17,7 @@
       :model-value="props.element.children"
       item-key="id"
       group="sequence"
-      class="flex flex-col items-center p-x-4 mb-8 overflow-auto nowheel scroll text-sm p-2"
+      class="flex flex-col items-center px-2 overflow-auto text-sm"
       handle=".handle"
       @mousedown.stop
       @dragover.prevent
@@ -45,7 +46,7 @@
       </template>
       <template #footer>
         <div
-          class="w-full p-4 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
+          class="w-full p-2 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
         >
           拖放组件到此处
         </div>

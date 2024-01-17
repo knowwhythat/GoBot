@@ -2,12 +2,16 @@
   <div class="flex flex-col">
     <Toolbar class="p-2">
       <template #start>
-        <Button @click="router.back()" v-tooltip="'返回'" class="mr-2">
+        <Button
+          @click="router.back()"
+          v-tooltip="'返回'"
+          class="mr-2 px-3 py-2"
+        >
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button v-tooltip="'运行'" class="mr-2">
+        <Button v-tooltip="'运行'" class="mr-2 px-3 py-2">
           <template #icon>
             <v-remixicon name="riPlayLine" />
           </template>
@@ -19,7 +23,7 @@
           <p class="pt-3 pr-2 text-xl font-serif font-semibold">
             {{ projectName }}
           </p>
-          <Button v-tooltip="'编辑'">
+          <Button v-tooltip="'编辑'" class="px-3 py-2">
             <template #icon>
               <v-remixicon name="riEditBoxLine" />
             </template>
@@ -28,12 +32,12 @@
       </template>
 
       <template #end>
-        <Button v-tooltip="'发布'" class="mr-2">
+        <Button v-tooltip="'发布'" class="mr-2 px-3 py-2">
           <template #icon>
             <v-remixicon name="riSendPlaneLine" />
           </template>
         </Button>
-        <Button v-tooltip="'保存'" @click="save">
+        <Button v-tooltip="'保存'" @click="save" class="px-3 py-2">
           <template #icon>
             <span>
               <span

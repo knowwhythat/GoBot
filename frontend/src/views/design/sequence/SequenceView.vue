@@ -1,13 +1,13 @@
 <template>
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-2">
+    <Toolbar class="p-1">
       <template #start>
-        <Button @click="router.back()" lable="返回" class="mr-2">
+        <Button @click="router.back()" lable="返回" class="mr-2 px-3 py-2">
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button label="保存" class="mr-2" @click="save">
+        <Button label="保存" class="mr-2 px-3 py-2" @click="save">
           <template #icon>
             <span>
               <span
@@ -28,7 +28,7 @@
         <Button
           label="停止"
           :disabled="!(running || debuging)"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           @click="terminate"
         >
           <template #icon>
@@ -38,7 +38,7 @@
         <Button
           label="运行"
           :disabled="debuging"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           @click="run"
           :loading="running"
         >
@@ -49,7 +49,7 @@
         <Button
           label="调试"
           :disabled="running"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           @click="debug"
           :loading="debuging"
         >
@@ -59,7 +59,7 @@
         </Button>
         <Button
           label="单行调试"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           :disabled="!breakpointHit"
           @click="dealDebug('n')"
           v-if="debuging"
@@ -70,7 +70,7 @@
         </Button>
         <Button
           label="下个断点"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           :disabled="!breakpointHit"
           @click="dealDebug('c')"
           v-if="debuging"
@@ -82,7 +82,7 @@
         <Button
           label="重启Repl"
           icon="pi pi-replay"
-          class="mr-2"
+          class="mr-2 px-3 py-2"
           @click="restartRepl"
         >
         </Button>
@@ -99,6 +99,7 @@
           v-model="activeSidePanel"
           on-label=""
           off-label=""
+          class="px-3 py-2"
           on-icon="pi pi-chevron-right"
           off-icon="pi pi-chevron-left"
         >
@@ -148,7 +149,7 @@
       <SplitterPanel class="h-full" :size="75">
         <Splitter>
           <SplitterPanel :size="50">
-            <div class="flex justify-around">
+            <div class="flex justify-around p-2">
               <SequenceActivity
                 :element="mainActivity.sequence"
                 @update="update"
@@ -228,9 +229,11 @@ const props = defineProps({
 const nodes = ref(null);
 const router = useRouter();
 const dataChanged = ref(false);
+const selectedActivity = ref([]);
 provide("dataChanged", { dataChanged, updateDataChanged });
 provide("contextVariable", { contextVariable: [] });
 provide("projectId", { projectId: props.id });
+provide("selectedActivity", { selectedActivity });
 
 function updateDataChanged() {
   dataChanged.value = true;
@@ -432,7 +435,7 @@ async function restartRepl() {
 </script>
 <style scoped>
 #sequence-designer {
-  height: calc(100vh - 68px);
+  height: calc(100vh - 56px);
 }
 :deep(.p-splitter-panel) {
   overflow: auto;
@@ -444,15 +447,21 @@ async function restartRepl() {
   padding: 0.75rem;
 }
 :deep(.p-listbox-list) {
-  height: calc(100vh - 190px);
+  height: calc(100vh - 186px);
 }
 :deep(.p-tree-wrapper) {
-  height: calc(100vh - 182px);
+  height: calc(100vh - 168px);
 }
 :deep(.p-tree) {
   padding: 0.25rem;
 }
 :deep(.p-splitter) {
   margin: 0;
+}
+:deep(.p-treenode-icon) {
+  display: none;
+}
+:deep(.p-treenode-label) {
+  margin-left: -0.75rem;
 }
 </style>

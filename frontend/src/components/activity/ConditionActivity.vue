@@ -1,5 +1,6 @@
 <template>
   <ActivityBase
+    :id="props.element.id"
     :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
@@ -96,7 +97,6 @@ onMounted(() => {
 
 function update({ id, children }) {
   if (id) {
-    console.log(id);
     let target = props.element.children.filter((element) => element.id === id);
     target[0].children = children;
   } else {
@@ -141,7 +141,6 @@ function updateData(data) {
 }
 
 function deleteNode({ id }) {
-  console.log(id);
   const blockIndex = props.element.children.findIndex(
     (activity) => activity.id === id
   );
