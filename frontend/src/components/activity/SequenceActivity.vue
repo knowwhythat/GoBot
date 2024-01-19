@@ -96,6 +96,7 @@ function findComponent(name) {
   return activityMap[name];
 }
 
+const { selectedActivity } = inject("selectedActivity");
 function deleteNode({ id }) {
   const blockIndex = props.element.children.findIndex(
     (activity) => activity.id === id
@@ -106,6 +107,8 @@ function deleteNode({ id }) {
     copyActivities.splice(blockIndex, 1);
     emit("update", { id: props.element.id, children: copyActivities });
   }
+  const index = selectedActivity.value.findIndex((item) => item === id);
+  selectedActivity.value.splice(index, 1);
 }
 
 function update({ id, children }) {

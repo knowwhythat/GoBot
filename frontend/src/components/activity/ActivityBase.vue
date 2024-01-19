@@ -6,7 +6,6 @@
     class="activity-node w-full my-1 min-w-[400px]"
     :class="[{ 'ring-1 ring-blue-700': isSelected }, 'group/item']"
     style="cursor: grab"
-    @update:collapsed="panelToggle"
     @dblclick.stop="dialogShow = true"
     @click.stop="handleClick"
     :pt="{
@@ -26,7 +25,7 @@
       <div class="flex align-items-center gap-2">
         <button
           v-if="props.toggleable"
-          @click.stop="nodeData.collapsed = !nodeData.collapsed"
+          @click.stop="panelToggle(!nodeData.collapsed)"
         >
           <span
             :class="[

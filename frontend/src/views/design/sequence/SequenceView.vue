@@ -7,7 +7,16 @@
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button label="保存" class="mr-2 px-3 py-2" @click="save">
+        <Button
+          label="保存"
+          v-tooltip="{
+            value: shortcuts['editor:save'].readable,
+            showDelay: 100,
+            hideDelay: 300,
+          }"
+          class="mr-2 px-3 py-2"
+          @click="save"
+        >
           <template #icon>
             <span>
               <span
@@ -27,6 +36,11 @@
         </Button>
         <Button
           label="停止"
+          v-tooltip="{
+            value: shortcuts['editor:terminate-flow'].readable,
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           :disabled="!(running || debuging)"
           class="mr-2 px-3 py-2"
           @click="terminate"
@@ -37,6 +51,11 @@
         </Button>
         <Button
           label="运行"
+          v-tooltip="{
+            value: shortcuts['editor:execute-flow'].readable,
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           :disabled="debuging"
           class="mr-2 px-3 py-2"
           @click="run"
@@ -48,6 +67,11 @@
         </Button>
         <Button
           label="调试"
+          v-tooltip="{
+            value: shortcuts['editor:debug-flow'].readable,
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           :disabled="running"
           class="mr-2 px-3 py-2"
           @click="debug"
@@ -190,7 +214,7 @@ import SplitterPanel from "primevue/splitterpanel";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import Tree from "primevue/tree";
-import { ref, onMounted, reactive, provide } from "vue";
+import { ref, onMounted, reactive, provide, shallowReactive } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";
 import {
@@ -209,7 +233,9 @@ import {
   WindowMinimise,
   WindowMaximise,
 } from "@back/runtime/runtime";
+import { useShortcut, getShortcut } from "@/composable/shortcut";
 import { getIconPath } from "@/utils/helper";
+import { useEditorStore } from "@/stores/editor";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 const props = defineProps({
@@ -295,6 +321,126 @@ function isLeaf(data) {
 }
 
 const activeSidePanel = ref(false);
+
+const shortcuts = useShortcut([
+  getShortcut("editor:save", save),
+  getShortcut("editor:execute-flow", run),
+  getShortcut("editor:debug-flow", debug),
+  getShortcut("editor:terminate-flow", terminate),
+  getShortcut("editor:del-block", delBlock),
+  getShortcut("editor:cut-block", cutBlock),
+  getShortcut("editor:copy-block", copyBlock),
+  getShortcut("editor:paste-block", pasteBlock),
+]);
+function delBlock() {
+  selectedActivity.value.forEach((id) => {
+    innerDelete(mainActivity.sequence.children, id);
+  });
+  selectedActivity.value = [];
+}
+
+function innerDelete(children, id) {
+  const index = children.findIndex(
+    (item) => item.id === id && !item.hasOwnProperty("deleteable")
+  );
+  if (index != -1) {
+    children.splice(index, 1);
+    dataChanged.value = true;
+  } else {
+    children.forEach((ele) => {
+      if (ele.children) {
+        innerDelete(ele.children, id);
+      }
+    });
+  }
+}
+const editorStore = useEditorStore();
+function cutBlock() {
+  let cutBlock = [];
+  selectedActivity.value.forEach((id) => {
+    innerCut(mainActivity.sequence.children, id, cutBlock);
+  });
+  selectedActivity.value = [];
+  editorStore.addToPasteBlocks(cutBlock);
+}
+
+function innerCut(children, id, cutBlock) {
+  const index = children.findIndex(
+    (item) => item.id === id && !item.hasOwnProperty("deleteable")
+  );
+  if (index != -1) {
+    cutBlock.push(shallowReactive(children.splice(index, 1)[0]));
+    dataChanged.value = true;
+  } else {
+    children.forEach((ele) => {
+      if (ele.children) {
+        innerCut(ele.children, id, cutBlock);
+      }
+    });
+  }
+}
+
+function copyBlock() {
+  let copyBlock = [];
+  selectedActivity.value.forEach((id) => {
+    innerCopy(mainActivity.sequence.children, id, copyBlock);
+  });
+  editorStore.addToPasteBlocks(copyBlock);
+}
+
+function innerCopy(children, id, copyBlock) {
+  const block = children.find(
+    (item) => item.id === id && !item.hasOwnProperty("deleteable")
+  );
+  if (block) {
+    copyBlock.push(shallowReactive({ ...block, id: nanoid(16) }));
+  } else {
+    children.forEach((ele) => {
+      if (ele.children) {
+        innerCopy(ele.children, id, copyBlock);
+      }
+    });
+  }
+}
+
+function pasteBlock() {
+  console.log(editorStore.copiedBlocks);
+  if (editorStore.copiedBlocks.length > 0) {
+    if (selectedActivity.value.length > 0) {
+      const id = selectedActivity.value[selectedActivity.value.length - 1];
+      innerPaste(mainActivity.sequence.children, id);
+    } else {
+      editorStore.copiedBlocks.forEach((block) => {
+        mainActivity.sequence.children.push(
+          shallowReactive({ ...block, id: nanoid(16) })
+        );
+      });
+      dataChanged.value = true;
+    }
+  }
+}
+
+function innerPaste(children, id) {
+  const index = children.findIndex(
+    (item) => item.id === id && !item.hasOwnProperty("deleteable")
+  );
+  if (index != -1) {
+    editorStore.copiedBlocks.forEach((block, innerIndex) => {
+      children.splice(
+        index + innerIndex + 1,
+        0,
+        shallowReactive({ ...block, id: nanoid(16) })
+      );
+    });
+    dataChanged.value = true;
+  } else {
+    children.forEach((ele) => {
+      if (ele.children) {
+        innerPaste(ele.children, id);
+      }
+    });
+  }
+}
 
 async function save() {
   try {
