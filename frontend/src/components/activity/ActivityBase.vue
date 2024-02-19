@@ -3,9 +3,9 @@
     :id="props.id"
     :toggleable="false"
     :collapsed="nodeData.collapsed"
-    class="activity-node w-full my-1 min-w-[400px]"
+    class="activity-node m-1 min-w-[400px]"
     :class="[{ 'ring-1 ring-blue-700': isSelected }, 'group/item']"
-    style="cursor: grab"
+    style="cursor: grab; width: calc(100% - 8px)"
     @dblclick.stop="dialogShow = true"
     @click.stop="handleClick"
     :pt="{
@@ -54,14 +54,12 @@
           v-if="props.deleteable"
           class="p-panel-header-icon p-link mr-2"
           @click.stop="$emit('delete')"
-          v-tooltip="{ value: '删除', showDelay: 100, hideDelay: 300 }"
         >
           <span class="pi pi-trash"></span>
         </button>
         <button
           class="p-panel-header-icon p-link mr-2"
           @click.stop="dialogShow = true"
-          v-tooltip="{ value: '编辑', showDelay: 100, hideDelay: 300 }"
         >
           <span class="pi pi-pencil"></span>
         </button>

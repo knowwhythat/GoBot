@@ -12,59 +12,38 @@
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
   >
-    <draggable
-      v-if="props.element.children"
-      :model-value="props.element.children"
-      item-key="id"
-      group="sequence"
-      class="flex flex-col items-center px-2 overflow-auto text-sm"
-      handle=".handle"
-      @mousedown.stop
-      @dragover.prevent
-      @drop="handleDrop"
-      @update:modelValue="
-        $emit('update', { id: props.element.id, children: $event })
-      "
+    <div
+      v-for="(element, index) in props.element.children"
+      :key="element.id"
+      class="flex flex-col items-center px-2 overflow-auto text-sm m-0.5"
     >
-      <template #item="{ element, index }">
-        <SequenceActivity
-          :index="index"
-          v-if="element.component == 'SequenceActivity'"
-          v-bind="{ element: element }"
-          @dragenter="dragEnter"
-          @update="update"
-          @delete="deleteNode($event)"
-        />
-        <component
-          v-else
-          :index="index"
-          :is="findComponent(element.component)"
-          @dragenter="dragEnter"
-          v-bind="{ element: element }"
-          @delete="deleteNode($event)"
-        />
-      </template>
-      <template #footer>
-        <div
-          class="w-full p-2 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
-        >
-          拖放组件到此处
-        </div>
-      </template>
-    </draggable>
+      <SequenceActivity
+        :index="index"
+        v-if="element.component == 'SequenceActivity'"
+        v-bind="{ element: element }"
+        @dragenter="dragEnter"
+        @update="update"
+        @delete="deleteNode($event)"
+      />
+      <component
+        v-else
+        :index="index"
+        :is="findComponent(element.component)"
+        @dragenter="dragEnter"
+        v-bind="{ element: element }"
+        @delete="deleteNode($event)"
+      />
+    </div>
+    <div
+      class="w-full p-2 rounded-lg text-gray-600 dark:text-gray-200 border-2 text-center border-dashed"
+    >
+      拖放组件到此处
+    </div>
   </ActivityBase>
 </template>
 <script setup>
-import {
-  ref,
-  onMounted,
-  computed,
-  shallowReactive,
-  inject,
-  provide,
-} from "vue";
+import { ref, onMounted, computed, inject, provide } from "vue";
 import ActivityBase from "./ActivityBase.vue";
-import draggable from "vuedraggable";
 import { nanoid } from "nanoid";
 import { typeBuilder } from "@/utils/shared";
 
@@ -133,20 +112,16 @@ function handleDrop(event) {
 
   const copyActivities = [...props.element.children];
   if (event.target.innerText === "拖放组件到此处") {
-    copyActivities.push(
-      shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
-    );
+    copyActivities.push({ ...droppedBlock, id: nanoid(16), parameter: {} });
   } else {
     if (dropIndex.value) {
-      copyActivities.splice(
-        dropIndex.value,
-        0,
-        shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
-      );
+      copyActivities.splice(dropIndex.value, 0, {
+        ...droppedBlock,
+        id: nanoid(16),
+        parameter: {},
+      });
     } else {
-      copyActivities.push(
-        shallowReactive({ ...droppedBlock, id: nanoid(16), parameter: {} })
-      );
+      copyActivities.push({ ...droppedBlock, id: nanoid(16), parameter: {} });
     }
   }
   emit("update", { id: props.element.id, children: copyActivities });

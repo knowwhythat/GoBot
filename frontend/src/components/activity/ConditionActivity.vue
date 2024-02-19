@@ -32,14 +32,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import {
-  ref,
-  onMounted,
-  computed,
-  shallowReactive,
-  watch,
-  reactive,
-} from "vue";
+import { onMounted, reactive } from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";

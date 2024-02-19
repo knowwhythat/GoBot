@@ -11,7 +11,7 @@ import vRemixicon, { icons } from "@/components/vRemixicon";
 import "@/assets/css/style.css";
 import "@/assets/css/drawflow.css";
 import "@/assets/css/flow.css";
-import "primevue/resources/themes/lara-light-teal/theme.css";
+import "primevue/resources/themes/lara-light-purple/theme.css";
 import BadgeDirective from "primevue/badgedirective";
 
 const pinia = createPinia();
