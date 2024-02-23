@@ -77,7 +77,7 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	code := ""
 	needPass := false
 	if activity.IsPseudo {
-		if activity.Method == "if" || activity.Method == "else if" {
+		if activity.Method == "if" || activity.Method == "elif" {
 			indent = indent - 1
 			code += strings.Repeat(" ", indent*4)
 			expression := activity.Parameter["expression"]

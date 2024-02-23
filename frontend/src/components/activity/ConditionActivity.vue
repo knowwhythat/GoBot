@@ -99,9 +99,9 @@ function update({ id, children }) {
 function addCondition() {
   props.element.children.splice(1, 0, {
     id: nanoid(16),
-    key: "else if",
-    method: "else if",
-    label: "ElseIf",
+    key: "elif",
+    method: "elif",
+    label: "Else If",
     toggleable: true,
     deleteable: true,
     icon_path: "riHome5Line",

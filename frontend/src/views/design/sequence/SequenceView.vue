@@ -141,12 +141,8 @@
                     v-if="isLeaf(slotProps)"
                     draggable="true"
                     class="transform select-none cursor-move text-ellipsis max-w-xs"
-                    @dragstart="
-                      $event.dataTransfer.setData(
-                        'activity',
-                        JSON.stringify(slotProps.node)
-                      )
-                    "
+                    @dragstart="toolDragStart($event, slotProps.node)"
+                    @dragend="toolDragEnd($event)"
                   >
                     {{ slotProps.node.label }}
                   </div>
@@ -163,7 +159,7 @@
       <SplitterPanel class="h-full" :size="75" :min-size="66">
         <div>
           <Splitter id="sequence-designer" layout="vertical">
-            <SplitterPanel :size="70">
+            <SplitterPanel :size="70" :min-size="30">
               <div class="flex justify-around">
                 <SequenceActivity
                   :element="mainActivity.sequence"
@@ -307,6 +303,21 @@ onMounted(() => {
 
 function isLeaf(data) {
   return !(data.node.children && data.node.children.length > 0);
+}
+
+const dragBlockId = ref("");
+const dropBlockId = ref("");
+
+provide("dragBlockId", { dragBlockId });
+provide("dropBlockId", { dropBlockId });
+
+function toolDragStart(event, element) {
+  dragBlockId.value = "";
+  event.dataTransfer.setData("activity", JSON.stringify(element));
+}
+
+function toolDragEnd(event) {
+  dropBlockId.value = "";
 }
 
 const shortcuts = useShortcut([
