@@ -143,7 +143,12 @@
         </div>
       </template>
     </DataView>
-    <Dialog v-model:visible="newProject.dialogVisible" modal header="Header">
+    <Dialog
+      v-model:visible="newProject.dialogVisible"
+      modal
+      maximizable
+      header="Header"
+    >
       <template #header>
         <div
           class="inline-flex align-items-center justify-content-center gap-2"
@@ -152,28 +157,25 @@
           <span class="font-bold white-space-nowrap">新建流程</span>
         </div>
       </template>
-      <div class="card flex justify-content-center">
-        <form @submit="onSubmit" class="flex flex-col gap-2">
-          <span>
-            <label for="value" class="mr-2">流程名称</label>
-            <InputText
-              id="value"
-              v-model="newProject.name"
-              type="text"
-              :class="{ 'p-invalid': newProject.errorMessage }"
-              aria-describedby="text-error"
-            />
-          </span>
-          <small class="p-error" id="text-error">{{
-            newProject.errorMessage || "&nbsp;"
-          }}</small>
-        </form>
+      <div class="flex justify-content-center">
+        <label for="value" class="mt-3 w-20">流程名称</label>
+        <InputText
+          id="value"
+          v-model="newProject.name"
+          type="text"
+          autocomplete="off"
+        />
       </div>
-
+      <div class="flex justify-content-center mt-2">
+        <label for="value" class="w-20">描述</label>
+        <Editor v-model="newProject.desc" editorStyle="height: 240px" />
+      </div>
       <template #footer>
         <Button
           label="取消"
           icon="pi pi-times"
+          outlined
+          severity="secondary"
           @click="newProject.dialogVisible = false"
         />
         <Button
@@ -197,11 +199,14 @@ import SelectButton from "primevue/selectbutton";
 import SplitButton from "primevue/splitbutton";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import Editor from "primevue/editor";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "lodash-es";
 import { CreateProject, ListProject, DeleteProject } from "@back/go/main/App";
+import { useConfirm } from "primevue/useconfirm";
 const toast = useToast();
 const router = useRouter();
+const confirm = useConfirm();
 
 const projects = ref();
 const layout = ref("grid");
@@ -250,13 +255,24 @@ function getItems(id) {
       label: "删除",
       icon: "pi pi-times",
       command: () => {
-        DeleteProject(id)
-          .then((result) => {
-            listProject();
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        confirm.require({
+          message: "确定要删除这条记录吗?",
+          icon: "pi pi-info-circle",
+          rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+          acceptClass: "p-button-danger p-button-sm",
+          rejectLabel: "取消",
+          acceptLabel: "删除",
+          accept: () => {
+            DeleteProject(id)
+              .then((result) => {
+                listProject();
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          },
+          reject: () => {},
+        });
       },
     },
     {
@@ -270,11 +286,6 @@ function getItems(id) {
           life: 3000,
         });
       },
-    },
-    {
-      label: "Upload",
-      icon: "pi pi-upload",
-      command: () => {},
     },
   ];
 }
@@ -296,7 +307,7 @@ const newProject = reactive({
   dialogVisible: false,
   loading: false,
   name: "",
-  errorMessage: "",
+  desc: "",
 });
 
 function createProject() {
@@ -304,6 +315,15 @@ function createProject() {
 }
 
 function doCreateProject() {
+  if (!newProject.name) {
+    toast.add({
+      severity: "warn",
+      summary: "提示",
+      detail: "流程名称不能为空",
+      life: 3000,
+    });
+    return;
+  }
   newProject.loading = true;
   CreateProject(newProject.name)
     .then((result) => {
@@ -314,7 +334,12 @@ function doCreateProject() {
     .catch((error) => {
       console.error(error);
       newProject.loading = false;
-      newProject.errorMessage = error;
+      toast.add({
+        severity: "error",
+        summary: "异常",
+        detail: error,
+        life: 3000,
+      });
     });
 }
 </script>
