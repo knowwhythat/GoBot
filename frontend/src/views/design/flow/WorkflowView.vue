@@ -1,43 +1,41 @@
 <template>
   <div class="flex flex-col">
-    <Toolbar class="p-2">
+    <Toolbar class="p-0 bg-slate-200" style="user-select: none">
       <template #start>
         <Button
           @click="router.back()"
           v-tooltip="'返回'"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-300"
+          text
         >
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
-        <Button v-tooltip="'运行'" class="mr-2 px-3 py-2">
+        <Button
+          text
+          v-tooltip="'运行'"
+          class="mr-2 px-3 py-2 hover:bg-slate-300"
+        >
           <template #icon>
             <v-remixicon name="riPlayLine" />
           </template>
         </Button>
-      </template>
-
-      <template #center>
-        <span class="flex">
-          <p class="pt-3 pr-2 text-xl font-serif font-semibold">
-            {{ projectName }}
-          </p>
-          <Button v-tooltip="'编辑'" class="px-3 py-2">
-            <template #icon>
-              <v-remixicon name="riEditBoxLine" />
-            </template>
-          </Button>
-        </span>
-      </template>
-
-      <template #end>
-        <Button v-tooltip="'发布'" class="mr-2 px-3 py-2">
+        <Button
+          text
+          v-tooltip="'发布'"
+          class="mr-2 px-3 py-2 hover:bg-slate-300"
+        >
           <template #icon>
             <v-remixicon name="riSendPlaneLine" />
           </template>
         </Button>
-        <Button v-tooltip="'保存'" @click="save" class="px-3 py-2">
+        <Button
+          text
+          v-tooltip="'保存'"
+          @click="save"
+          class="px-3 py-2 hover:bg-slate-300"
+        >
           <template #icon>
             <span>
               <span
@@ -55,6 +53,23 @@
             </span>
           </template>
         </Button>
+      </template>
+
+      <template #center>
+        <span class="flex">
+          <p class="pt-3 text-xl font-serif font-semibold">
+            {{ projectName }}
+          </p>
+          <Button text v-tooltip="'编辑'" class="hover:bg-slate-300">
+            <template #icon>
+              <v-remixicon name="riEditBoxLine" />
+            </template>
+          </Button>
+        </span>
+      </template>
+
+      <template #end>
+        <SystemOperate />
       </template>
     </Toolbar>
     <WorkflowEditor
@@ -77,6 +92,7 @@ import { reactive, ref, shallowRef, onBeforeMount } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
+import SystemOperate from "@/components/SystemOperate.vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { useToast } from "primevue/usetoast";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/main/App";

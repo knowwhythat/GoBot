@@ -59,7 +59,6 @@
         :pathOption="pathOption"
         :needInit="needInit"
         @hide="dialogShow = false"
-        @check="checkElement($event)"
         @update="saveElement($event)"
       />
       <ElementTreeDialog
@@ -230,16 +229,11 @@ async function saveElement(paths) {
 }
 async function checkElement(paths) {
   try {
-    let resp;
-    if (paths) {
-      resp = await StartCheckWindowsElement(JSON.stringify(paths));
-    } else {
-      const paths = await GetWindowsElement(
-        projectId,
-        props.element.parameter["windows_element"].substring(2)
-      );
-      resp = await StartCheckWindowsElement(paths);
-    }
+    const paths = await GetWindowsElement(
+      projectId,
+      props.element.parameter["windows_element"].substring(2)
+    );
+    const resp = await StartCheckWindowsElement(paths);
     const result = JSON.parse(resp);
     if (result["result"] === "ok") {
       toast.add({

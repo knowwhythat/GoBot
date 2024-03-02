@@ -15,8 +15,8 @@
     :toggleable="false"
   >
     <template #icons>
-      <div>
-        <button class="mr-4 hover:text-purple-500" @click="logs = []">
+      <div class="flex align-items-center gap-2">
+        <button class="mr-4 hover:text-purple-500" @click="$emit('clear')">
           <span class="pi pi-delete-left"></span>
         </button>
         <button class="mr-4 hover:text-purple-500" @click="filter = !filter">
@@ -27,31 +27,41 @@
         </button>
       </div>
     </template>
-    <Listbox
-      :options="logs"
-      :filter="filter"
-      emptyMessage="没有日志"
-      listStyle="height: calc(100% - 30px);"
-    />
+    <div ref="container">
+      <Listbox
+        :options="logs"
+        :filter="filter"
+        emptyMessage="没有日志"
+        listStyle="height: calc(100% - 30px);"
+      />
+    </div>
   </Panel>
 </template>
 <script setup>
 import Panel from "primevue/panel";
 import Listbox from "primevue/listbox";
-import { ref, onMounted, onUnmounted } from "vue";
-import { EventsOn, EventsOff } from "@back/runtime/runtime";
-const emit = defineEmits(["hide"]);
+import { ref, watch, nextTick } from "vue";
+const props = defineProps({
+  logs: {
+    type: Array,
+    default: [],
+  },
+});
+const emit = defineEmits(["hide", "clear"]);
+const container = ref(null);
+watch(
+  () => props.logs,
+  (o, n) => {
+    nextTick(() => {
+      if (container && container.value) {
+        const trs = container.value.getElementsByTagName("li");
+        trs[trs.length - 1].scrollIntoViewIfNeeded();
+      }
+    });
+  },
+  { deep: true }
+);
 const filter = ref(false);
-const logs = ref([]);
-onMounted(() => {
-  EventsOn("log_event", (data) => {
-    logs.value.push(data);
-  });
-});
-
-onUnmounted(() => {
-  EventsOff("log_event");
-});
 </script>
 <style scoped>
 :deep(.p-splitter-panel) {
@@ -63,6 +73,9 @@ onUnmounted(() => {
 }
 :deep(.p-toggleable-content) {
   height: calc(100% - 40px);
+}
+:deep(.p-panel-content) {
+  height: 100%;
   overflow: auto;
 }
 </style>

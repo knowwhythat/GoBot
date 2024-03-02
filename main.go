@@ -30,14 +30,16 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "GoBot",
-		Width:  1024,
-		Height: 768,
+		Width:  1440,
+		Height: 720,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		// Frameless:          true,
-		MinWidth:  400,
-		MinHeight: 400,
+		Frameless:       true,
+		CSSDragProperty: "user-select",
+		CSSDragValue:    "none",
+		MinWidth:        400,
+		MinHeight:       400,
 		// BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup:     app.startup,
 		OnShutdown:    app.shutdown,

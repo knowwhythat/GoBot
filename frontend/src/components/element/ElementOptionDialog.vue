@@ -73,6 +73,7 @@
 </template>
 
 <script setup>
+import { StartCheckWindowsElement } from "@back/go/main/App";
 import Dialog from "primevue/dialog";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
@@ -80,13 +81,14 @@ import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
-import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import ElementValue from "@/components/element/ElementValue.vue";
 import { ref, watch } from "vue";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 
-const emit = defineEmits(["hide", "update", "check"]);
+const emit = defineEmits(["hide", "update"]);
 const props = defineProps({
   dialogShow: {
     type: Boolean,
@@ -147,6 +149,7 @@ function show() {
         }
       }
       path.attrs = attrs;
+      path.displayName = path.name;
       path.enable = true;
       return path;
     });
@@ -155,8 +158,34 @@ function show() {
   }
   selectedPath.value = paths.value[0];
 }
-function checkData() {
-  emit("check", paths.value);
+
+async function checkData() {
+  try {
+    const resp = await StartCheckWindowsElement(JSON.stringify(paths.value));
+    const result = JSON.parse(resp);
+    if (result["result"] === "ok") {
+      toast.add({
+        severity: "success",
+        summary: "校验成功",
+        detail: "找到元素",
+        life: 3000,
+      });
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "校验失败",
+        detail: "元素未找到",
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "校验失败",
+      detail: err,
+      life: 3000,
+    });
+  }
 }
 function updateData() {
   emit("update", paths.value);

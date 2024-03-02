@@ -3,9 +3,13 @@
     :id="props.id"
     :toggleable="false"
     :collapsed="nodeData.collapsed"
-    class="activity-node m-1 min-w-[400px]"
-    :class="[{ 'ring-1 ring-blue-700': isSelected }, 'group/item']"
+    class="activity-node rounded m-1 min-w-[400px]"
+    :class="[
+      { 'ring-2 ring-offset-0 ring-purple-700': isSelected },
+      'group/item',
+    ]"
     style="cursor: grab; width: calc(100% - 8px)"
+    @hover.stop
     @dblclick.stop="dialogShow = true"
     @click.stop="handleClick"
     :pt="{

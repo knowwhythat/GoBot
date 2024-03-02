@@ -1,20 +1,26 @@
 <template>
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-1">
+    <Toolbar class="p-0 border-none" style="user-select: none">
       <template #start>
-        <Button @click="router.back()" lable="返回" class="mr-2 px-3 py-2">
+        <Button
+          @click="router.back()"
+          lable="返回"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          text
+        >
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
           </template>
         </Button>
         <Button
+          text
           label="保存"
-          v-tooltip="{
+          v-tooltip.bottom="{
             value: shortcuts['editor:save'].readable,
             showDelay: 100,
             hideDelay: 300,
           }"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           @click="save"
         >
           <template #icon>
@@ -35,14 +41,15 @@
           </template>
         </Button>
         <Button
+          text
           label="停止"
-          v-tooltip="{
+          v-tooltip.bottom="{
             value: shortcuts['editor:terminate-flow'].readable,
             showDelay: 100,
             hideDelay: 300,
           }"
           :disabled="!(running || debuging)"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           @click="terminate"
         >
           <template #icon>
@@ -50,14 +57,15 @@
           </template>
         </Button>
         <Button
+          text
           label="运行"
-          v-tooltip="{
+          v-tooltip.bottom="{
             value: shortcuts['editor:execute-flow'].readable,
             showDelay: 100,
             hideDelay: 300,
           }"
           :disabled="debuging"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           @click="run"
           :loading="running"
         >
@@ -66,14 +74,15 @@
           </template>
         </Button>
         <Button
+          text
           label="调试"
-          v-tooltip="{
+          v-tooltip.bottom="{
             value: shortcuts['editor:debug-flow'].readable,
             showDelay: 100,
             hideDelay: 300,
           }"
           :disabled="running"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           @click="debug"
           :loading="debuging"
         >
@@ -82,8 +91,9 @@
           </template>
         </Button>
         <Button
+          text
           label="单行调试"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('n')"
           v-if="debuging"
@@ -93,8 +103,9 @@
           </template>
         </Button>
         <Button
+          text
           label="下个断点"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('c')"
           v-if="debuging"
@@ -104,9 +115,10 @@
           </template>
         </Button>
         <Button
+          text
           label="重启Repl"
           icon="pi pi-replay"
-          class="mr-2 px-3 py-2"
+          class="mr-2 px-3 py-2 hover:bg-slate-200"
           @click="restartRepl"
         >
         </Button>
@@ -114,51 +126,21 @@
 
       <template #center>
         <span class="flex">
-          <p class="pt-3 pr-2 text-xl font-serif font-semibold">{{ label }}</p>
+          <p class="pr-2 text-xl font-serif font-semibold">
+            {{ label == "" ? "子流程" : label }}
+          </p>
         </span>
       </template>
+
+      <template #end>
+        <SystemOperate />
+      </template>
     </Toolbar>
-    <Splitter class="mb-5" stateStorage="local">
-      <SplitterPanel :size="25">
-        <TabView>
-          <TabPanel header="组件库">
-            <Tree
-              :value="nodes"
-              :filter="true"
-              selectionMode="single"
-              filterMode="lenient"
-              filterPlaceholder="输入组件名称进行搜索"
-              class="w-full h-full"
-            >
-              <template #default="slotProps">
-                <div class="flex">
-                  <p class="pr-2">
-                    <v-remixicon
-                      v-bind="getIconPath(slotProps.node.icon_path)"
-                    />
-                  </p>
-                  <div
-                    v-if="isLeaf(slotProps)"
-                    draggable="true"
-                    class="transform select-none cursor-move text-ellipsis max-w-xs"
-                    @dragstart="toolDragStart($event, slotProps.node)"
-                    @dragend="toolDragEnd($event)"
-                  >
-                    {{ slotProps.node.label }}
-                  </div>
-                  <b class="cursor-default" v-else>{{
-                    slotProps.node.label
-                  }}</b>
-                </div>
-              </template>
-            </Tree>
-          </TabPanel>
-          <TabPanel header="项目树"></TabPanel>
-        </TabView>
-      </SplitterPanel>
+    <Splitter class="mb-5" stateStorage="local" :gutter-size="5">
+      <SplitterPanel :size="25"> <LeftPaneView /> </SplitterPanel>
       <SplitterPanel class="h-full" :size="75" :min-size="66">
         <div>
-          <Splitter id="sequence-designer" layout="vertical">
+          <Splitter id="sequence-designer" layout="vertical" :gutter-size="5">
             <SplitterPanel :size="70" :min-size="30">
               <div class="flex justify-around">
                 <SequenceActivity
@@ -168,7 +150,21 @@
               </div>
             </SplitterPanel>
             <SplitterPanel v-if="activeNav != ''" :size="30" :min-size="10">
-              <component :is="navMap[activeNav]" @hide="activeNav = ''" />
+              <LogsView
+                v-if="activeNav == 'LogsView'"
+                :logs="logs"
+                @hide="activeNav = ''"
+                @clear="logs = []"
+              />
+              <VariablesView
+                v-else-if="activeNav == 'VariablesView'"
+                @hide="activeNav = ''"
+              />
+              <ElementsView
+                :id="props.id"
+                v-else-if="activeNav == 'ElementsView'"
+                @hide="activeNav = ''"
+              />
             </SplitterPanel>
           </Splitter>
           <div class="flex flex-row h-8 bg-slate-100">
@@ -191,19 +187,20 @@
   </div>
 </template>
 <script setup>
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
 import Button from "primevue/button";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import Tree from "primevue/tree";
-import { ref, onMounted, reactive, provide } from "vue";
+import { ref, onMounted, onUnmounted, reactive, provide } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
+import SystemOperate from "@/components/SystemOperate.vue";
+import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
+import LogsView from "@/views/design/sequence/LogsView.vue";
+import VariablesView from "@/views/design/sequence/VariablesView.vue";
+import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import { nanoid } from "nanoid";
 import {
-  ParseAllPlugin,
   GetSubFlow,
   SaveSubFlow,
   RunSubFlow,
@@ -219,7 +216,7 @@ import {
   WindowMaximise,
 } from "@back/runtime/runtime";
 import { useShortcut, getShortcut } from "@/composable/shortcut";
-import { getIconPath } from "@/utils/helper";
+
 import { useEditorStore } from "@/stores/editor";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
@@ -237,7 +234,7 @@ const props = defineProps({
     default: "",
   },
 });
-const nodes = ref(null);
+
 const router = useRouter();
 const dataChanged = ref(false);
 const selectedActivity = ref([]);
@@ -245,6 +242,7 @@ provide("dataChanged", { dataChanged, updateDataChanged });
 provide("contextVariable", { contextVariable: [] });
 provide("projectId", { projectId: props.id });
 provide("selectedActivity", { selectedActivity });
+const logs = ref([]);
 
 function updateDataChanged() {
   dataChanged.value = true;
@@ -268,19 +266,6 @@ function update({ children }) {
 }
 
 onMounted(() => {
-  ParseAllPlugin()
-    .then((result) => {
-      nodes.value = result;
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.add({
-        severity: "error",
-        summary: "加载组件树异常",
-        detail: err,
-        life: 3000,
-      });
-    });
   GetSubFlow(props.id, props.subflowId)
     .then((result) => {
       if (result) {
@@ -299,26 +284,20 @@ onMounted(() => {
         life: 3000,
       });
     });
+  EventsOn("log_event", (data) => {
+    logs.value.push(data);
+  });
 });
 
-function isLeaf(data) {
-  return !(data.node.children && data.node.children.length > 0);
-}
+onUnmounted(() => {
+  EventsOff("log_event");
+});
 
 const dragBlockId = ref("");
 const dropBlockId = ref("");
 
 provide("dragBlockId", { dragBlockId });
 provide("dropBlockId", { dropBlockId });
-
-function toolDragStart(event, element) {
-  dragBlockId.value = "";
-  event.dataTransfer.setData("activity", JSON.stringify(element));
-}
-
-function toolDragEnd(event) {
-  dropBlockId.value = "";
-}
 
 const shortcuts = useShortcut([
   getShortcut("editor:save", save),
@@ -330,6 +309,7 @@ const shortcuts = useShortcut([
   getShortcut("editor:copy-block", copyBlock),
   getShortcut("editor:paste-block", pasteBlock),
 ]);
+
 function delBlock() {
   selectedActivity.value.forEach((id) => {
     innerDelete(mainActivity.sequence.children, id);
@@ -460,15 +440,6 @@ const bottomNav = [
   { title: "元素库", component: "ElementsView" },
 ];
 
-const navComponents = import.meta.glob("@/views/design/sequence/*.vue", {
-  eager: true,
-});
-const navMap = {};
-for (let each in navComponents) {
-  const name = navComponents[each].default.__name;
-  navMap[`${name}`] = navComponents[each].default;
-}
-
 const activeNav = ref("");
 
 function bottomNavClick(nav) {
@@ -578,6 +549,9 @@ async function restartRepl() {
 #sequence-designer {
   height: calc(100vh - 86px);
 }
+:deep(.p-splitter .p-splitter-gutter) {
+  background: #e5e7eb;
+}
 :deep(.p-splitter-panel) {
   overflow: auto;
 }
@@ -587,20 +561,8 @@ async function restartRepl() {
 :deep(.p-tabview-nav-link) {
   padding: 0.75rem;
 }
-:deep(.p-tree-wrapper) {
-  height: calc(100vh - 168px);
-}
-:deep(.p-tree) {
-  padding: 0.25rem;
-}
 :deep(.p-splitter) {
   margin: 0;
-}
-:deep(.p-treenode-icon) {
-  display: none;
-}
-:deep(.p-treenode-label) {
-  margin-left: -0.75rem;
 }
 :deep(.p-panel .p-panel-content) {
   padding: 0.25rem;
