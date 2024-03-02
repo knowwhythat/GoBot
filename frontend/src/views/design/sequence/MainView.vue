@@ -1,9 +1,9 @@
 <template>
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-0 border-none" style="user-select: none">
+    <Toolbar class="p-1 border-none" style="user-select: none">
       <template #start>
         <Button
-          @click="router.back()"
+          @click="confirmQuit"
           lable="返回"
           class="mr-2 px-3 py-2 hover:bg-slate-200"
           text
@@ -133,7 +133,7 @@
       </template>
 
       <template #end>
-        <SystemOperate />
+        <SystemOperate @quit="confirmQuit" />
       </template>
     </Toolbar>
     <Splitter class="mb-5" stateStorage="local" :gutter-size="5">
@@ -190,7 +190,7 @@
 import Button from "primevue/button";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import { useRouter, onBeforeRouteLeave } from "vue-router";
+import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import { ref, onMounted, onUnmounted, reactive, provide } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
@@ -218,8 +218,11 @@ import {
 import { useShortcut, getShortcut } from "@/composable/shortcut";
 
 import { useEditorStore } from "@/stores/editor";
+import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
+const confirm = useConfirm();
+
 const props = defineProps({
   id: {
     type: String,
@@ -455,6 +458,7 @@ const running = ref(false);
 var reg = /code_map_id="([^"]*)/;
 async function run() {
   await save();
+  logs.value = [];
   running.value = true;
   try {
     WindowMinimise();
@@ -524,22 +528,38 @@ async function terminate() {
   running.value = false;
 }
 
-onBeforeRouteLeave(onBeforeLeave);
-
-async function onBeforeLeave() {
-  if (debuging.value || running.value) {
-    const confirm = window.confirm("退出将停止正在运行的流程，是否退出");
-    if (!confirm) {
-      return false;
-    } else {
-      await terminate();
-    }
+const confirmQuit = () => {
+  if (!dataChanged.value && !debuging.value && !running.value) {
+    router.back();
+  } else if (debuging.value || running.value) {
+    confirm.require({
+      message: "退出将停止正在运行的流程，是否退出?",
+      header: "确认",
+      icon: "pi pi-exclamation-triangle",
+      rejectClass: "p-button-secondary p-button-outlined",
+      rejectLabel: "取消",
+      acceptLabel: "确认",
+      accept: async () => {
+        await terminate();
+        router.back();
+      },
+      reject: () => {},
+    });
+  } else {
+    confirm.require({
+      message: "工作空间的修改尚未保存,确认将丢弃所有修改,是否确认?",
+      header: "确认",
+      icon: "pi pi-exclamation-triangle",
+      rejectClass: "p-button-secondary p-button-outlined",
+      rejectLabel: "取消",
+      acceptLabel: "确认",
+      accept: () => {
+        router.back();
+      },
+      reject: () => {},
+    });
   }
-  if (dataChanged.value) {
-    const confirm = window.confirm("有修改尚未保存，是否退出");
-    if (!confirm) return false;
-  }
-}
+};
 
 async function restartRepl() {
   await RestartReplCommand(props.id);

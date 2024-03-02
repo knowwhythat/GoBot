@@ -35,19 +35,6 @@ func (a *App) shutdown(ctx context.Context) {
 	services.StopWindowsInspectCommand()
 }
 
-func (a *App) beforeClose(ctx context.Context) bool {
-	dialog, err := runtime.MessageDialog(ctx, runtime.MessageDialogOptions{
-		Type:    runtime.QuestionDialog,
-		Title:   "退出?",
-		Message: "退出后所有的任务将停止,是否确定退出?",
-	})
-
-	if err != nil {
-		return false
-	}
-	return dialog != "Yes"
-}
-
 func (a *App) OpenDialog(option map[string]string) string {
 	if option["type"] == "file" {
 		fileter := runtime.FileFilter{DisplayName: option["display"], Pattern: option["pattern"]}

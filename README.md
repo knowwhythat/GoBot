@@ -1,31 +1,28 @@
-# README
+## <center>GoBot</center>
 
-## About
+<center>A RPA GUI program developed by vue3 + wails.</center>
 
-This is the official Wails Vue template.
+# Preview
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+![首页](./doc/img/%E9%A6%96%E9%A1%B5.png)
+![流程图编辑](./doc/img/%E6%B5%81%E7%A8%8B%E5%9B%BE%E7%BC%96%E8%BE%91.png)
+![流程块编辑](./doc/img/%E6%B5%81%E7%A8%8B%E5%9D%97%E7%BC%96%E8%BE%91.png)
 
-## Live Development
+## Build
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+1、Build Environment
 
-## Building
+Node.js
 
-To build a redistributable, production mode package, use `wails build`.
+npm
 
-## Generate
+Go
 
-wails generate module
+Wails link ：go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-go mod edit -fmt # go.mod 格式化
-go mod edit -require=golang.org/x/text@v0.3.3 # 添加⼀个依赖
-go mod edit -droprequire=golang.org/x/text # require 的反向操作，移除⼀个依赖
-go mod edit -replace=github.com/gin-gonic/gin=/home/colin/gin # 替换模块版本
-go mod edit -dropreplace=github.com/gin-gonic/gin # replace 的反向操作
-go mod edit -exclude=golang.org/x/text@v0.3.1 # 排除⼀个特定的模块版本
-go mod edit -dropexclude=golang.org/x/text@v0.3.1 # exclude 的反向操作
+2、Pull and Build
+git clone https://github.com/knowwhythat/GoBot.git
+
+cd GoBot
+
+wails build

@@ -12,7 +12,7 @@
       />
       <v-remixicon v-else size="20" viewBox="0 0 1024 1024" name="maxIcon" />
     </div>
-    <div class="hover:bg-slate-200 p-2" @click="Quit">
+    <div class="hover:bg-slate-200 p-2" @click="$emit('quit')">
       <v-remixicon size="20" viewBox="0 0 1024 1024" name="closeIcon" />
     </div>
   </div>
@@ -20,12 +20,11 @@
 <script setup>
 import {
   WindowIsMaximised,
-  Quit,
   WindowMinimise,
   WindowToggleMaximise,
 } from "@back/runtime/runtime";
-
 import { onMounted, onUnmounted, ref } from "vue";
+const emit = defineEmits(["quit"]);
 
 onMounted(async () => {
   isMax.value = await WindowIsMaximised();

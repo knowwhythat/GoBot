@@ -3,7 +3,7 @@
     <Toolbar class="p-0 bg-slate-200" style="user-select: none">
       <template #start>
         <Button
-          @click="router.back()"
+          @click="confirmQuit"
           v-tooltip="'返回'"
           class="mr-2 px-3 py-2 hover:bg-slate-300"
           text
@@ -69,7 +69,7 @@
       </template>
 
       <template #end>
-        <SystemOperate />
+        <SystemOperate @quit="confirmQuit" />
       </template>
     </Toolbar>
     <WorkflowEditor
@@ -89,7 +89,7 @@
 
 <script setup>
 import { reactive, ref, shallowRef, onBeforeMount } from "vue";
-import { useRouter, onBeforeRouteLeave } from "vue-router";
+import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
 import SystemOperate from "@/components/SystemOperate.vue";
@@ -98,6 +98,8 @@ import { useToast } from "primevue/usetoast";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/main/App";
 import { WindowMaximise } from "@back/runtime/runtime";
 import { trim } from "lodash-es";
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
 const toast = useToast();
 
 const props = defineProps({
@@ -136,14 +138,24 @@ const state = reactive({
   dataChanged: false,
 });
 
-onBeforeRouteLeave(onBeforeLeave);
-
-function onBeforeLeave() {
-  if (state.dataChanged) {
-    const confirm = window.confirm("有修改尚未保存，是否退出");
-    if (!confirm) return false;
+const confirmQuit = () => {
+  if (!state.dataChanged) {
+    router.back();
+  } else {
+    confirm.require({
+      message: "工作空间的修改尚未保存,确认将丢弃所有修改,是否确认?",
+      header: "确认",
+      icon: "pi pi-exclamation-triangle",
+      rejectClass: "p-button-secondary p-button-outlined",
+      rejectLabel: "取消",
+      acceptLabel: "确认",
+      accept: () => {
+        router.back();
+      },
+      reject: () => {},
+    });
   }
-}
+};
 
 const router = useRouter();
 const editor = shallowRef(null);

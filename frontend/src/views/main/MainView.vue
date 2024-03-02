@@ -12,7 +12,7 @@
       }"
     >
       <template #icons>
-        <SystemOperate />
+        <SystemOperate @quit="confirmQuit" />
       </template>
       <router-view></router-view>
     </Panel>
@@ -37,6 +37,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { Quit } from "@back/runtime/runtime";
 import Panel from "primevue/panel";
 import Dock from "primevue/dock";
 import TerminalSvg from "@/assets/images/terminal.svg";
@@ -44,6 +45,8 @@ import DesignerSvg from "@/assets/images/designer.svg";
 import TriggerSvg from "@/assets/images/trigger.svg";
 import RecordSvg from "@/assets/images/record.svg";
 import SystemOperate from "@/components/SystemOperate.vue";
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
 
 const router = useRouter();
 const title = ref("工作流");
@@ -88,6 +91,21 @@ const onDockItemClick = (event, item) => {
   }
 
   event.preventDefault();
+};
+
+const confirmQuit = () => {
+  confirm.require({
+    message: "关闭程序后所有的任务将停止,是否确定关闭?",
+    header: "关闭程序",
+    icon: "pi pi-exclamation-triangle",
+    rejectClass: "p-button-secondary p-button-outlined",
+    rejectLabel: "取消",
+    acceptLabel: "确认",
+    accept: () => {
+      Quit();
+    },
+    reject: () => {},
+  });
 };
 </script>
 
