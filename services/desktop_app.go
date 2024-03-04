@@ -11,7 +11,6 @@ import (
 	"gobot/log"
 	"gobot/services/sys_exec"
 	"gobot/utils"
-	"io/fs"
 	"net"
 	"os"
 	"os/exec"
@@ -62,17 +61,7 @@ func startWindowsInspectCommand() error {
 	return nil
 }
 
-func StartPickWindowsElement(ctx context.Context, projectId string) (string, error) {
-	project, err := QueryProjectById(projectId)
-	if err != nil {
-		return "", err
-	}
-	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir
-	if !utils.PathExist(imagePath) {
-		if err = os.MkdirAll(imagePath, fs.ModeDir); err != nil {
-			return "", err
-		}
-	}
+func StartPickWindowsElement(ctx context.Context) (string, error) {
 	if windowsInspectCommand == nil {
 		go startWindowsInspectCommand()
 	}
@@ -88,7 +77,6 @@ func StartPickWindowsElement(ctx context.Context, projectId string) (string, err
 		sendMessage["method"] = "highlight_control"
 		sendMessage["message_id"] = messageId
 		data := make(map[string]interface{})
-		data["image_path"] = imagePath
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
 		log.Logger.Info(string(request))
@@ -252,17 +240,7 @@ func HighlightCurrentElement(controlId string) error {
 	return errors.New("连接服务失败")
 }
 
-func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string) (string, error) {
-	project, err := QueryProjectById(projectId)
-	if err != nil {
-		return "", err
-	}
-	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir
-	if !utils.PathExist(imagePath) {
-		if err = os.MkdirAll(imagePath, fs.ModeDir); err != nil {
-			return "", err
-		}
-	}
+func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, error) {
 	if windowsInspectCommand == nil {
 		go startWindowsInspectCommand()
 	}
@@ -278,7 +256,6 @@ func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string)
 		sendMessage["message_id"] = messageId
 		data := make(map[string]interface{})
 		sendMessage["method"] = "get_select_control"
-		data["image_path"] = imagePath
 		data["control_id"] = controlId
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
@@ -308,11 +285,23 @@ func GetSelectedWindowsElement(ctx context.Context, projectId, controlId string)
 	return "", errors.New("连接服务失败")
 }
 
-func SaveWindowsElement(id, elementId, selector string) error {
+func SaveWindowsElement(id, elementId, image, selector string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {
 		return err
 	}
+	if len(image) > 0 {
+		imageDirPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator)
+		if !utils.PathExist(imageDirPath) {
+			os.MkdirAll(imageDirPath, os.ModePerm)
+		}
+		imageData, err := base64.StdEncoding.DecodeString(image)
+		if err != nil {
+			return err
+		}
+		os.WriteFile(imageDirPath+string(os.PathSeparator)+elementId+".png", imageData, 0666)
+	}
+
 	selectorPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.Selector
 	selectorData := make(map[string]interface{})
 	if utils.PathExist(selectorPath) {
@@ -325,7 +314,7 @@ func SaveWindowsElement(id, elementId, selector string) error {
 			return err
 		}
 	}
-	elementData := make([]interface{}, 0)
+	elementData := make(map[string]interface{}, 0)
 	err = json.Unmarshal([]byte(selector), &elementData)
 	if err != nil {
 		return err
@@ -359,6 +348,55 @@ func GetWindowsElement(id, elementId string) (string, error) {
 	if selector, ok := selectorData[elementId]; ok {
 		selectorByte, err := json.Marshal(selector)
 		return string(selectorByte), err
+	}
+	return "", nil
+}
+
+func RemoveWindowsElement(id, elementId string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator) + elementId + ".png"
+	if utils.PathExist(imagePath) {
+		os.Remove(imagePath)
+	}
+	selectorPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.Selector
+	selectorData := make(map[string]interface{})
+	if utils.PathExist(selectorPath) {
+		data, err := os.ReadFile(selectorPath)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(data, &selectorData)
+		if err != nil {
+			return err
+		}
+	}
+	if _, ok := selectorData[elementId]; ok {
+		delete(selectorData, elementId)
+		saveData, err := json.Marshal(selectorData)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(selectorPath, saveData, 0666)
+		return err
+	}
+	return nil
+}
+
+func GetProjectWindowsElements(id string) (string, error) {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return "", err
+	}
+	selectorPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.Selector
+	if utils.PathExist(selectorPath) {
+		data, err := os.ReadFile(selectorPath)
+		if err != nil {
+			return "", err
+		}
+		return string(data), nil
 	}
 	return "", nil
 }

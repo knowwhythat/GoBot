@@ -143,16 +143,16 @@ func (a *App) GetElementImage(id, elementId string) (string, error) {
 	return services.GetElementImage(id, elementId)
 }
 
-func (a *App) StartPickWindowsElement(id string) (string, error) {
-	return services.StartPickWindowsElement(a.ctx, id)
+func (a *App) StartPickWindowsElement() (string, error) {
+	return services.StartPickWindowsElement(a.ctx)
 }
 
 func (a *App) StartCheckWindowsElement(paths string) (string, error) {
 	return services.StartCheckWindowsElement(a.ctx, paths)
 }
 
-func (a *App) SaveWindowsElement(id, elementId, data string) error {
-	return services.SaveWindowsElement(id, elementId, data)
+func (a *App) SaveWindowsElement(id, elementId, image, data string) error {
+	return services.SaveWindowsElement(id, elementId, image, data)
 }
 
 func (a *App) GetWindowsElement(id, elementId string) (string, error) {
@@ -167,6 +167,14 @@ func (a *App) HighlightCurrentElement(controlId string) error {
 	return services.HighlightCurrentElement(controlId)
 }
 
-func (a *App) GetSelectedWindowsElement(projectId, controlId string) (string, error) {
-	return services.GetSelectedWindowsElement(a.ctx, projectId, controlId)
+func (a *App) GetSelectedWindowsElement(controlId string) (string, error) {
+	return services.GetSelectedWindowsElement(a.ctx, controlId)
+}
+
+func (a *App) GetProjectWindowsElements(projectId string) (string, error) {
+	return services.GetProjectWindowsElements(projectId)
+}
+
+func (a *App) RemoveWindowsElement(projectId, controlId string) error {
+	return services.RemoveWindowsElement(projectId, controlId)
 }

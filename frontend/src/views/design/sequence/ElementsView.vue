@@ -29,7 +29,7 @@
             hideDelay: 300,
           }"
         >
-          <v-remixicon name="riFocus2Line" size="24" />
+          <v-remixicon name="riFocus2Line" size="16" />
         </button>
         <button
           class="mr-4 hover:text-purple-500"
@@ -40,7 +40,7 @@
             hideDelay: 300,
           }"
         >
-          <v-remixicon name="riNodeTree" size="24" />
+          <v-remixicon name="riNodeTree" size="16" />
         </button>
         <button class="hover:text-purple-500" @click="$emit('hide')">
           <span class="pi pi-chevron-down"></span>
@@ -48,10 +48,38 @@
       </div>
     </template>
     <div class="flex relative">
-      <div ref="container">
-        <Tree :value="nodes" :filter="false" filterMode="lenient"></Tree>
+      <Tree
+        :value="nodes"
+        :filter="false"
+        filterMode="lenient"
+        selectionMode="single"
+        v-model:expandedKeys="expandedKeys"
+        v-model:selectionKeys="selectedKey"
+        @node-select="nodeSelect"
+        :pt="{
+          root: (options) => ({
+            class: ['flex-1'],
+          }),
+          content: (options) => ({
+            oncontextmenu: onContextMenuClick(options),
+          }),
+        }"
+      >
+        <template #default="slotProps">
+          <div>{{ slotProps.node.label }}</div>
+        </template>
+      </Tree>
+      <ContextMenu ref="menu" :model="items" />
+      <div class="w-48 h-48">
+        <Image
+          v-if="imagePath"
+          :src="imagePath"
+          alt="Image"
+          width="192"
+          height="192"
+          preview
+        />
       </div>
-      <div class="w-48 h-48 absolute top-0 right-0"></div>
     </div>
     <ElementOptionDialog
       :dialogShow="dialogShow"
@@ -68,11 +96,13 @@
   </Panel>
 </template>
 <script setup>
+import Image from "primevue/image";
+import ContextMenu from "primevue/contextmenu";
 import Panel from "primevue/panel";
 import Tree from "primevue/tree";
 import ElementOptionDialog from "@/components/element/ElementOptionDialog.vue";
 import ElementTreeDialog from "@/components/element/ElementTreeDialog.vue";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted, toRaw } from "vue";
 import {
   StartPickWindowsElement,
   StartCheckWindowsElement,
@@ -81,9 +111,14 @@ import {
   GetWindowsElement,
   GetElementImage,
   GetSelectedWindowsElement,
+  GetProjectWindowsElements,
+  RemoveWindowsElement,
 } from "@back/go/main/App";
+import { nanoid } from "nanoid";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 const toast = useToast();
+const confirm = useConfirm();
 const emit = defineEmits(["hide"]);
 const props = defineProps({
   id: {
@@ -91,51 +126,43 @@ const props = defineProps({
     default: "",
   },
 });
-const nodes = ref([
-  {
-    key: "0",
-    label: "Documents",
-    data: "Documents Folder",
-    icon: "pi pi-fw pi-inbox",
-    children: [
-      {
-        key: "0-0",
-        label: "Work",
-        data: "Work Folder",
-        icon: "pi pi-fw pi-cog",
-        children: [
-          {
-            key: "0-0-0",
-            label: "Expenses.doc",
-            icon: "pi pi-fw pi-file",
-            data: "Expenses Document",
-          },
-          {
-            key: "0-0-1",
-            label: "Resume.doc",
-            icon: "pi pi-fw pi-file",
-            data: "Resume Document",
-          },
-        ],
-      },
-      {
-        key: "0-1",
-        label: "Home",
-        data: "Home Folder",
-        icon: "pi pi-fw pi-home",
-        children: [
-          {
-            key: "0-1-0",
-            label: "Invoices.txt",
-            icon: "pi pi-fw pi-file",
-            data: "Invoices for this month",
-          },
-        ],
-      },
-    ],
-  },
-]);
+const nodes = ref([]);
+const selectedKey = ref(null);
+const expandedKeys = ref({});
 
+onMounted(async () => {
+  await loadElements();
+});
+
+async function loadElements() {
+  const result = await GetProjectWindowsElements(props.id);
+  nodes.value = [];
+  const elements = JSON.parse(result);
+  for (let [key, value] of Object.entries(elements)) {
+    const processName = value["processName"];
+    const process = nodes.value.find((node) => node.label == processName);
+    if (process) {
+      process["children"].push({
+        key: key,
+        label: value["displayName"],
+        data: value,
+      });
+    } else {
+      nodes.value.push({
+        key: nanoid(16),
+        label: value["processName"],
+        data: [],
+        children: [
+          {
+            key: key,
+            label: value["displayName"],
+            data: value,
+          },
+        ],
+      });
+    }
+  }
+}
 const container = ref();
 
 const treeDialogShow = ref(false);
@@ -145,11 +172,43 @@ const needInit = ref(false);
 
 async function pickElement() {
   try {
-    const resp = await StartPickWindowsElement(props.id);
+    const resp = await StartPickWindowsElement();
     const result = JSON.parse(resp);
     if (result.result === "ok") {
       needInit.value = true;
       pathOption.value = JSON.parse(result.data);
+      dialogShow.value = true;
+      console.log(pathOption.value);
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "拾取失败",
+        detail: result.reason,
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "拾取失败",
+      detail: err,
+      life: 3000,
+    });
+  }
+}
+
+function deepPickElement() {
+  treeDialogShow.value = true;
+}
+
+async function selectElement(id) {
+  try {
+    const resp = await GetSelectedWindowsElement(id);
+    const result = JSON.parse(resp);
+    if (result.result === "ok") {
+      needInit.value = true;
+      pathOption.value = JSON.parse(result.data);
+      treeDialogShow.value = false;
       dialogShow.value = true;
     } else {
       toast.add({
@@ -169,7 +228,76 @@ async function pickElement() {
   }
 }
 
-function deepPickElement() {}
+async function saveElement(element) {
+  const image = element.image;
+  delete element.image;
+
+  await SaveWindowsElement(
+    props.id,
+    element.id,
+    image,
+    JSON.stringify(element)
+  );
+  dialogShow.value = false;
+  await loadElements();
+}
+const imagePath = ref(null);
+async function nodeSelect(node) {
+  if (!node["children"]) {
+    const image = await GetElementImage(props.id, node.key);
+    imagePath.value = "data:image/png;base64," + image;
+  } else {
+    imagePath.value = null;
+  }
+}
+const selectedNode = ref(null);
+const menu = ref();
+const items = ref([
+  {
+    label: "删除",
+    icon: "pi pi-times-circle",
+    command: () => {
+      confirm.require({
+        header: "提示",
+        message: "确定要删除这条记录吗?",
+        icon: "pi pi-info-circle",
+        rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+        acceptClass: "p-button-danger p-button-sm",
+        rejectLabel: "取消",
+        acceptLabel: "删除",
+        accept: () => {
+          RemoveWindowsElement(props.id, selectedNode.value.key)
+            .then((result) => {
+              loadElements();
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        },
+        reject: () => {},
+      });
+    },
+  },
+  {
+    label: "编辑",
+    icon: "pi pi-file-edit",
+    command: () => {
+      needInit.value = false;
+      console.log(selectedNode.value);
+      pathOption.value = toRaw(selectedNode.value.data);
+      dialogShow.value = true;
+    },
+  },
+]);
+
+function onContextMenuClick(options) {
+  return async function (event) {
+    if (!options.props.node["children"]) {
+      selectedNode.value = options.props.node;
+      menu.value.show(event);
+    }
+  };
+}
 </script>
 <style scoped>
 :deep(.p-splitter-panel) {

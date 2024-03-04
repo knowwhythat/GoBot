@@ -174,7 +174,7 @@ const pathOption = ref({});
 const needInit = ref(false);
 async function pickElement() {
   try {
-    const resp = await StartPickWindowsElement(projectId);
+    const resp = await StartPickWindowsElement();
     const result = JSON.parse(resp);
     if (result.result === "ok") {
       needInit.value = true;

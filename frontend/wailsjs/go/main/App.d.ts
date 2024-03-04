@@ -17,7 +17,9 @@ export function GetElementImage(arg1:string,arg2:string):Promise<string>;
 
 export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
 
-export function GetSelectedWindowsElement(arg1:string,arg2:string):Promise<string>;
+export function GetProjectWindowsElements(arg1:string):Promise<string>;
+
+export function GetSelectedWindowsElement(arg1:string):Promise<string>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
 
@@ -33,6 +35,8 @@ export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activitiy>>;
 
+export function RemoveWindowsElement(arg1:string,arg2:string):Promise<void>;
+
 export function RestartReplCommand(arg1:string):Promise<void>;
 
 export function RunActivity(arg1:string,arg2:string):Promise<void>;
@@ -43,7 +47,7 @@ export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
-export function SaveWindowsElement(arg1:string,arg2:string,arg3:string):Promise<void>;
+export function SaveWindowsElement(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
 export function SelectProject(arg1:string):Promise<models.Project>;
 
@@ -53,7 +57,7 @@ export function StartCheckWindowsElement(arg1:string):Promise<string>;
 
 export function StartPick():Promise<string>;
 
-export function StartPickWindowsElement(arg1:string):Promise<string>;
+export function StartPickWindowsElement():Promise<string>;
 
 export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
 

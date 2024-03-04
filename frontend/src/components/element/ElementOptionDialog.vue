@@ -25,7 +25,10 @@
           listStyle="max-height:650px"
         >
           <template #header>
-            <div class="text-center">元素节点</div>
+            <div class="text-center mt-1">
+              <span class="mr-2">元素名称:</span>
+              <InputText v-model="pathOption.displayName" type="text" />
+            </div>
           </template>
           <template #option="slotProps">
             <div class="flex align-items-center">
@@ -81,10 +84,11 @@ import Listbox from "primevue/listbox";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
+import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import ElementValue from "@/components/element/ElementValue.vue";
-import { ref, watch } from "vue";
+import { ref, toRaw, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
@@ -102,6 +106,9 @@ const props = defineProps({
     type: Object,
     default: () => ({
       id: "",
+      processNmae: "",
+      displayName: "",
+      image: "",
       paths: [],
     }),
   },
@@ -149,7 +156,6 @@ function show() {
         }
       }
       path.attrs = attrs;
-      path.displayName = path.name;
       path.enable = true;
       return path;
     });
@@ -187,8 +193,15 @@ async function checkData() {
     });
   }
 }
+
 function updateData() {
-  emit("update", paths.value);
+  emit("update", {
+    id: props.pathOption.id,
+    processName: props.pathOption.processName,
+    displayName: props.pathOption.displayName,
+    image: props.pathOption.image,
+    paths: toRaw(paths.value),
+  });
 }
 </script>
 <style scoped>

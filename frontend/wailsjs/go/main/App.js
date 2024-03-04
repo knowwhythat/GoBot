@@ -30,8 +30,12 @@ export function GetMainFlow(arg1) {
   return window['go']['main']['App']['GetMainFlow'](arg1);
 }
 
-export function GetSelectedWindowsElement(arg1, arg2) {
-  return window['go']['main']['App']['GetSelectedWindowsElement'](arg1, arg2);
+export function GetProjectWindowsElements(arg1) {
+  return window['go']['main']['App']['GetProjectWindowsElements'](arg1);
+}
+
+export function GetSelectedWindowsElement(arg1) {
+  return window['go']['main']['App']['GetSelectedWindowsElement'](arg1);
 }
 
 export function GetSubFlow(arg1, arg2) {
@@ -62,6 +66,10 @@ export function ParseAllPlugin() {
   return window['go']['main']['App']['ParseAllPlugin']();
 }
 
+export function RemoveWindowsElement(arg1, arg2) {
+  return window['go']['main']['App']['RemoveWindowsElement'](arg1, arg2);
+}
+
 export function RestartReplCommand(arg1) {
   return window['go']['main']['App']['RestartReplCommand'](arg1);
 }
@@ -82,8 +90,8 @@ export function SaveSubFlow(arg1, arg2, arg3) {
   return window['go']['main']['App']['SaveSubFlow'](arg1, arg2, arg3);
 }
 
-export function SaveWindowsElement(arg1, arg2, arg3) {
-  return window['go']['main']['App']['SaveWindowsElement'](arg1, arg2, arg3);
+export function SaveWindowsElement(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['SaveWindowsElement'](arg1, arg2, arg3, arg4);
 }
 
 export function SelectProject(arg1) {
@@ -102,8 +110,8 @@ export function StartPick() {
   return window['go']['main']['App']['StartPick']();
 }
 
-export function StartPickWindowsElement(arg1) {
-  return window['go']['main']['App']['StartPickWindowsElement'](arg1);
+export function StartPickWindowsElement() {
+  return window['go']['main']['App']['StartPickWindowsElement']();
 }
 
 export function TerminateSubFlow(arg1, arg2) {

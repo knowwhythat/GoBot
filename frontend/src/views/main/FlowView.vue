@@ -9,8 +9,7 @@
                 <i class="pi pi-search" />
                 <InputText
                   v-model="searchText"
-                  style="margin-left: 40px"
-                  placeholder="Search"
+                  placeholder="输入关键字进行搜索"
                 />
               </span>
               <Button label="导入">
@@ -164,6 +163,7 @@
           v-model="newProject.name"
           type="text"
           autocomplete="off"
+          class="w-full ml-2"
         />
       </div>
       <div class="flex justify-content-center mt-2">
@@ -256,6 +256,7 @@ function getItems(id) {
       icon: "pi pi-times",
       command: () => {
         confirm.require({
+          header: "提示",
           message: "确定要删除这条记录吗?",
           icon: "pi pi-info-circle",
           rejectClass: "p-button-secondary p-button-outlined p-button-sm",
