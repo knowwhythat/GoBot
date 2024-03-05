@@ -24,7 +24,7 @@
         >
           <v-remixicon v-bind="getIconPath(props.icon)" />
         </span>
-        <p>{{ nodeData.label }}</p>
+        <p class="w-64 truncate">{{ nodeData.label }}</p>
       </div>
     </template>
 

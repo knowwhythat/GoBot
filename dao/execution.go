@@ -110,10 +110,6 @@ func (t *Tx) DeleteAllExecutionsWhereProjectId(ProjectId uuid.UUID) (err error) 
 }
 
 func (t *Tx) InsertExecutionLog(executionLogs string, executionId uuid.UUID) (err error) {
-
-	if err != nil {
-		return err
-	}
 	b, err := t.tx.CreateBucketIfNotExists([]byte(constants.ExecutionLogBucket))
 	if err != nil {
 		return err

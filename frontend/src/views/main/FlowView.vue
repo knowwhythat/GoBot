@@ -106,17 +106,24 @@
                 class="flex flex-wrap align-items-center justify-content-between gap-2"
               >
                 <div class="flex align-items-center gap-2">
-                  <v-remixicon size="18" name="riPriceTag3Line" />
-                  <span class="font-semibold">{{ item?.category }}</span>
+                  <v-remixicon size="18" name="riHistoryLine" />
+                  <span class="-mt-1">
+                    {{ item?.update_ts.substr(0, 19).replace("T", " ") }}
+                  </span>
                 </div>
               </div>
-              <div class="flex flex-column align-items-center gap-3 py-5">
+              <div class="flex flex-row align-items-center gap-3 py-3">
                 <div class="text-xl font-bold truncate">
                   {{ item?.name }}
                 </div>
               </div>
+              <div class="pb-1">
+                {{ item?.description }}
+              </div>
               <div class="flex flex-row-reverse gap-1">
                 <SplitButton
+                  rounded
+                  outlined
                   label="设置"
                   icon="pi pi-play"
                   @click="run(item?.id)"
@@ -127,11 +134,18 @@
                   </template>
                 </SplitButton>
                 <Button
+                  rounded
+                  outlined
                   icon="pi pi-file-edit"
                   @click="edit(item?.id)"
                   v-tooltip="'编辑'"
                 />
-                <Button icon="pi pi-caret-right" v-tooltip="'运行'">
+                <Button
+                  icon="pi pi-caret-right"
+                  rounded
+                  outlined
+                  v-tooltip="'运行'"
+                >
                   <template #icon>
                     <v-remixicon size="24" name="riPlayLine" />
                   </template>
@@ -231,7 +245,6 @@ function listProject(name) {
   ListProject(name)
     .then((result) => {
       projects.value = result.list;
-      console.log(projects);
     })
     .catch((error) => {
       toast.add({

@@ -1,10 +1,10 @@
 <template>
   <ActivityBase
-    :toggleable="true"
+    :toggleable="false"
     :runnable="true"
     :id="props.element.id"
     :breakpoint="props.element.breakpoint"
-    :collapsed="props.element.collapsed"
+    :collapsed="true"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
     :icon="props.element.icon_path"
@@ -15,31 +15,34 @@
     @update="updateData($event)"
     @run="runActivity"
   >
-    <div class="flex mx-2">
-      <InputText
-        :model-value="variableName"
-        @update:model-value="chageName($event)"
-        class="w-32"
-        placeholder="变量名称"
-      />
-      <span class="mx-1 my-auto"> = </span>
-      <InputGroup>
+    <template #top>
+      <div class="flex">
         <InputText
-          :model-value="variableValue"
-          @update:model-value="chageValue($event)"
-          class="w-32"
-          placeholder="变量值"
+          :model-value="variableName"
+          @update:model-value="chageName($event)"
+          class="py-0 px-2 h-8"
+          placeholder="变量名称"
         />
-        <Button
-          :severity="isExpression ? 'Primary' : 'secondary'"
-          @click="changeValueType"
-        >
-          <template #icon>
-            <v-remixicon name="riReactjsFill" size="24" />
-          </template>
-        </Button>
-      </InputGroup>
-    </div>
+        <span class="mx-1 my-auto"> = </span>
+        <InputGroup>
+          <InputText
+            :model-value="variableValue"
+            @update:model-value="chageValue($event)"
+            class="py-0 px-2 h-8"
+            placeholder="变量值"
+          />
+          <Button
+            class="h-8"
+            :severity="isExpression ? 'Primary' : 'secondary'"
+            @click="changeValueType"
+          >
+            <template #icon>
+              <v-remixicon name="riReactjsFill" size="24" />
+            </template>
+          </Button>
+        </InputGroup>
+      </div>
+    </template>
   </ActivityBase>
 </template>
 <script setup>

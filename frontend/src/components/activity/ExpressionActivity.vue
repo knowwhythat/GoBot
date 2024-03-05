@@ -1,10 +1,10 @@
 <template>
   <ActivityBase
     :runnable="true"
-    :toggleable="true"
+    :toggleable="false"
     :id="props.element.id"
     :breakpoint="props.element.breakpoint"
-    :collapsed="props.element.collapsed"
+    :collapsed="true"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
     :icon="props.element.icon_path"
@@ -15,21 +15,27 @@
     @update="updateData($event)"
     @run="runActivity"
   >
-    <InputGroup class="mb-2">
-      <InputText
-        :model-value="expression"
-        @update:model-value="chageExpression($event)"
-        placeholder="输入内容或表达式"
-      />
-      <Button
-        :severity="isExpression ? 'Primary' : 'secondary'"
-        @click="chageIsExpression"
-      >
-        <template #icon>
-          <v-remixicon name="riReactjsFill" size="24" />
-        </template>
-      </Button>
-    </InputGroup>
+    <template #top>
+      <div>
+        <InputGroup>
+          <InputText
+            class="py-0 px-2 h-8"
+            :model-value="expression"
+            @update:model-value="chageExpression($event)"
+            placeholder="输入内容或表达式"
+          />
+          <Button
+            class="h-8"
+            :severity="isExpression ? 'Primary' : 'secondary'"
+            @click="chageIsExpression"
+          >
+            <template #icon>
+              <v-remixicon name="riReactjsFill" size="24" />
+            </template>
+          </Button>
+        </InputGroup>
+      </div>
+    </template>
   </ActivityBase>
 </template>
 <script setup>

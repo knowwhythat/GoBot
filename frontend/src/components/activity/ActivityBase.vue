@@ -3,13 +3,9 @@
     :id="props.id"
     :toggleable="false"
     :collapsed="nodeData.collapsed"
-    class="activity-node rounded m-1 min-w-[400px]"
-    :class="[
-      { 'ring-2 ring-offset-0 ring-purple-700': isSelected },
-      'group/item',
-    ]"
+    class="rounded m-1 min-w-[400px]"
+    :class="[{ 'ring-2 ring-offset-0 ring-purple-700': isSelected }]"
     style="cursor: grab; width: calc(100% - 8px)"
-    @hover.stop
     @dblclick.stop="dialogShow = true"
     @click.stop="handleClick"
     :pt="{
@@ -20,6 +16,7 @@
         class: [
           'handle',
           'hover:bg-slate-200',
+          'group/item',
           props.id === debugingId ? 'bg-red-200' : '',
         ],
       }),
@@ -46,9 +43,10 @@
         >
           <v-remixicon v-bind="getIconPath(props?.icon)" />
         </span>
-        <span class="max-w-xs truncate p-1">
+        <span class="w-48 truncate p-1">
           {{ label }}
         </span>
+        <slot name="top"></slot>
       </div>
     </template>
     <template #icons>
@@ -70,7 +68,7 @@
       </div>
     </template>
     <div class="flex-row content-center">
-      <slot></slot>
+      <slot name="default"></slot>
     </div>
     <ParamEditorDialog
       :runnable="props.runnable"

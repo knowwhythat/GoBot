@@ -9,15 +9,15 @@ const defaultShortcut = {
   },
   "editor:cut-block": {
     id: "editor:cut-block",
-    combo: "mod+x",
+    combo: "mod+alt+x",
   },
   "editor:copy-block": {
     id: "editor:copy-block",
-    combo: "mod+c",
+    combo: "mod+alt+c",
   },
   "editor:paste-block": {
     id: "editor:paste-block",
-    combo: "mod+v",
+    combo: "mod+alt+v",
   },
   "editor:del-block": {
     id: "editor:del-block",
