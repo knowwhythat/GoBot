@@ -124,14 +124,6 @@
         </Button>
       </template>
 
-      <template #center>
-        <span class="flex">
-          <p class="pr-2 text-xl font-serif font-semibold">
-            {{ label == "" ? "子流程" : label }}
-          </p>
-        </span>
-      </template>
-
       <template #end>
         <SystemOperate @quit="confirmQuit" />
       </template>

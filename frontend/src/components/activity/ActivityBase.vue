@@ -88,7 +88,7 @@ import { getIconPath } from "@/utils/helper";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import ParamEditorDialog from "@/components/editor/ParamEditorDialog.vue";
-import { reactive, onMounted, inject, ref, computed } from "vue";
+import { reactive, onMounted, inject, ref, computed, watch } from "vue";
 
 const props = defineProps({
   id: {
@@ -142,8 +142,15 @@ const emit = defineEmits(["delete", "update", "run"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
 const { debugingId } = inject("debugingId");
 const { selectedActivity } = inject("selectedActivity");
+const { newAddBlockId } = inject("newAddBlockId");
 
 const isSelected = computed(() => selectedActivity.value.includes(props.id));
+
+watch(newAddBlockId, (value, oldValue) => {
+  if (value && value == props.id) {
+    dialogShow.value = true;
+  }
+});
 
 function handleClick(event) {
   if (event.ctrlKey) {

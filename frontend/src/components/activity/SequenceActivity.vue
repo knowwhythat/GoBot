@@ -93,7 +93,15 @@
   </ActivityBase>
 </template>
 <script setup>
-import { ref, onMounted, computed, inject, provide, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  computed,
+  inject,
+  provide,
+  watch,
+  nextTick,
+} from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import { nanoid } from "nanoid";
 import { typeBuilder } from "@/utils/shared";
@@ -181,7 +189,8 @@ function dragEnter(event, element) {
   event.stopPropagation();
   dropBlockId.value = element.id;
 }
-
+const newAddBlockId = ref(null);
+provide("newAddBlockId", { newAddBlockId: newAddBlockId });
 function handleDrop(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -191,11 +200,11 @@ function handleDrop(event) {
   if (!droppedBlock || dropBlockId.value == "") return;
 
   const copyActivities = [...props.element.children];
+  const newBlockId = nanoid(16);
   if (droppedBlock.id) {
-    console.log(dragBlockId.value);
     dragBlockId.value = "";
     if (id.value == dropBlockId.value) {
-      copyActivities.push({ ...droppedBlock, id: nanoid(16), parameter: {} });
+      copyActivities.push({ ...droppedBlock, id: newBlockId, parameter: {} });
     } else {
       const dropIndex = copyActivities.findIndex(
         (item) => item.id == dropBlockId.value
@@ -203,14 +212,14 @@ function handleDrop(event) {
       if (dropIndex > -1) {
         copyActivities.splice(dropIndex, 0, {
           ...droppedBlock,
-          id: nanoid(16),
+          id: newBlockId,
           parameter: {},
         });
       }
     }
   } else {
     if (id.value == dropBlockId.value) {
-      copyActivities.push({ ...droppedBlock, id: nanoid(16), parameter: {} });
+      copyActivities.push({ ...droppedBlock, id: newBlockId, parameter: {} });
     } else {
       const dropIndex = copyActivities.findIndex(
         (item) => item.id == dropBlockId.value
@@ -218,14 +227,19 @@ function handleDrop(event) {
       if (dropIndex > -1) {
         copyActivities.splice(dropIndex, 0, {
           ...droppedBlock,
-          id: nanoid(16),
+          id: newBlockId,
           parameter: {},
         });
       }
     }
   }
-
+  selectedActivity.value = [newBlockId];
   emit("update", { id: props.element.id, children: copyActivities });
+  if (!droppedBlock.id) {
+    nextTick(() => {
+      newAddBlockId.value = newBlockId;
+    });
+  }
 }
 
 function updateData(data) {
