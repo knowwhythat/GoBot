@@ -14,7 +14,9 @@
       <template #icons>
         <SystemOperate @quit="confirmQuit" />
       </template>
-      <router-view></router-view>
+      <KeepAlive>
+        <router-view></router-view>
+      </KeepAlive>
     </Panel>
 
     <div>
@@ -44,6 +46,7 @@ import TerminalSvg from "@/assets/images/terminal.svg";
 import DesignerSvg from "@/assets/images/designer.svg";
 import TriggerSvg from "@/assets/images/trigger.svg";
 import RecordSvg from "@/assets/images/record.svg";
+import SettingSvg from "@/assets/images/setting.svg";
 import SystemOperate from "@/components/SystemOperate.vue";
 import { useConfirm } from "primevue/useconfirm";
 const confirm = useConfirm();
@@ -76,11 +79,19 @@ const items = ref([
     },
   },
   {
-    label: "日志",
+    label: "运行监控",
     icon: TerminalSvg,
     command: () => {
-      title.value = "日志";
-      router.push("/log");
+      title.value = "运行监控";
+      router.push("/monitor");
+    },
+  },
+  {
+    label: "设置",
+    icon: SettingSvg,
+    command: () => {
+      title.value = "设置";
+      router.push("/setting");
     },
   },
 ]);

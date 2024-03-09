@@ -96,7 +96,7 @@ import SystemOperate from "@/components/SystemOperate.vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { useToast } from "primevue/usetoast";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/main/App";
-import { WindowMaximise } from "@back/runtime/runtime";
+import { WindowMaximise, WindowUnmaximise } from "@back/runtime/runtime";
 import { trim } from "lodash-es";
 import { useConfirm } from "primevue/useconfirm";
 const confirm = useConfirm();
@@ -141,6 +141,7 @@ const state = reactive({
 const confirmQuit = () => {
   if (!state.dataChanged) {
     router.back();
+    WindowUnmaximise();
   } else {
     confirm.require({
       message: "工作空间的修改尚未保存,确认将丢弃所有修改,是否确认?",
@@ -151,6 +152,7 @@ const confirmQuit = () => {
       acceptLabel: "确认",
       accept: () => {
         router.back();
+        WindowUnmaximise();
       },
       reject: () => {},
     });

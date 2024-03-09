@@ -23,6 +23,7 @@
             :model-value="expression"
             @update:model-value="chageExpression($event)"
             placeholder="输入内容或表达式"
+            @keydown="(e) => e.stopPropagation()"
           />
           <Button
             class="h-8"

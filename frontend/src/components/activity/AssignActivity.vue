@@ -22,6 +22,7 @@
           @update:model-value="chageName($event)"
           class="py-0 px-2 h-8"
           placeholder="变量名称"
+          @keydown="(e) => e.stopPropagation()"
         />
         <span class="mx-1 my-auto"> = </span>
         <InputGroup>
@@ -30,6 +31,7 @@
             @update:model-value="chageValue($event)"
             class="py-0 px-2 h-8"
             placeholder="变量值"
+            @keydown="(e) => e.stopPropagation()"
           />
           <Button
             class="h-8"

@@ -3,7 +3,7 @@
 import {plugin} from '../models';
 import {models} from '../models';
 
-export function CreateProject(arg1:string):Promise<void>;
+export function AddOrUpdateProject(arg1:string,arg2:string,arg3:string,arg4:boolean):Promise<void>;
 
 export function DealDebugSignal(arg1:string):Promise<void>;
 
@@ -41,6 +41,8 @@ export function RestartReplCommand(arg1:string):Promise<void>;
 
 export function RunActivity(arg1:string,arg2:string):Promise<void>;
 
+export function RunMainFlow(arg1:string):Promise<void>;
+
 export function RunSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
@@ -60,5 +62,3 @@ export function StartPick():Promise<string>;
 export function StartPickWindowsElement():Promise<string>;
 
 export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
-
-export function UpdateProject(arg1:string,arg2:string):Promise<void>;

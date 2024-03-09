@@ -11,7 +11,8 @@ type Project struct {
 	Name        string    `json:"name"`
 	Path        string    `json:"path"`
 	Icon        string    `json:"icon"`
+	IsFlow      bool      `json:"isFlow"`
 	Description string    `json:"description"`
-	CreateTs    time.Time `json:"create_ts"`
-	UpdateTs    time.Time `json:"update_ts"`
+	CreateTs    time.Time `json:"createTs"`
+	UpdateTs    time.Time `json:"updateTs"`
 }

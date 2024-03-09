@@ -13,6 +13,7 @@ import "@/assets/css/drawflow.css";
 import "@/assets/css/flow.css";
 import "primevue/resources/themes/lara-light-purple/theme.css";
 import BadgeDirective from "primevue/badgedirective";
+import { LogError } from "@back/runtime/runtime";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -30,5 +31,10 @@ app.use(ConfirmationService);
 app.directive("tooltip", Tooltip);
 app.directive("badge", BadgeDirective);
 app.use(vRemixicon, icons);
+
+app.config.errorHandler = (err) => {
+  console.error(err);
+  LogError(err);
+};
 
 app.mount("#app");

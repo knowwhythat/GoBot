@@ -108,7 +108,7 @@
                 <div class="flex align-items-center gap-2">
                   <v-remixicon size="18" name="riHistoryLine" />
                   <span class="-mt-1">
-                    {{ item?.update_ts.substr(0, 19).replace("T", " ") }}
+                    {{ item?.updateTs.substr(0, 19).replace("T", " ") }}
                   </span>
                 </div>
               </div>
@@ -117,16 +117,14 @@
                   {{ item?.name }}
                 </div>
               </div>
-              <div class="pb-1">
-                {{ item?.description }}
-              </div>
+              <div class="pb-1">{{}}</div>
               <div class="flex flex-row-reverse gap-1">
                 <SplitButton
                   rounded
                   outlined
                   label="设置"
                   icon="pi pi-play"
-                  @click="run(item?.id)"
+                  @click="run(item)"
                   :model="getItems(item?.id)"
                 >
                   <template #icon>
@@ -137,13 +135,14 @@
                   rounded
                   outlined
                   icon="pi pi-file-edit"
-                  @click="edit(item?.id)"
+                  @click="edit(item)"
                   v-tooltip="'编辑'"
                 />
                 <Button
                   icon="pi pi-caret-right"
                   rounded
                   outlined
+                  @click="run(item)"
                   v-tooltip="'运行'"
                 >
                   <template #icon>
@@ -171,17 +170,21 @@
         </div>
       </template>
       <div class="flex justify-content-center">
-        <label for="value" class="mt-3 w-20">流程名称</label>
+        <label for="value" class="mt-3 w-32">流程名称</label>
         <InputText
           id="value"
           v-model="newProject.name"
           type="text"
           autocomplete="off"
-          class="w-full ml-2"
+          class="w-full ml-6"
         />
       </div>
       <div class="flex justify-content-center mt-2">
-        <label for="value" class="w-20">描述</label>
+        <label for="value" class="w-32">是否使用流程图</label>
+        <InputSwitch v-model="newProject.isFlow" />
+      </div>
+      <div class="flex justify-content-center mt-2">
+        <label for="value" class="w-32">描述</label>
         <Editor v-model="newProject.desc" editorStyle="height: 240px" />
       </div>
       <template #footer>
@@ -206,6 +209,7 @@
 <script setup>
 import { ref, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
+import InputSwitch from "primevue/inputswitch";
 import DataView from "primevue/dataview";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
@@ -216,8 +220,15 @@ import Dialog from "primevue/dialog";
 import Editor from "primevue/editor";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "lodash-es";
-import { CreateProject, ListProject, DeleteProject } from "@back/go/main/App";
+import {
+  AddOrUpdateProject,
+  ListProject,
+  DeleteProject,
+  RunMainFlow,
+} from "@back/go/main/App";
 import { useConfirm } from "primevue/useconfirm";
+import { useAppStore } from "@/stores/app";
+const appStore = useAppStore();
 const toast = useToast();
 const router = useRouter();
 const confirm = useConfirm();
@@ -262,7 +273,13 @@ function getItems(id) {
     {
       label: "编辑",
       icon: "pi pi-file-edit",
-      command: () => {},
+      command: () => {
+        const pro = projects.value.find((p) => p.id == id);
+        newProject.id = pro.id;
+        newProject.name = pro.name;
+        newProject.desc = pro.description;
+        newProject.dialogVisible = true;
+      },
     },
     {
       label: "删除",
@@ -277,11 +294,14 @@ function getItems(id) {
           rejectLabel: "取消",
           acceptLabel: "删除",
           accept: () => {
+            appStore.changeLoadingState(true);
             DeleteProject(id)
               .then((result) => {
+                appStore.changeLoadingState(false);
                 listProject();
               })
               .catch((error) => {
+                appStore.changeLoadingState(false);
                 console.error(error);
               });
           },
@@ -304,27 +324,38 @@ function getItems(id) {
   ];
 }
 
-const run = () => {
-  toast.add({
-    severity: "success",
-    summary: "Success",
-    detail: "Data Saved",
-    life: 3000,
+const run = (item) => {
+  RunMainFlow(item.id).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "流程运行异常",
+      detail: err,
+      life: 3000,
+    });
   });
 };
 
-const edit = (id) => {
-  router.push("/design?id=" + id);
+const edit = (item) => {
+  if (item.isFlow) {
+    router.push("/design?id=" + item.id);
+  } else {
+    router.push(`design/sequence?id=${item.id}&subflowId=main&label=主流程`);
+  }
 };
 
 const newProject = reactive({
   dialogVisible: false,
   loading: false,
+  id: "",
   name: "",
+  isFlow: false,
   desc: "",
 });
 
 function createProject() {
+  newProject.id = "";
+  newProject.name = "";
+  newProject.desc = "";
   newProject.dialogVisible = true;
 }
 
@@ -339,14 +370,22 @@ function doCreateProject() {
     return;
   }
   newProject.loading = true;
-  CreateProject(newProject.name)
+  appStore.changeLoadingState(true);
+  AddOrUpdateProject(
+    newProject.id,
+    newProject.name,
+    newProject.desc,
+    newProject.isFlow
+  )
     .then((result) => {
       newProject.loading = false;
+      appStore.changeLoadingState(false);
       newProject.dialogVisible = false;
       listProject();
     })
     .catch((error) => {
       console.error(error);
+      appStore.changeLoadingState(false);
       newProject.loading = false;
       toast.add({
         severity: "error",

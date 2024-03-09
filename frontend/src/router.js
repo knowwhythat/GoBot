@@ -3,7 +3,8 @@ import Main from "@/views/main/MainView.vue";
 import Flow from "@/views/main/FlowView.vue";
 import Trigger from "@/views/main/TriggerView.vue";
 import Record from "@/views/main/RecordView.vue";
-import Log from "@/views/main/LogView.vue";
+import Setting from "@/views/main/SettingView.vue";
+import Monitor from "@/views/main/MonitorView.vue";
 import DesignView from "@/views/design/DesignView.vue";
 import WorkflowView from "@/views/design/flow/WorkflowView.vue";
 import SequenceView from "@/views/design/sequence/MainView.vue";
@@ -18,7 +19,8 @@ export const router = createRouter({
         { path: "", component: Flow },
         { path: "trigger", component: Trigger },
         { path: "record", component: Record },
-        { path: "log", component: Log },
+        { path: "monitor", component: Monitor },
+        { path: "setting", component: Setting },
       ],
     },
     {

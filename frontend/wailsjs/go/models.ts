@@ -5,11 +5,12 @@ export namespace models {
 	    name: string;
 	    path: string;
 	    icon: string;
+	    isFlow: boolean;
 	    description: string;
 	    // Go type: time
-	    create_ts: any;
+	    createTs: any;
 	    // Go type: time
-	    update_ts: any;
+	    updateTs: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Project(source);
@@ -21,9 +22,10 @@ export namespace models {
 	        this.name = source["name"];
 	        this.path = source["path"];
 	        this.icon = source["icon"];
+	        this.isFlow = source["isFlow"];
 	        this.description = source["description"];
-	        this.create_ts = this.convertValues(source["create_ts"], null);
-	        this.update_ts = this.convertValues(source["update_ts"], null);
+	        this.createTs = this.convertValues(source["createTs"], null);
+	        this.updateTs = this.convertValues(source["updateTs"], null);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

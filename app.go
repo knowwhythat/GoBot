@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"gobot/dao"
 	"gobot/forms"
 	"gobot/models"
@@ -65,19 +66,27 @@ func (a *App) SelectProject(id string) (project *models.Project, err error) {
 	return project, err
 }
 
-func (a *App) UpdateProject(id string, name string) error {
-	_, err := services.ModifyProject(id, models.Project{Name: name})
-	return err
-}
-
 func (a *App) DeleteProject(id string) error {
 	err := services.RemoveProject(id)
 	return err
 }
 
-func (a *App) CreateProject(name string) error {
-	_, err := services.AddProject(name)
+func (a *App) AddOrUpdateProject(id, name, desc string, isFlow bool) error {
+	_, err := services.AddOrUpdateProject(id, name, desc, isFlow)
 	return err
+}
+
+func (a *App) RunMainFlow(id string) error {
+	project, err := services.QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	if project.IsFlow {
+		return errors.New("暂不支持流程图类型的项目运行")
+	} else {
+		return services.RunSubFlow(a.ctx, id, "main")
+	}
+
 }
 
 func (a *App) GetMainFlow(id string) (map[string]string, error) {
