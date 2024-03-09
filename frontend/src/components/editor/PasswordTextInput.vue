@@ -20,6 +20,7 @@
       v-if="isExpression"
       :placeholder="input.placeholder"
       v-model="content"
+      @keydown="(e) => e.stopPropagation()"
     />
     <Password
       v-if="!isExpression"

@@ -20,6 +20,7 @@
       :editable="true"
       :model-value="props.value"
       @update:modelValue="$emit('update', $event)"
+      @keydown="(e) => e.stopPropagation()"
     ></InputText>
   </InputGroup>
 </template>

@@ -193,7 +193,6 @@ const newAddBlockId = ref(null);
 provide("newAddBlockId", { newAddBlockId: newAddBlockId });
 function handleDrop(event) {
   event.preventDefault();
-  event.stopPropagation();
   const droppedBlock = JSON.parse(
     event.dataTransfer.getData("activity") || null
   );
@@ -202,9 +201,9 @@ function handleDrop(event) {
   const copyActivities = [...props.element.children];
   const newBlockId = nanoid(16);
   if (droppedBlock.id) {
-    dragBlockId.value = "";
     if (id.value == dropBlockId.value) {
       copyActivities.push({ ...droppedBlock, id: newBlockId, parameter: {} });
+      dragBlockId.value = "";
     } else {
       const dropIndex = copyActivities.findIndex(
         (item) => item.id == dropBlockId.value
@@ -215,6 +214,9 @@ function handleDrop(event) {
           id: newBlockId,
           parameter: {},
         });
+        dragBlockId.value = "";
+      } else {
+        return;
       }
     }
   } else {
@@ -230,6 +232,8 @@ function handleDrop(event) {
           id: newBlockId,
           parameter: {},
         });
+      } else {
+        return;
       }
     }
   }
@@ -240,6 +244,7 @@ function handleDrop(event) {
       newAddBlockId.value = newBlockId;
     });
   }
+  event.stopPropagation();
 }
 
 function updateData(data) {

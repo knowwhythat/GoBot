@@ -37,6 +37,7 @@
               class="w-full mr-2"
               type="text"
               v-model="nodeData.label"
+              @keydown="(e) => e.stopPropagation()"
             />
             <a title="提示" target="_blank" rel="noopener" class="my-auto p-4">
               <v-remixicon name="riInformationLine" size="18" />
@@ -175,7 +176,10 @@
                 size="20"
                 class="mr-2"
               />
-              <InputText v-model="nodeData.parameter['retry_interval']" />
+              <InputText
+                v-model="nodeData.parameter['retry_interval']"
+                @keydown="(e) => e.stopPropagation()"
+              />
             </div>
           </div>
         </div>

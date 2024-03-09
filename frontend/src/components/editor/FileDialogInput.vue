@@ -16,7 +16,11 @@
         @node-select="selectedNode($event)"
       ></Tree>
     </OverlayPanel>
-    <InputText :placeholder="input.placeholder" v-model="content" />
+    <InputText
+      :placeholder="input.placeholder"
+      v-model="content"
+      @keydown="(e) => e.stopPropagation()"
+    />
     <Button icon="pi pi-folder-open" @click="openDialog"></Button>
     <Button
       :severity="isExpression ? 'Primary' : 'secondary'"

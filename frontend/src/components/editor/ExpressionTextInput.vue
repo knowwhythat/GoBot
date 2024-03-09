@@ -16,7 +16,11 @@
         @node-select="selectedNode($event)"
       ></Tree>
     </OverlayPanel>
-    <InputText :placeholder="input.placeholder" v-model="content" />
+    <InputText
+      :placeholder="input.placeholder"
+      v-model="content"
+      @keydown="(e) => e.stopPropagation()"
+    />
     <Button
       :severity="isExpression ? 'Primary' : 'secondary'"
       @click="changeValueType"

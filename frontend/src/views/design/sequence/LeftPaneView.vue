@@ -12,6 +12,9 @@
           label: (options) => ({
             class: ['w-full'],
           }),
+          input: (options) => ({
+            onkeydown: (e) => e.stopPropagation(),
+          }),
         }"
       >
         <template #default="slotProps">

@@ -47,7 +47,7 @@
         </button>
       </div>
     </template>
-    <div class="flex relative">
+    <div class="flex relative h-full">
       <Tree
         :value="nodes"
         :filter="false"
@@ -70,14 +70,14 @@
         </template>
       </Tree>
       <ContextMenu ref="menu" :model="items" />
-      <div class="w-48 h-48">
+      <div class="w-64 h-full">
         <Image
           v-if="imagePath"
           :src="imagePath"
           alt="Image"
-          width="192"
-          height="192"
           preview
+          class="flex"
+          image-class="flex justify-center items-center object-scale-down"
         />
       </div>
     </div>
@@ -317,5 +317,8 @@ function onContextMenuClick(options) {
 :deep(.p-tree) {
   padding: 0;
   border: none;
+}
+:deep(.p-tree-wrapper) {
+  height: 100%;
 }
 </style>
