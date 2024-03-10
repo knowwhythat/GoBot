@@ -8,10 +8,10 @@ import (
 
 type Execution struct {
 	Id            uuid.UUID `json:"id"`
-	ProjectId     uuid.UUID `json:"project_id"`
-	SubFlowId     string    `json:"sub_flow_id"`
-	ExecuteResult int       `json:"execute_result"` // 0:失败;1:成功;3:手动停止
-	ErrorMsg      string    `json:"error_msg"`
-	StartTs       time.Time `json:"start_ts"`
-	EndTs         time.Time `json:"end_ts"`
+	ProjectId     uuid.UUID `json:"projectId"`
+	SubFlowId     string    `json:"subFlowId"`
+	ExecuteResult int       `json:"executeResult"` // 0:失败;1:成功;3:手动停止
+	ErrorMsg      string    `json:"errorMsg"`
+	StartTs       time.Time `json:"startTs"`
+	EndTs         time.Time `json:"endTs"`
 }

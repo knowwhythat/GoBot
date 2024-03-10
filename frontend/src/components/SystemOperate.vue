@@ -3,7 +3,7 @@
     <div class="hover:bg-slate-200 p-2" @click="WindowMinimise">
       <v-remixicon size="20" viewBox="0 0 1024 1024" name="minIcon" />
     </div>
-    <div class="hover:bg-slate-200 p-2" @click="WindowToggleMaximise">
+    <div class="hover:bg-slate-200 p-2" @click="toggleMaximise">
       <v-remixicon
         v-if="isMax"
         size="20"
@@ -23,8 +23,8 @@ import {
   WindowMinimise,
   WindowToggleMaximise,
 } from "@back/runtime/runtime";
-import { onMounted, onUnmounted, ref } from "vue";
-const emit = defineEmits(["quit"]);
+import { nextTick, onMounted, onUnmounted, ref } from "vue";
+const emit = defineEmits(["toggleMax", "min", "quit"]);
 
 onMounted(async () => {
   isMax.value = await WindowIsMaximised();
@@ -39,5 +39,12 @@ const isMax = ref(false);
 
 async function handleResize() {
   isMax.value = await WindowIsMaximised();
+}
+
+async function toggleMaximise() {
+  await WindowToggleMaximise();
+  nextTick(async () => {
+    emit("toggleMax", await WindowIsMaximised());
+  });
 }
 </script>

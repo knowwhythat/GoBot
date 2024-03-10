@@ -260,7 +260,8 @@ function update({ children }) {
   mainActivity.sequence.children = children;
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await WindowMaximise();
   GetSubFlow(props.id, props.subflowId)
     .then((result) => {
       if (result) {

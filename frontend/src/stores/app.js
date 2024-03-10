@@ -20,6 +20,8 @@ export const useAppStore = defineStore("app", {
     },
     retrieved: true,
     loading: false,
+    mainWindow: { isMax: false, width: 0, height: 0 },
+    designWindow: { isMax: false, width: 0, height: 0 },
   }),
   getters: {
     inputPosition: (state) =>
@@ -38,6 +40,9 @@ export const useAppStore = defineStore("app", {
     },
     changeLoadingState(value) {
       this.loading = value;
+    },
+    changeMainWindowState(value) {
+      this.mainWindow.isMax = value;
     },
   },
 });

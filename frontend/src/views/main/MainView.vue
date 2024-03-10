@@ -12,11 +12,12 @@
       }"
     >
       <template #icons>
-        <SystemOperate @quit="confirmQuit" />
+        <SystemOperate
+          @quit="confirmQuit"
+          @toggleMax="appStore.changeMainWindowState($event)"
+        />
       </template>
-      <KeepAlive>
-        <router-view></router-view>
-      </KeepAlive>
+      <router-view></router-view>
     </Panel>
 
     <div>
@@ -37,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Quit } from "@back/runtime/runtime";
 import Panel from "primevue/panel";
@@ -49,8 +50,18 @@ import RecordSvg from "@/assets/images/record.svg";
 import SettingSvg from "@/assets/images/setting.svg";
 import SystemOperate from "@/components/SystemOperate.vue";
 import { useConfirm } from "primevue/useconfirm";
+import { useAppStore } from "@/stores/app";
+import { WindowUnmaximise, WindowMaximise } from "@back/runtime/runtime";
+const appStore = useAppStore();
 const confirm = useConfirm();
 
+onMounted(async () => {
+  if (appStore.mainWindow.isMax) {
+    await WindowMaximise();
+  } else {
+    await WindowUnmaximise();
+  }
+});
 const router = useRouter();
 const title = ref("工作流");
 const items = ref([

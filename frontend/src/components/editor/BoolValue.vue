@@ -1,6 +1,6 @@
 <template>
   <Checkbox
-    class="pt-3"
+    class="mt-4"
     v-model="content"
     trueValue="True"
     falseValue="False"
