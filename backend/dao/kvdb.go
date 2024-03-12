@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"gobot/utils"
+	"gobot/backend/utils"
 	"os"
 	"path/filepath"
 	"time"

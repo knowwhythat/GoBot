@@ -2,7 +2,7 @@ package services
 
 import (
 	"encoding/json"
-	"gobot/log"
+	"gobot/backend/log"
 	"os"
 	"strings"
 )

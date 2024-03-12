@@ -19,7 +19,8 @@
     <Splitter>
       <SplitterPanel :size="30">
         <Listbox
-          v-model="selectedPath"
+          :model-value="selectedPath"
+          @update:modelValue="updateSelected"
           :options="paths"
           class="w-full"
           listStyle="max-height:650px"
@@ -132,6 +133,12 @@ const selectedPath = ref({
   attrs: [],
 });
 
+function updateSelected(value) {
+  if (value) {
+    selectedPath.value = value;
+  }
+}
+
 function show() {
   if (props.needInit) {
     paths.value = props.pathOption.paths.map((path, index) => {
@@ -162,7 +169,7 @@ function show() {
   } else {
     paths.value = props.pathOption.paths;
   }
-  selectedPath.value = paths.value[0];
+  selectedPath.value = paths.value[paths.value.length - 1];
 }
 
 async function checkData() {

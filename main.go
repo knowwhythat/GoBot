@@ -2,9 +2,9 @@ package main
 
 import (
 	"embed"
-	"gobot/config"
-	"gobot/dao"
-	"gobot/log"
+	"gobot/backend/config"
+	"gobot/backend/dao"
+	"gobot/backend/log"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -14,9 +14,6 @@ import (
 
 //go:embed all:frontend/dist
 var assets embed.FS
-
-//go:embed services/appicon.ico
-var icon []byte
 
 func main() {
 	if err := config.InitConfig("./config.yml"); err != nil {

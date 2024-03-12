@@ -2,8 +2,8 @@ package dao
 
 import (
 	"encoding/json"
-	"gobot/constants"
-	"gobot/models"
+	"gobot/backend/constants"
+	"gobot/backend/models"
 	"time"
 
 	uuid "github.com/google/uuid"

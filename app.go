@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"errors"
-	"gobot/dao"
-	"gobot/forms"
-	"gobot/models"
-	"gobot/plugin"
-	"gobot/services"
-	"gobot/services/sys_tray"
+	"gobot/backend/dao"
+	"gobot/backend/forms"
+	"gobot/backend/models"
+	"gobot/backend/plugin"
+	"gobot/backend/services"
+	"gobot/backend/services/sys_tray"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -22,6 +23,9 @@ type App struct {
 func NewApp() *App {
 	return &App{}
 }
+
+//go:embed backend/services/appicon.ico
+var icon []byte
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
