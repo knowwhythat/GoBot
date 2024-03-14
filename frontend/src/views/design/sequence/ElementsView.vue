@@ -113,7 +113,7 @@ import {
   GetSelectedWindowsElement,
   GetProjectWindowsElements,
   RemoveWindowsElement,
-} from "@back/go/main/App";
+} from "@back/go/backend/App";
 import { nanoid } from "nanoid";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";

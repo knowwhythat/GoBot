@@ -45,7 +45,7 @@ import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
-import { RunActivity } from "@back/go/main/App";
+import { RunActivity } from "@back/go/backend/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();

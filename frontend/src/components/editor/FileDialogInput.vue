@@ -39,7 +39,7 @@ import InputText from "primevue/inputtext";
 import OverlayPanel from "primevue/overlaypanel";
 import Button from "primevue/button";
 import { ref, computed } from "vue";
-import { OpenDialog } from "@back/go/main/App";
+import { OpenDialog } from "@back/go/backend/App";
 const props = defineProps({
   value: {
     type: String,

@@ -95,7 +95,7 @@ import Button from "primevue/button";
 import SystemOperate from "@/components/SystemOperate.vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { useToast } from "primevue/usetoast";
-import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/main/App";
+import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
 import { WindowMaximise, WindowUnmaximise } from "@back/runtime/runtime";
 import { trim } from "lodash-es";
 import { useConfirm } from "primevue/useconfirm";

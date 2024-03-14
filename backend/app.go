@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"context"
@@ -24,17 +24,17 @@ func NewApp() *App {
 	return &App{}
 }
 
-//go:embed backend/services/appicon.ico
+//go:embed services/appicon.ico
 var icon []byte
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
-func (a *App) startup(ctx context.Context) {
+func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
 	sys_tray.CreateTray(ctx, icon)
 }
 
-func (a *App) shutdown(ctx context.Context) {
+func (a *App) Shutdown(ctx context.Context) {
 	dao.MainDB.Close()
 	dao.LogDB.Close()
 	services.StopWindowsInspectCommand()

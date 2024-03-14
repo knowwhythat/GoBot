@@ -50,7 +50,7 @@ import TabPanel from "primevue/tabpanel";
 import Tree from "primevue/tree";
 import { getIconPath } from "@/utils/helper";
 import { ref, onMounted, inject } from "vue";
-import { ParseAllPlugin } from "@back/go/main/App";
+import { ParseAllPlugin } from "@back/go/backend/App";
 
 const nodes = ref(null);
 

@@ -30,7 +30,7 @@
 </template>
 <script setup>
 import Image from "primevue/image";
-import { RunActivity, GetElementImage } from "@back/go/main/App";
+import { RunActivity, GetElementImage } from "@back/go/backend/App";
 import { inject, onMounted, ref } from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";

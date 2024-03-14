@@ -225,7 +225,7 @@ import {
   ListProject,
   DeleteProject,
   RunMainFlow,
-} from "@back/go/main/App";
+} from "@back/go/backend/App";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
 const appStore = useAppStore();

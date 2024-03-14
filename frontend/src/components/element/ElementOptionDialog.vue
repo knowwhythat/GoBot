@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { StartCheckWindowsElement } from "@back/go/main/App";
+import { StartCheckWindowsElement } from "@back/go/backend/App";
 import Dialog from "primevue/dialog";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";

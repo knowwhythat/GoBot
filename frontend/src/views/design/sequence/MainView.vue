@@ -200,7 +200,7 @@ import {
   TerminateSubFlow,
   DealDebugSignal,
   RestartReplCommand,
-} from "@back/go/main/App";
+} from "@back/go/backend/App";
 import {
   EventsOn,
   EventsOff,

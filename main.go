@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"gobot/backend"
 	"gobot/backend/config"
 	"gobot/backend/dao"
 	"gobot/backend/log"
@@ -23,7 +24,7 @@ func main() {
 	log.Init()
 	dao.InitKvDB()
 	// Create an instance of the app structure
-	app := NewApp()
+	app := backend.NewApp()
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "GoBot",
@@ -38,8 +39,8 @@ func main() {
 		MinWidth:        400,
 		MinHeight:       400,
 		// BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:  app.startup,
-		OnShutdown: app.shutdown,
+		OnStartup:  app.Startup,
+		OnShutdown: app.Shutdown,
 		Bind: []interface{}{
 			app,
 		},

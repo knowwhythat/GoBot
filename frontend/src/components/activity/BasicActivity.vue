@@ -19,7 +19,7 @@
 <script setup>
 import ActivityBase from "./ActivityBase.vue";
 import { inject } from "vue";
-import { RunActivity } from "@back/go/main/App";
+import { RunActivity } from "@back/go/backend/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();

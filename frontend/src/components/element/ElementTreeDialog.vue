@@ -53,7 +53,7 @@ import { ref, watch } from "vue";
 import {
   GetWindowsElementList,
   HighlightCurrentElement,
-} from "@back/go/main/App";
+} from "@back/go/backend/App";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 

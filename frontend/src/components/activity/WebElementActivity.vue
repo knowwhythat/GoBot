@@ -29,7 +29,7 @@
   </ActivityBase>
 </template>
 <script setup>
-import { StartCheck, RunActivity } from "@back/go/main/App";
+import { StartCheck, RunActivity } from "@back/go/backend/App";
 import { inject } from "vue";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
