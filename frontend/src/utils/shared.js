@@ -212,10 +212,10 @@ export const conditionBuilder = {
 export const typeBuilder = {
   str: {
     icon: "pi pi-dollar",
-    prperty: [{ label: "trim", type: "method" }],
+    property: [{ label: "trim", type: "method" }],
   },
   number: {
     icon: "pi pi-plus-circle",
-    prperty: [{ label: "trim", type: "method" }],
+    property: [{ label: "trim", type: "method" }],
   },
 };

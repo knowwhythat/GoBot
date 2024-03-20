@@ -1,3 +1,26 @@
+export namespace forms {
+	
+	export class LoginForm {
+	    username: string;
+	    pwd: string;
+	    rememberMe: boolean;
+	    autoLogin: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new LoginForm(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.username = source["username"];
+	        this.pwd = source["pwd"];
+	        this.rememberMe = source["rememberMe"];
+	        this.autoLogin = source["autoLogin"];
+	    }
+	}
+
+}
+
 export namespace models {
 	
 	export class Project {

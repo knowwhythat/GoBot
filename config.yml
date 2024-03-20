@@ -1,9 +1,14 @@
-kvdb:
-  path: "D:\\code\\go\\gobot\\build\\data\\"
-log:
-  path: "D:\\code\\go\\gobot\\build\\log\\"
-  level: "Info"
 data:
-  path: "D:\\code\\go\\gobot\\build\\data\\"
+    path: D:\code\go\gobot\build\data\
+kvdb:
+    path: D:\code\go\gobot\build\data\
+log:
+    level: Info
+    path: D:\code\go\gobot\build\log\
+login:
+    autologin: true
+    pwd: cRP5+wvyv56DMABfiYXjLiMB8aUcZwNEwkqx+PFxf4U=
+    rememberme: true
+    username: admin
 python:
-  path: "D:\\Program Files (x86)\\Python3.8\\python.exe"
+    path: D:\Program Files (x86)\Python3.8\python.exe

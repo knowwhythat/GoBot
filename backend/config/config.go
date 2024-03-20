@@ -14,7 +14,7 @@ type Config struct {
 	Name string
 }
 
-// 监控配置文件变化并热加载程序
+// WatchConfig 监控配置文件变化并热加载程序
 func (c *Config) WatchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
@@ -45,7 +45,7 @@ func (c *Config) Init() error {
 		viper.SetDefault("log.level", "Info")
 		viper.SetDefault("data.path", exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
 		viper.SetDefault("python.path", exePath+string(os.PathSeparator)+"python"+string(os.PathSeparator)+"python.exe")
-		viper.WriteConfig()
+		_ = viper.WriteConfig()
 	}
 
 	return nil

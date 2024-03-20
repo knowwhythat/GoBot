@@ -10,9 +10,14 @@ import (
 	"gobot/backend/plugin"
 	"gobot/backend/services"
 	"gobot/backend/services/sys_tray"
+	"gobot/backend/utils"
+
+	"github.com/spf13/viper"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+const aesKey = "I98NTHNPezFnbe8iCaSc1xMPAv8ZtTil"
 
 // App struct
 type App struct {
@@ -27,7 +32,7 @@ func NewApp() *App {
 //go:embed services/appicon.ico
 var icon []byte
 
-// startup is called when the app starts. The context is saved
+// Startup is called when the app starts. The context is saved,
 // so we can call the runtime methods
 func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
@@ -35,15 +40,15 @@ func (a *App) Startup(ctx context.Context) {
 }
 
 func (a *App) Shutdown(ctx context.Context) {
-	dao.MainDB.Close()
-	dao.LogDB.Close()
+	_ = dao.MainDB.Close()
+	_ = dao.LogDB.Close()
 	services.StopWindowsInspectCommand()
 }
 
 func (a *App) OpenDialog(option map[string]string) string {
 	if option["type"] == "file" {
-		fileter := runtime.FileFilter{DisplayName: option["display"], Pattern: option["pattern"]}
-		filePath, _ := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{Title: "选择文件", Filters: []runtime.FileFilter{fileter}})
+		filter := runtime.FileFilter{DisplayName: option["display"], Pattern: option["pattern"]}
+		filePath, _ := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{Title: "选择文件", Filters: []runtime.FileFilter{filter}})
 		return filePath
 	} else if option["type"] == "directory" {
 		filePath, _ := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{Title: "选择目录"})
@@ -51,6 +56,41 @@ func (a *App) OpenDialog(option map[string]string) string {
 	}
 
 	return ""
+}
+
+func (a *App) GetLoginData() forms.LoginForm {
+	username := viper.GetString("login.username")
+	pwd := viper.GetString("login.pwd")
+	if pwd != "" {
+		decryptPwd, err := utils.DecryptAES2Base64([]byte(aesKey), pwd)
+		if err == nil {
+			pwd = string(decryptPwd)
+		} else {
+			pwd = ""
+		}
+	}
+	rememberMe := viper.GetBool("login.rememberMe")
+	autoLogin := viper.GetBool("login.autoLogin")
+	return forms.LoginForm{
+		Username:   username,
+		Pwd:        pwd,
+		RememberMe: rememberMe,
+		AutoLogin:  autoLogin,
+	}
+}
+
+func (a *App) Login(form forms.LoginForm) error {
+	env := runtime.Environment(a.ctx)
+	println(env.Arch)
+	if form.RememberMe {
+		pwd, _ := utils.EncryptAES2Base64([]byte(aesKey), []byte(form.Pwd))
+		viper.Set("login.username", form.Username)
+		viper.Set("login.pwd", pwd)
+		viper.Set("login.rememberMe", form.RememberMe)
+		viper.Set("login.autoLogin", form.AutoLogin)
+		_ = viper.WriteConfig()
+	}
+	return nil
 }
 
 func (a *App) ListProject(query string, pageNum int) (result map[string]interface{}, err error) {

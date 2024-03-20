@@ -26,6 +26,10 @@ export function GetElementImage(arg1, arg2) {
   return window['go']['backend']['App']['GetElementImage'](arg1, arg2);
 }
 
+export function GetLoginData() {
+  return window['go']['backend']['App']['GetLoginData']();
+}
+
 export function GetMainFlow(arg1) {
   return window['go']['backend']['App']['GetMainFlow'](arg1);
 }
@@ -56,6 +60,10 @@ export function HighlightCurrentElement(arg1) {
 
 export function ListProject(arg1, arg2) {
   return window['go']['backend']['App']['ListProject'](arg1, arg2);
+}
+
+export function Login(arg1) {
+  return window['go']['backend']['App']['Login'](arg1);
 }
 
 export function OpenDialog(arg1) {

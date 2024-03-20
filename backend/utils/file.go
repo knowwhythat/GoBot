@@ -12,7 +12,12 @@ func SaveFile(src io.Reader, dst string) error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func(out *os.File) {
+		err := out.Close()
+		if err != nil {
+			//
+		}
+	}(out)
 
 	_, err = io.Copy(out, src)
 	return err
@@ -20,7 +25,10 @@ func SaveFile(src io.Reader, dst string) error {
 
 func GetFileMD5(file io.Reader) string {
 	h := md5.New()
-	io.Copy(h, file)
+	_, err := io.Copy(h, file)
+	if err != nil {
+		return ""
+	}
 	return hex.EncodeToString(h.Sum(nil))
 }
 

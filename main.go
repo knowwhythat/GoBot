@@ -22,7 +22,7 @@ func main() {
 		panic(err)
 	}
 	log.Init()
-	dao.InitKvDB()
+	_ = dao.InitKvDB()
 	// Create an instance of the app structure
 	app := backend.NewApp()
 	// Create application with options

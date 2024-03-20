@@ -70,7 +70,7 @@ const items = ref([
     icon: DesignerSvg,
     command: () => {
       title.value = "工作流";
-      router.push("/");
+      router.push("/main");
     },
   },
   {
@@ -78,7 +78,7 @@ const items = ref([
     icon: TriggerSvg,
     command: () => {
       title.value = "触发器";
-      router.push("/trigger");
+      router.push("/main/trigger");
     },
   },
   {
@@ -86,7 +86,7 @@ const items = ref([
     icon: RecordSvg,
     command: () => {
       title.value = "执行记录";
-      router.push("/record");
+      router.push("/main/record");
     },
   },
   {
@@ -94,7 +94,7 @@ const items = ref([
     icon: TerminalSvg,
     command: () => {
       title.value = "运行监控";
-      router.push("/monitor");
+      router.push("/main/monitor");
     },
   },
   {
@@ -102,7 +102,7 @@ const items = ref([
     icon: SettingSvg,
     command: () => {
       title.value = "设置";
-      router.push("/setting");
+      router.push("/main/setting");
     },
   },
 ]);
