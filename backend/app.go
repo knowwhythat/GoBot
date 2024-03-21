@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"errors"
+	"fmt"
 	"gobot/backend/dao"
 	"gobot/backend/forms"
 	"gobot/backend/models"
@@ -80,8 +81,8 @@ func (a *App) GetLoginData() forms.LoginForm {
 }
 
 func (a *App) Login(form forms.LoginForm) error {
-	env := runtime.Environment(a.ctx)
-	println(env.Arch)
+	sysInfo := services.GetSysInfo()
+	fmt.Printf("sysInfo: %#v\n", sysInfo)
 	if form.RememberMe {
 		pwd, _ := utils.EncryptAES2Base64([]byte(aesKey), []byte(form.Pwd))
 		viper.Set("login.username", form.Username)
