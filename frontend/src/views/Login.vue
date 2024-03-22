@@ -126,9 +126,12 @@ async function login() {
     return;
   }
   try {
+    appStore.changeLoadingState(true);
     await Login(loginForm);
     router.push("/main");
+    appStore.changeLoadingState(false);
   } catch (err) {
+    appStore.changeLoadingState(false);
     toast.add({
       severity: "error",
       summary: "登录异常",

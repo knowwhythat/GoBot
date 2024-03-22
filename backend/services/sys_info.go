@@ -61,7 +61,7 @@ func GetSysInfo() (info LSysInfo) {
 	info.OSPlatform = n.Platform + n.PlatformFamily + n.PlatformVersion + n.KernelArch
 	info.HostId = n.HostID
 	// 获取200ms内的CPU信息，太短不准确，也可以获几秒内的，但这样会有延时，因为要等待
-	cc, _ := cpu.Percent(time.Millisecond*200, false)
+	cc, _ := cpu.Percent(time.Second*1, false)
 	info.CpuUsedPercent = cc[0]
 
 	return

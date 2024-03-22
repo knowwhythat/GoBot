@@ -1,5 +1,6 @@
 <template>
   <div class="flex gap-4 -mt-5">
+    <slot></slot>
     <div class="hover:bg-slate-200 p-2" @click="WindowMinimise">
       <v-remixicon size="20" viewBox="0 0 1024 1024" name="minIcon" />
     </div>

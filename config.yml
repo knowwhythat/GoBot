@@ -6,8 +6,8 @@ log:
     level: Info
     path: D:\code\go\gobot\build\log\
 login:
-    autologin: true
-    pwd: Vv3lJg38S++yagDTDPYWRhGaPqvTQKwo5aHDd4VY8K8=
+    autologin: false
+    pwd: eVrNRFh2XSnXn+GwMxCAWT8azMtS9DTck1pmMRUQNiY=
     rememberme: true
     username: admin
 python:

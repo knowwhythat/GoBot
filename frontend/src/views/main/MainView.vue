@@ -15,9 +15,17 @@
         <SystemOperate
           @quit="confirmQuit"
           @toggleMax="appStore.changeMainWindowState($event)"
-        />
+        >
+          <div class="hover:bg-slate-200 p-2" @click="WindowMinimise">
+            <v-remixicon size="20" name="riUser3Line" />
+          </div>
+        </SystemOperate>
       </template>
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <transition name="slide-left">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </Panel>
 
     <div>
