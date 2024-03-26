@@ -91,19 +91,13 @@ func (a *App) Login(form forms.LoginForm) error {
 		viper.Set("login.autoLogin", form.AutoLogin)
 		_ = viper.WriteConfig()
 	}
+	services.InitSchedule(a.ctx)
 	return nil
 }
 
-func (a *App) ListProject(query string, pageNum int) (result map[string]interface{}, err error) {
-	total, resultList, err := services.QueryProjectPage(forms.QueryForm{
-		Query: query,
-		PageForm: forms.PageForm{
-			PageNum:  1,
-			PageSize: 12,
-		},
-	})
-	result = map[string]interface{}{"total": total, "list": resultList}
-	return result, err
+func (a *App) ListProject() (resultList []*models.Project, err error) {
+	resultList, err = services.QueryProjectPage()
+	return
 }
 
 func (a *App) SelectProject(id string) (project *models.Project, err error) {
@@ -131,7 +125,6 @@ func (a *App) RunMainFlow(id string) error {
 	} else {
 		return services.RunSubFlow(a.ctx, id, "main")
 	}
-
 }
 
 func (a *App) GetMainFlow(id string) (map[string]string, error) {
@@ -173,7 +166,7 @@ func (a *App) DealDebugSignal(command string) error {
 	return services.DealDebugSignal(command)
 }
 
-func (a *App) ParseAllPlugin() ([]plugin.Activitiy, error) {
+func (a *App) ParseAllPlugin() ([]plugin.Activity, error) {
 	return plugin.ParseAllPlugin()
 }
 
@@ -231,4 +224,20 @@ func (a *App) GetProjectWindowsElements(projectId string) (string, error) {
 
 func (a *App) RemoveWindowsElement(projectId, controlId string) error {
 	return services.RemoveWindowsElement(projectId, controlId)
+}
+
+func (a *App) QuerySchedulePage() (resultList []*models.Schedule, err error) {
+	return services.QuerySchedulePage()
+}
+
+func (a *App) AddOrUpdateSchedule(schedule models.Schedule) (err error) {
+	return services.AddOrUpdateSchedule(schedule)
+}
+
+func (a *App) ToggleScheduleById(id string, state bool) (err error) {
+	return services.ToggleScheduleById(id, state)
+}
+
+func (a *App) GetNextTriggerTime(cron string) (result string, err error) {
+	return services.GetNextTriggerTime(cron)
 }

@@ -6,63 +6,25 @@ import (
 	"fmt"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
-	"gobot/backend/forms"
 	"gobot/backend/models"
 	"gobot/backend/services/sys_exec"
 	"gobot/backend/utils"
 	"io/fs"
 	"os"
-	"strings"
 
-	"github.com/ahmetb/go-linq"
 	"github.com/spf13/viper"
 )
 
-func QueryProjectPage(page forms.QueryForm) (total int, resultList []*models.Project, err error) {
+func QueryProjectPage() (resultList []*models.Project, err error) {
 	if err := dao.ReadTx(dao.MainDB, func(tx dao.Tx) error {
-		allProjects, err := tx.SelectAllProject()
-		if err != nil {
-			return err
-		}
+		resultList, err = tx.SelectAllProject()
+		return err
 
-		query := linq.From(allProjects).Where(func(project interface{}) bool {
-			projectVlue := project.(*models.Project)
-			return strings.Contains(projectVlue.Name, page.Query)
-		}).OrderByDescendingT(func(project *models.Project) int64 {
-			return project.UpdateTs.UnixNano()
-		}).Query
-		total = query.Count()
-
-		if page.PageNum > 0 && page.PageSize > 0 {
-			start, end := page.Range()
-			query = query.Skip(start).Take(end - start)
-		}
-		projects := query.Results()
-
-		for _, project := range projects {
-			project := project.(*models.Project)
-			resultList = append(resultList, project)
-		}
-		return nil
 	}); err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 
-	return total, resultList, nil
-}
-
-func CountProject() (total int, err error) {
-	if err := dao.ReadTx(dao.MainDB, func(tx dao.Tx) error {
-		allProjects, err := tx.SelectAllProject()
-		if err != nil {
-			return err
-		}
-		total = len(allProjects)
-		return nil
-	}); err != nil {
-		return 0, err
-	}
-	return total, nil
+	return resultList, nil
 }
 
 func QueryProjectById(id string) (result *models.Project, err error) {
@@ -80,7 +42,7 @@ func AddOrUpdateProject(id, name, desc string, isFlow bool) (result *models.Proj
 	dataPath := viper.GetString("data.path")
 	projectDir := dataPath + constants.BaseDir + string(os.PathSeparator) + id
 	if !utils.PathExist(projectDir) {
-		os.MkdirAll(projectDir, fs.ModeDir)
+		_ = os.MkdirAll(projectDir, fs.ModeDir)
 	}
 	if id == "" {
 		result = &models.Project{
@@ -111,7 +73,7 @@ func AddOrUpdateProject(id, name, desc string, isFlow bool) (result *models.Proj
 		project.Name = name
 		project.Description = desc
 		project.IsFlow = isFlow
-		ModifyProject(*project)
+		_ = ModifyProject(*project)
 	}
 
 	return result, nil
@@ -119,7 +81,7 @@ func AddOrUpdateProject(id, name, desc string, isFlow bool) (result *models.Proj
 
 func ModifyProject(form models.Project) (err error) {
 	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
-		project, err := tx.SelectProject(form.Id.String())
+		project, err := tx.SelectProject(form.Id)
 		if err != nil {
 			return err
 		}
@@ -183,7 +145,7 @@ func SaveMainFlow(id string, data string) error {
 	if err != nil {
 		return err
 	}
-	ModifyProject(*project)
+	_ = ModifyProject(*project)
 
 	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	if !utils.PathExist(mainFlowPath) {
@@ -216,7 +178,7 @@ func SaveSubFlow(id string, subId string, data string) error {
 	if err != nil {
 		return err
 	}
-	ModifyProject(*project)
+	_ = ModifyProject(*project)
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
 	if !utils.PathExist(devPath) {

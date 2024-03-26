@@ -27,12 +27,12 @@ var windowsInspectCommand *exec.Cmd
 
 var windowsInspectPort = 7777
 
-func GetElementImage(projectId, element_id string) (string, error) {
+func GetElementImage(projectId, elementId string) (string, error) {
 	project, err := QueryProjectById(projectId)
 	if err != nil {
 		return "", err
 	}
-	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator) + element_id + ".png"
+	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator) + elementId + ".png"
 	if utils.PathExist(imagePath) {
 		data, err := os.ReadFile(imagePath)
 		if err != nil {

@@ -1,5 +1,4 @@
 //go:build windows
-// +build windows
 
 package sys_tray
 
@@ -11,7 +10,7 @@ import (
 )
 
 func CreateTray(ctx context.Context, icon []byte) {
-	menu := map[string]([2]string){
+	menu := map[string][2]string{
 		"Show": {"显示", "显示窗口"},
 		"Hide": {"隐藏", "隐藏窗口"},
 		"Quit": {"退出", "退出程序"},

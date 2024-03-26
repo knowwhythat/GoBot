@@ -41,8 +41,8 @@ func (t *Tx) SelectProject(id string) (project *models.Project, err error) {
 }
 
 func (t *Tx) InsertProject(project *models.Project) (err error) {
-	if project.Id == uuid.Nil {
-		project.Id = uuid.New()
+	if project.Id == "" {
+		project.Id = uuid.New().String()
 	}
 	if project.CreateTs.IsZero() {
 		project.CreateTs = time.Now()
@@ -59,7 +59,7 @@ func (t *Tx) InsertProject(project *models.Project) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = b.Put([]byte(project.Id.String()), value); err != nil {
+	if err = b.Put([]byte(project.Id), value); err != nil {
 		return err
 	}
 	return nil
@@ -72,7 +72,7 @@ func (t *Tx) UpdateProject(project *models.Project) (err error) {
 	}
 	project.UpdateTs = time.Now()
 	value, _ := json.Marshal(&project)
-	if err = b.Put([]byte(project.Id.String()), value); err != nil {
+	if err = b.Put([]byte(project.Id), value); err != nil {
 		return err
 	}
 	return nil

@@ -152,4 +152,7 @@ const confirmQuit = () => {
 .body {
   height: calc(100vh - 98px);
 }
+:deep(.p-panel .p-panel-content) {
+  border: none;
+}
 </style>

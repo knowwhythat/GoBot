@@ -41,8 +41,8 @@ func (t *Tx) SelectExecution(id uuid.UUID) (execution *models.Execution, err err
 }
 
 func (t *Tx) InsertExecution(execution *models.Execution) (err error) {
-	if execution.Id == uuid.Nil {
-		execution.Id = uuid.New()
+	if execution.Id == "" {
+		execution.Id = uuid.New().String()
 	}
 	if execution.StartTs.IsZero() {
 		execution.StartTs = time.Now()
@@ -59,7 +59,7 @@ func (t *Tx) InsertExecution(execution *models.Execution) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = b.Put([]byte(execution.Id.String()), value); err != nil {
+	if err = b.Put([]byte(execution.Id), value); err != nil {
 		return err
 	}
 	return nil
@@ -72,7 +72,7 @@ func (t *Tx) UpdateExecution(execution *models.Execution) (err error) {
 	}
 	execution.EndTs = time.Now()
 	value, _ := json.Marshal(&execution)
-	if err = b.Put([]byte(execution.Id.String()), value); err != nil {
+	if err = b.Put([]byte(execution.Id), value); err != nil {
 		return err
 	}
 	return nil
@@ -89,7 +89,7 @@ func (t *Tx) DeleteExecution(id uuid.UUID) (err error) {
 	return nil
 }
 
-func (t *Tx) DeleteAllExecutionsWhereProjectId(ProjectId uuid.UUID) (err error) {
+func (t *Tx) DeleteAllExecutionsWhereProjectId(projectId string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ExecutionBucket))
 	if b == nil {
 		return nil
@@ -100,8 +100,8 @@ func (t *Tx) DeleteAllExecutionsWhereProjectId(ProjectId uuid.UUID) (err error) 
 		if err = json.Unmarshal(v, &execution); err != nil {
 			return err
 		}
-		if execution.ProjectId == ProjectId {
-			if err = b.Delete([]byte(execution.Id.String())); err != nil {
+		if execution.ProjectId == projectId {
+			if err = b.Delete([]byte(execution.Id)); err != nil {
 				return err
 			}
 		}

@@ -9,7 +9,7 @@ import (
 //go:embed config
 var f embed.FS
 
-var file_list []string = []string{
+var fileList []string = []string{
 	"base_control.json",
 	"data_process.json",
 	"browser.json",
@@ -17,14 +17,14 @@ var file_list []string = []string{
 }
 
 type PluginConfig struct {
-	Id          string      `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Version     string      `json:"version"`
-	Activities  []Activitiy `json:"activities"`
+	Id          string     `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Version     string     `json:"version"`
+	Activities  []Activity `json:"activities"`
 }
 
-type Activitiy struct {
+type Activity struct {
 	Key             string          `json:"key"`
 	Label           string          `json:"label"`
 	IconPath        string          `json:"icon_path"`
@@ -34,7 +34,7 @@ type Activitiy struct {
 	IsPseudo        bool            `json:"isPseudo,omitempty"`
 	ParameterDefine ParameterDefine `json:"parameter_define,omitempty"`
 	Component       string          `json:"component,omitempty"`
-	Children        []Activitiy     `json:"children,omitempty"`
+	Children        []Activity      `json:"children,omitempty"`
 }
 
 type ParameterDefine struct {
@@ -66,9 +66,9 @@ type Output struct {
 	EditorType   string `json:"editor_type"`
 }
 
-func ParseAllPlugin() ([]Activitiy, error) {
-	var activities []Activitiy
-	for _, name := range file_list {
+func ParseAllPlugin() ([]Activity, error) {
+	var activities []Activity
+	for _, name := range fileList {
 		pluginFile, _ := f.Open("config/" + name)
 		content, err := io.ReadAll(pluginFile)
 		if err != nil {

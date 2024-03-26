@@ -58,9 +58,9 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	processMap[subId] = command
 	var stderr bytes.Buffer
 	command.Stderr = &stderr
-	execution := models.Execution{Id: uuid.New(), ProjectId: uuid.MustParse(id), SubFlowId: subId, StartTs: time.Now()}
-	background, cancle := context.WithCancel(context.Background())
-	background = context.WithValue(background, constants.ExecutionId("executionId"), execution.Id.String())
+	execution := models.Execution{Id: uuid.New().String(), ProjectId: id, SubFlowId: subId, StartTs: time.Now()}
+	background, cancel := context.WithCancel(context.Background())
+	background = context.WithValue(background, constants.ExecutionId("executionId"), execution.Id)
 
 	go func() {
 		monitorLog(ctx, background, logPath)
@@ -68,7 +68,7 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	_, err = command.Output()
 	delete(processMap, subId)
 	time.AfterFunc(2*time.Second, func() {
-		cancle()
+		cancel()
 	})
 	execution.EndTs = time.Now()
 	if err != nil {
@@ -139,7 +139,7 @@ loop:
 			}
 		}
 	}
-	tails.Stop()
+	_ = tails.Stop()
 	if executeId, ok := background.Value(constants.ExecutionId("executionId")).(string); ok {
 		logs, err := os.ReadFile(logPath)
 		if err != nil {
@@ -151,5 +151,5 @@ loop:
 			})
 		}
 	}
-	os.Remove(logPath)
+	_ = os.Remove(logPath)
 }

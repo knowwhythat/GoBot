@@ -1,6 +1,12 @@
 <template>
   <div style="height: 100%">
-    <DataView :value="projects" :layout="layout">
+    <DataView
+      :value="showProjects"
+      :layout="layout"
+      paginator
+      :rows="12"
+      :alwaysShowPaginator="false"
+    >
       <template #header>
         <Toolbar class="bg-gray-100 p-2">
           <template #start>
@@ -234,6 +240,7 @@ const router = useRouter();
 const confirm = useConfirm();
 
 const projects = ref();
+const showProjects = ref();
 const layout = ref("grid");
 const options = ref([
   { icon: "pi pi-table", value: "grid" },
@@ -248,14 +255,15 @@ const searchText = ref("");
 watch(
   searchText,
   throttle((newVal, oldVal) => {
-    listProject(newVal);
+    showProjects.value = projects.value.filter((p) => p.name.includes(newVal));
   }, 1000)
 );
 
-function listProject(name) {
-  ListProject(name)
+function listProject() {
+  ListProject()
     .then((result) => {
-      projects.value = result.list;
+      projects.value = result;
+      showProjects.value = result;
     })
     .catch((error) => {
       toast.add({

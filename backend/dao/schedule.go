@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"gobot/backend/constants"
 	"gobot/backend/models"
+	"strings"
 	"time"
 
 	uuid "github.com/google/uuid"
 )
 
-// 查询所有定时调度
+// SelectAllSchedules 查询所有定时调度
 func (t *Tx) SelectAllSchedules() (schedules []*models.Schedule, err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
@@ -26,13 +27,13 @@ func (t *Tx) SelectAllSchedules() (schedules []*models.Schedule, err error) {
 	return schedules, nil
 }
 
-// 根据 ID 查询定时调度
-func (t *Tx) SelectSchedule(id uuid.UUID) (schedule *models.Schedule, err error) {
+// SelectSchedule 根据 ID 查询定时调度
+func (t *Tx) SelectSchedule(id string) (schedule *models.Schedule, err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
 		return nil, nil
 	}
-	value := b.Get([]byte(id.String()))
+	value := b.Get([]byte(id))
 	if len(value) == 0 {
 		return nil, nil
 	}
@@ -42,10 +43,10 @@ func (t *Tx) SelectSchedule(id uuid.UUID) (schedule *models.Schedule, err error)
 	return schedule, nil
 }
 
-// 插入新定时调度
+// InsertSchedule 插入新定时调度
 func (t *Tx) InsertSchedule(schedule *models.Schedule) (err error) {
-	if schedule.Id == uuid.Nil {
-		schedule.Id = uuid.New()
+	if strings.TrimSpace(schedule.Id) == "" {
+		schedule.Id = uuid.New().String()
 	}
 	if schedule.CreateTs.IsZero() {
 		schedule.CreateTs = time.Now()
@@ -62,13 +63,13 @@ func (t *Tx) InsertSchedule(schedule *models.Schedule) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = b.Put([]byte(schedule.Id.String()), value); err != nil {
+	if err = b.Put([]byte(schedule.Id), value); err != nil {
 		return err
 	}
 	return nil
 }
 
-// 更新定时调度
+// UpdateSchedule 更新定时调度
 func (t *Tx) UpdateSchedule(schedule *models.Schedule) (err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
@@ -76,26 +77,26 @@ func (t *Tx) UpdateSchedule(schedule *models.Schedule) (err error) {
 	}
 	schedule.UpdateTs = time.Now()
 	value, _ := json.Marshal(&schedule)
-	if err = b.Put([]byte(schedule.Id.String()), value); err != nil {
+	if err = b.Put([]byte(schedule.Id), value); err != nil {
 		return err
 	}
 	return nil
 }
 
-// 通过 ID 删除定时调度
-func (t *Tx) DeleteSchedule(id uuid.UUID) (err error) {
+// DeleteSchedule 通过 ID 删除定时调度
+func (t *Tx) DeleteSchedule(id string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
 		return nil
 	}
-	if err = b.Delete([]byte(id.String())); err != nil {
+	if err = b.Delete([]byte(id)); err != nil {
 		return err
 	}
 	return nil
 }
 
-// 根据项目 ID 删除所有定时调度
-func (t *Tx) DeleteAllSchedulesWhereSpiderId(ProjectId uuid.UUID) (err error) {
+// DeleteAllSchedulesWhereSpiderId 根据项目 ID 删除所有定时调度
+func (t *Tx) DeleteAllSchedulesWhereSpiderId(projectId string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
 		return nil
@@ -106,8 +107,8 @@ func (t *Tx) DeleteAllSchedulesWhereSpiderId(ProjectId uuid.UUID) (err error) {
 		if err = json.Unmarshal(v, &schedule); err != nil {
 			return err
 		}
-		if schedule.ProjectId == ProjectId {
-			if err = b.Delete([]byte(schedule.Id.String())); err != nil {
+		if schedule.ProjectId == projectId {
+			if err = b.Delete([]byte(schedule.Id)); err != nil {
 				return err
 			}
 		}

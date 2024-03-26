@@ -6,6 +6,10 @@ export function AddOrUpdateProject(arg1, arg2, arg3, arg4) {
   return window['go']['backend']['App']['AddOrUpdateProject'](arg1, arg2, arg3, arg4);
 }
 
+export function AddOrUpdateSchedule(arg1) {
+  return window['go']['backend']['App']['AddOrUpdateSchedule'](arg1);
+}
+
 export function DealDebugSignal(arg1) {
   return window['go']['backend']['App']['DealDebugSignal'](arg1);
 }
@@ -34,6 +38,10 @@ export function GetMainFlow(arg1) {
   return window['go']['backend']['App']['GetMainFlow'](arg1);
 }
 
+export function GetNextTriggerTime(arg1) {
+  return window['go']['backend']['App']['GetNextTriggerTime'](arg1);
+}
+
 export function GetProjectWindowsElements(arg1) {
   return window['go']['backend']['App']['GetProjectWindowsElements'](arg1);
 }
@@ -58,8 +66,8 @@ export function HighlightCurrentElement(arg1) {
   return window['go']['backend']['App']['HighlightCurrentElement'](arg1);
 }
 
-export function ListProject(arg1, arg2) {
-  return window['go']['backend']['App']['ListProject'](arg1, arg2);
+export function ListProject() {
+  return window['go']['backend']['App']['ListProject']();
 }
 
 export function Login(arg1) {
@@ -72,6 +80,10 @@ export function OpenDialog(arg1) {
 
 export function ParseAllPlugin() {
   return window['go']['backend']['App']['ParseAllPlugin']();
+}
+
+export function QuerySchedulePage() {
+  return window['go']['backend']['App']['QuerySchedulePage']();
 }
 
 export function RemoveWindowsElement(arg1, arg2) {
@@ -128,4 +140,8 @@ export function StartPickWindowsElement() {
 
 export function TerminateSubFlow(arg1, arg2) {
   return window['go']['backend']['App']['TerminateSubFlow'](arg1, arg2);
+}
+
+export function ToggleScheduleById(arg1, arg2) {
+  return window['go']['backend']['App']['ToggleScheduleById'](arg1, arg2);
 }

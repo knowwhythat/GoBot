@@ -29,7 +29,7 @@ func StartPick(ctx context.Context) (string, error) {
 		return "", err
 	}
 	if err := wsConn.WriteMessage(1, request); err != nil {
-		wsConn.Close()
+		_ = wsConn.Close()
 		wsConn = nil
 		return "", err
 	}
