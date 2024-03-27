@@ -12,6 +12,7 @@ type Schedule struct {
 	Cron             string    `json:"cron"`
 	Enabled          bool      `json:"enabled"`
 	Desc             string    `json:"desc"`
+	Config           string    `json:"config"`
 	CreateTs         time.Time `json:"createTs"`
 	UpdateTs         time.Time `json:"updateTs"`
 }

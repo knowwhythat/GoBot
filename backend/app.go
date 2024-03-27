@@ -241,3 +241,7 @@ func (a *App) ToggleScheduleById(id string, state bool) (err error) {
 func (a *App) GetNextTriggerTime(cron string) (result string, err error) {
 	return services.GetNextTriggerTime(cron)
 }
+
+func (a *App) RemoveSchedule(id string) (err error) {
+	return services.RemoveSchedule(id)
+}

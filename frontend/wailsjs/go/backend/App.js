@@ -86,6 +86,10 @@ export function QuerySchedulePage() {
   return window['go']['backend']['App']['QuerySchedulePage']();
 }
 
+export function RemoveSchedule(arg1) {
+  return window['go']['backend']['App']['RemoveSchedule'](arg1);
+}
+
 export function RemoveWindowsElement(arg1, arg2) {
   return window['go']['backend']['App']['RemoveWindowsElement'](arg1, arg2);
 }

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"github.com/reugn/go-quartz/matcher"
 	"gobot/backend/dao"
 	"gobot/backend/log"
 	"gobot/backend/models"
@@ -146,11 +147,16 @@ func AddOrUpdateSchedule(schedule models.Schedule) (err error) {
 
 func RemoveSchedule(id string) (err error) {
 	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
+
 		if err := tx.DeleteSchedule(id); err != nil {
 			return err
 		}
-		if err = sched.DeleteJob(quartz.NewJobKey(id)); err != nil {
-			return err
+		job := sched.GetJobKeys(matcher.JobNameEquals(id))
+
+		if len(job) != 0 {
+			if err = sched.DeleteJob(quartz.NewJobKey(id)); err != nil {
+				return err
+			}
 		}
 		return nil
 	}); err != nil {

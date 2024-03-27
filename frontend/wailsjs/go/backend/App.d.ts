@@ -46,6 +46,8 @@ export function ParseAllPlugin():Promise<Array<plugin.Activity>>;
 
 export function QuerySchedulePage():Promise<Array<models.Schedule>>;
 
+export function RemoveSchedule(arg1:string):Promise<void>;
+
 export function RemoveWindowsElement(arg1:string,arg2:string):Promise<void>;
 
 export function RestartReplCommand(arg1:string):Promise<void>;

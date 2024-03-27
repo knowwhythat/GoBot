@@ -77,6 +77,7 @@ export namespace models {
 	    cron: string;
 	    enabled: boolean;
 	    desc: string;
+	    config: string;
 	    // Go type: time
 	    createTs: any;
 	    // Go type: time
@@ -95,6 +96,7 @@ export namespace models {
 	        this.cron = source["cron"];
 	        this.enabled = source["enabled"];
 	        this.desc = source["desc"];
+	        this.config = source["config"];
 	        this.createTs = this.convertValues(source["createTs"], null);
 	        this.updateTs = this.convertValues(source["updateTs"], null);
 	    }

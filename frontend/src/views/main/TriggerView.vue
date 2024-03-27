@@ -6,6 +6,7 @@
       v-model:selection="selectedTrigger"
       v-model:filters="filters"
       selectionMode="single"
+      :alwaysShowPaginator="false"
       paginator
       :rows="10"
       :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -27,7 +28,7 @@
             <div class="flex gap-4">
               <Button
                 label="删除"
-                @click="CreateSchedule"
+                @click="deleteSchedule"
                 :disabled="!selectedTrigger"
               >
                 <template #icon>
@@ -36,7 +37,7 @@
               </Button>
               <Button
                 label="修改"
-                @click="CreateSchedule"
+                @click="updateSchedule"
                 :disabled="!selectedTrigger"
               >
                 <template #icon>
@@ -350,8 +351,11 @@ import {
   GetNextTriggerTime,
   AddOrUpdateSchedule,
   ToggleScheduleById,
+  RemoveSchedule,
 } from "@back/go/backend/App";
 import { useAppStore } from "@/stores/app";
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
 const appStore = useAppStore();
 const toast = useToast();
 const schedules = ref();
@@ -376,6 +380,7 @@ const newSchedule = ref({
   enable: false,
   desc: "",
   cron: "",
+  config: "",
 });
 
 const cronConfig = ref({
@@ -462,6 +467,47 @@ watch(
   { immediate: true, deep: true }
 );
 const weekname = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+function deleteSchedule() {
+  if (!selectedTrigger.value) {
+    return;
+  }
+  confirm.require({
+    header: "提示",
+    message: "确定要删除这条记录吗?",
+    icon: "pi pi-info-circle",
+    rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+    acceptClass: "p-button-danger p-button-sm",
+    rejectLabel: "取消",
+    acceptLabel: "删除",
+    accept: () => {
+      appStore.changeLoadingState(true);
+      RemoveSchedule(selectedTrigger.value.id)
+        .then((result) => {
+          appStore.changeLoadingState(false);
+          loadSchedules();
+        })
+        .catch((error) => {
+          appStore.changeLoadingState(false);
+          toast.add({
+            severity: "error",
+            summary: "删除失败",
+            detail: error,
+            life: 3000,
+          });
+        });
+    },
+    reject: () => {},
+  });
+}
+function updateSchedule() {
+  if (!selectedTrigger.value) {
+    return;
+  }
+  cronConfig.value = JSON.parse(selectedTrigger.value.config);
+  newSchedule.value = selectedTrigger.value;
+  nextTriggerTime.value = "";
+  dialogVisible.value = true;
+}
 function CreateSchedule() {
   cronConfig.value = {
     cronType: "minute",
@@ -478,6 +524,7 @@ function CreateSchedule() {
     enable: false,
     desc: "",
     cron: "",
+    config: "",
   };
   nextTriggerTime.value = "";
   dialogVisible.value = true;
@@ -501,6 +548,7 @@ async function doCreateSchedule() {
     });
     return;
   }
+  newSchedule.value.config = JSON.stringify(cronConfig.value);
   appStore.changeLoadingState(true);
   try {
     await AddOrUpdateSchedule(newSchedule.value);
