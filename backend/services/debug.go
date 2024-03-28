@@ -19,14 +19,14 @@ import (
 	"strconv"
 	"strings"
 
-	uuid "github.com/google/uuid"
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 var debugChan chan string
 
-func DeubugSubFlow(ctx context.Context, id string, subId string) error {
+func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	params := make(map[string]interface{})
 	project, err := QueryProjectById(id)
 	if err != nil {
@@ -68,12 +68,12 @@ func DeubugSubFlow(ctx context.Context, id string, subId string) error {
 	}
 	breakpoints := getBreakpoints(projectPath, subId)
 	go dealDebug(ctx, subId, inPipe, outPipe, breakpoints)
-	background, cancle := context.WithCancel(context.Background())
+	background, cancel := context.WithCancel(context.Background())
 	go monitorLog(ctx, background, logPath)
 	debugChan = make(chan string)
 	err = command.Run()
 	delete(processMap, subId)
-	cancle()
+	cancel()
 	close(debugChan)
 	debugChan = nil
 	if err != nil {
@@ -130,8 +130,10 @@ func getActivityBreakpoints(activity Activity) []string {
 }
 
 func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outPipe io.ReadCloser, breakpoints []string) {
-	defer inPipe.Close()
-	defer outPipe.Close()
+	defer func(inPipe io.WriteCloser, outPipe io.ReadCloser) {
+		_ = inPipe.Close()
+		_ = outPipe.Close()
+	}(inPipe, outPipe)
 	reader := bufio.NewReader(outPipe)
 	writer := bufio.NewWriter(inPipe)
 	output := ""
@@ -143,7 +145,7 @@ func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outP
 		if err != nil || io.EOF == err {
 			break
 		}
-		output += string(line)
+		output += line
 		if strings.HasSuffix(line, "\n(Pdb)") {
 			log.Logger.Info(output)
 			match := re.FindAllString(output, -1)
@@ -170,14 +172,14 @@ func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outP
 			}
 			if err != nil {
 				if command, ok := processMap[filename]; ok {
-					sys_exec.KillProcess(command)
+					_ = sys_exec.KillProcess(command)
 				}
 				break
 			}
 			err = writer.Flush()
 			if err != nil {
 				if command, ok := processMap[filename]; ok {
-					sys_exec.KillProcess(command)
+					_ = sys_exec.KillProcess(command)
 				}
 				break
 			}

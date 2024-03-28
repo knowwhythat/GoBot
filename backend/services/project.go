@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
 	"gobot/backend/models"
@@ -12,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 )
 
@@ -37,46 +37,43 @@ func QueryProjectById(id string) (result *models.Project, err error) {
 	return result, nil
 }
 
-func AddOrUpdateProject(id, name, desc string, isFlow bool) (result *models.Project, err error) {
-	path := viper.GetString("python.path")
-	dataPath := viper.GetString("data.path")
-	projectDir := dataPath + constants.BaseDir + string(os.PathSeparator) + id
-	if !utils.PathExist(projectDir) {
-		_ = os.MkdirAll(projectDir, fs.ModeDir)
-	}
-	if id == "" {
-		result = &models.Project{
-			Name:        name,
-			Description: desc,
-			IsFlow:      isFlow,
-			Path:        projectDir,
+func AddOrUpdateProject(project models.Project) (err error) {
+
+	if project.Id == "" {
+		project.Id = uuid.New().String()
+		path := viper.GetString("python.path")
+		dataPath := viper.GetString("data.path")
+		projectDir := dataPath + constants.BaseDir + string(os.PathSeparator) + project.Id
+		if !utils.PathExist(projectDir) {
+			_ = os.MkdirAll(projectDir, fs.ModeDir)
 		}
-		command := sys_exec.BuildCmd(path, "-m", "venv", result.Path+"\\venv")
-		output, err := command.Output()
+		project.Path = projectDir
+		command := sys_exec.BuildCmd(path, "-m", "venv", project.Path+"\\venv")
+		_, err := command.Output()
 		if err != nil {
-			fmt.Println(string(output))
-			return nil, err
+			return err
 		}
 		if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
-			if err := tx.InsertProject(result); err != nil {
+			if err := tx.InsertProject(&project); err != nil {
 				return err
 			}
 			return nil
 		}); err != nil {
-			return nil, err
+			return err
 		}
 	} else {
-		project, err := QueryProjectById(id)
+		result, err := QueryProjectById(project.Id)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		project.Name = name
-		project.Description = desc
-		project.IsFlow = isFlow
-		_ = ModifyProject(*project)
+		if result == nil {
+			return errors.New("未找到原始数据")
+		}
+
+		_ = ModifyProject(project)
 	}
 
-	return result, nil
+	return nil
 }
 
 func ModifyProject(form models.Project) (err error) {
@@ -114,6 +111,12 @@ func RemoveProject(id string) (err error) {
 			}
 			if err = tx.DeleteProject(id); err != nil {
 				return err
+			}
+			if err = tx.DeleteAllSchedulesWhereProjectId(id); err != nil {
+				return nil
+			}
+			if err = tx.DeleteAllExecutionsWhereProjectId(id); err != nil {
+				return nil
 			}
 		}
 		return nil

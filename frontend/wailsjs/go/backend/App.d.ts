@@ -4,7 +4,7 @@ import {models} from '../models';
 import {forms} from '../models';
 import {plugin} from '../models';
 
-export function AddOrUpdateProject(arg1:string,arg2:string,arg3:string,arg4:boolean):Promise<void>;
+export function AddOrUpdateProject(arg1:models.Project):Promise<void>;
 
 export function AddOrUpdateSchedule(arg1:models.Schedule):Promise<void>;
 
@@ -26,6 +26,8 @@ export function GetNextTriggerTime(arg1:string):Promise<string>;
 
 export function GetProjectWindowsElements(arg1:string):Promise<string>;
 
+export function GetRunningFlows():Promise<Array<models.Project>>;
+
 export function GetSelectedWindowsElement(arg1:string):Promise<string>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
@@ -44,7 +46,11 @@ export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activity>>;
 
+export function QueryAllExecution():Promise<Array<forms.ExecutionForm>>;
+
 export function QuerySchedulePage():Promise<Array<models.Schedule>>;
+
+export function RemoveExecution(arg1:Array<forms.ExecutionForm>):Promise<void>;
 
 export function RemoveSchedule(arg1:string):Promise<void>;
 
@@ -64,6 +70,8 @@ export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SaveWindowsElement(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
+export function SelectExecutionLog(arg1:string):Promise<string>;
+
 export function SelectProject(arg1:string):Promise<models.Project>;
 
 export function StartCheck(arg1:string,arg2:string):Promise<string>;
@@ -74,6 +82,6 @@ export function StartPick():Promise<string>;
 
 export function StartPickWindowsElement():Promise<string>;
 
-export function TerminateSubFlow(arg1:string,arg2:string):Promise<void>;
+export function TerminateSubFlow(arg1:string):Promise<void>;
 
 export function ToggleScheduleById(arg1:string,arg2:boolean):Promise<void>;

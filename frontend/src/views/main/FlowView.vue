@@ -161,12 +161,7 @@
         </div>
       </template>
     </DataView>
-    <Dialog
-      v-model:visible="newProject.dialogVisible"
-      modal
-      maximizable
-      header="Header"
-    >
+    <Dialog v-model:visible="dialogVisible" modal maximizable header="Header">
       <template #header>
         <div
           class="inline-flex align-items-center justify-content-center gap-2"
@@ -199,14 +194,9 @@
           icon="pi pi-times"
           outlined
           severity="secondary"
-          @click="newProject.dialogVisible = false"
+          @click="dialogVisible = false"
         />
-        <Button
-          label="确定"
-          icon="pi pi-check"
-          @click="doCreateProject"
-          :loading="newProject.loading"
-        />
+        <Button label="确定" icon="pi pi-check" @click="doCreateProject" />
       </template>
     </Dialog>
   </div>
@@ -286,7 +276,7 @@ function getItems(id) {
         newProject.id = pro.id;
         newProject.name = pro.name;
         newProject.desc = pro.description;
-        newProject.dialogVisible = true;
+        dialogVisible.value = true;
       },
     },
     {
@@ -333,14 +323,23 @@ function getItems(id) {
 }
 
 const run = (item) => {
-  RunMainFlow(item.id).catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "流程运行异常",
-      detail: err,
-      life: 3000,
-    });
+  toast.add({
+    severity: "success",
+    detail: "流程启动成功",
+    life: 3000,
   });
+  RunMainFlow(item.id)
+    .then(() => {
+      appStore.changeLoadingState(false);
+    })
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "流程运行异常",
+        detail: err,
+        life: 3000,
+      });
+    });
 };
 
 const edit = (item) => {
@@ -351,9 +350,8 @@ const edit = (item) => {
   }
 };
 
+const dialogVisible = ref(false);
 const newProject = reactive({
-  dialogVisible: false,
-  loading: false,
   id: "",
   name: "",
   isFlow: false,
@@ -363,8 +361,9 @@ const newProject = reactive({
 function createProject() {
   newProject.id = "";
   newProject.name = "";
+  newProject.isFlow = false;
   newProject.desc = "";
-  newProject.dialogVisible = true;
+  dialogVisible.value = true;
 }
 
 function doCreateProject() {
@@ -377,24 +376,15 @@ function doCreateProject() {
     });
     return;
   }
-  newProject.loading = true;
   appStore.changeLoadingState(true);
-  AddOrUpdateProject(
-    newProject.id,
-    newProject.name,
-    newProject.desc,
-    newProject.isFlow
-  )
+  AddOrUpdateProject(newProject)
     .then((result) => {
-      newProject.loading = false;
       appStore.changeLoadingState(false);
-      newProject.dialogVisible = false;
+      dialogVisible.value = false;
       listProject();
     })
     .catch((error) => {
-      console.error(error);
       appStore.changeLoadingState(false);
-      newProject.loading = false;
       toast.add({
         severity: "error",
         summary: "异常",

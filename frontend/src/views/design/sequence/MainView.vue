@@ -516,7 +516,7 @@ function dealDebug(command) {
   DealDebugSignal(command);
 }
 async function terminate() {
-  await TerminateSubFlow(props.id, props.subflowId);
+  await TerminateSubFlow(props.id);
   debuging.value = false;
   running.value = false;
 }

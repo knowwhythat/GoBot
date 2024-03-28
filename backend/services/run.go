@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	uuid "github.com/google/uuid"
+	"github.com/google/uuid"
 	"github.com/hpcloud/tail"
 	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -27,7 +27,7 @@ import (
 
 var processMap = make(map[string]*exec.Cmd)
 
-func RunSubFlow(ctx context.Context, id string, subId string) error {
+func RunSubFlow(ctx context.Context, id, subId, triggerType string) error {
 	params := make(map[string]interface{})
 	project, err := QueryProjectById(id)
 	if err != nil {
@@ -55,10 +55,10 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
 	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param)
-	processMap[subId] = command
+	processMap[id] = command
 	var stderr bytes.Buffer
 	command.Stderr = &stderr
-	execution := models.Execution{Id: uuid.New().String(), ProjectId: id, SubFlowId: subId, StartTs: time.Now()}
+	execution := models.Execution{Id: uuid.New().String(), ProjectId: id, SubFlowId: subId, TriggerType: triggerType, StartTs: time.Now()}
 	background, cancel := context.WithCancel(context.Background())
 	background = context.WithValue(background, constants.ExecutionId("executionId"), execution.Id)
 
@@ -66,13 +66,14 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 		monitorLog(ctx, background, logPath)
 	}()
 	_, err = command.Output()
-	delete(processMap, subId)
+	delete(processMap, id)
 	time.AfterFunc(2*time.Second, func() {
 		cancel()
 	})
+	errStr := ""
 	execution.EndTs = time.Now()
 	if err != nil {
-		errStr := stderr.String()
+		errStr = stderr.String()
 		_, errStr, founded := strings.Cut(errStr, projectPath)
 		log.Logger.Error(fmt.Sprintf("%t", founded))
 		log.Logger.Error(errStr)
@@ -81,11 +82,11 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 		} else {
 			execution.ExecuteResult = 0
 		}
-		return errors.New(errStr)
+		execution.ErrorMsg = errStr
 	} else {
 		execution.ExecuteResult = 1
 	}
-	if err := dao.WriteTx(dao.LogDB, func(tx dao.Tx) error {
+	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
 		if err := tx.InsertExecution(&execution); err != nil {
 			return err
 		}
@@ -93,15 +94,30 @@ func RunSubFlow(ctx context.Context, id string, subId string) error {
 	}); err != nil {
 		return err
 	}
-	return nil
+	runtime.EventsEmit(ctx, "execute_event")
+	if errStr != "" {
+		return errors.New(errStr)
+	}
+	return err
 }
 
-func TerminateSubFlow(id string, subId string) error {
-	if command, ok := processMap[subId]; ok {
+func TerminateSubFlow(id string) error {
+	if command, ok := processMap[id]; ok {
 		err := sys_exec.KillProcess(command)
 		return err
 	}
 	return nil
+}
+
+func GetRunningFlows() (resultList []*models.Project, err error) {
+	for id := range processMap {
+		project, err := QueryProjectById(id)
+		if err != nil {
+			return nil, err
+		}
+		resultList = append(resultList, project)
+	}
+	return resultList, nil
 }
 
 func monitorLog(ctx, background context.Context, logPath string) {
@@ -142,9 +158,9 @@ loop:
 	_ = tails.Stop()
 	if executeId, ok := background.Value(constants.ExecutionId("executionId")).(string); ok {
 		logs, err := os.ReadFile(logPath)
-		if err != nil {
+		if err == nil {
 			_ = dao.WriteTx(dao.LogDB, func(tx dao.Tx) error {
-				if err := tx.InsertExecutionLog(string(logs), uuid.MustParse(executeId)); err != nil {
+				if err := tx.InsertExecutionLog(string(logs), executeId); err != nil {
 					return err
 				}
 				return nil

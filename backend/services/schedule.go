@@ -28,7 +28,7 @@ func (s ScheduleJob) Execute(ctx context.Context) error {
 	if project.IsFlow {
 		return errors.New("暂不支持流程图类型的项目运行")
 	} else {
-		return RunSubFlow(ctx, project.Id, "main")
+		return RunSubFlow(ctx, project.Id, "main", "定时触发")
 	}
 }
 

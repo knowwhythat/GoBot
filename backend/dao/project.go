@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gobot/backend/constants"
 	"gobot/backend/models"
+	"sort"
 	"time"
 
 	uuid "github.com/google/uuid"
@@ -22,6 +23,9 @@ func (t *Tx) SelectAllProject() (projects []*models.Project, err error) {
 		}
 		projects = append(projects, project)
 	}
+	sort.Slice(projects, func(i, j int) bool {
+		return projects[i].UpdateTs.After(projects[j].UpdateTs)
+	})
 	return projects, nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gobot/backend/constants"
 	"gobot/backend/models"
+	"sort"
 	"time"
 
 	uuid "github.com/google/uuid"
@@ -22,15 +23,18 @@ func (t *Tx) SelectAllExecutions() (executions []*models.Execution, err error) {
 		}
 		executions = append(executions, execution)
 	}
+	sort.Slice(executions, func(i, j int) bool {
+		return executions[i].StartTs.After(executions[j].StartTs)
+	})
 	return executions, nil
 }
 
-func (t *Tx) SelectExecution(id uuid.UUID) (execution *models.Execution, err error) {
+func (t *Tx) SelectExecution(id string) (execution *models.Execution, err error) {
 	b := t.tx.Bucket([]byte(constants.ExecutionBucket))
 	if b == nil {
 		return nil, nil
 	}
-	value := b.Get([]byte(id.String()))
+	value := b.Get([]byte(id))
 	if len(value) == 0 {
 		return nil, nil
 	}
@@ -78,12 +82,12 @@ func (t *Tx) UpdateExecution(execution *models.Execution) (err error) {
 	return nil
 }
 
-func (t *Tx) DeleteExecution(id uuid.UUID) (err error) {
+func (t *Tx) DeleteExecution(id string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ExecutionBucket))
 	if b == nil {
 		return nil
 	}
-	if err = b.Delete([]byte(id.String())); err != nil {
+	if err = b.Delete([]byte(id)); err != nil {
 		return err
 	}
 	return nil
@@ -104,31 +108,47 @@ func (t *Tx) DeleteAllExecutionsWhereProjectId(projectId string) (err error) {
 			if err = b.Delete([]byte(execution.Id)); err != nil {
 				return err
 			}
+			if err = t.DeleteExecutionLog(execution.Id); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
-func (t *Tx) InsertExecutionLog(executionLogs string, executionId uuid.UUID) (err error) {
+func (t *Tx) InsertExecutionLog(executionLogs string, executionId string) (err error) {
 	b, err := t.tx.CreateBucketIfNotExists([]byte(constants.ExecutionLogBucket))
 	if err != nil {
 		return err
 	}
-	if err = b.Put([]byte(executionId.String()), []byte(executionLogs)); err != nil {
+	if err = b.Put([]byte(executionId), []byte(executionLogs)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (t *Tx) SelectExecutionLog(id uuid.UUID) (executionLog string, err error) {
+func (t *Tx) SelectExecutionLog(id string) (executionLog string, err error) {
 	b := t.tx.Bucket([]byte(constants.ExecutionLogBucket))
 	if b == nil {
 		return "", nil
 	}
-	value := b.Get([]byte(id.String()))
+	value := b.Get([]byte(id))
 	if len(value) == 0 {
 		return "", nil
 	}
 
 	return string(value), nil
+}
+
+func (t *Tx) DeleteExecutionLog(id string) (err error) {
+	b := t.tx.Bucket([]byte(constants.ExecutionLogBucket))
+	if b == nil {
+		return nil
+	}
+	err = b.Delete([]byte(id))
+	if err != nil {
+		return nil
+	}
+
+	return nil
 }

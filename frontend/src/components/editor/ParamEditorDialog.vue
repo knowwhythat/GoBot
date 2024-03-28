@@ -294,7 +294,6 @@ function setData() {
 }
 
 function updateInnerValue(key, value) {
-  console.log(key, value);
   nodeData.parameter[key] = value;
 }
 

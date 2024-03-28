@@ -2,6 +2,7 @@ package forms
 
 import (
 	uuid "github.com/google/uuid"
+	"time"
 )
 
 type BaseForm struct {
@@ -39,4 +40,16 @@ type LoginForm struct {
 	Pwd        string `form:"pwd" json:"pwd"`
 	RememberMe bool   `form:"rememberMe" json:"rememberMe"`
 	AutoLogin  bool   `form:"autoLogin" json:"autoLogin"`
+}
+
+type ExecutionForm struct {
+	Id            string    `json:"id"`
+	ProjectId     string    `json:"projectId"`
+	ProjectName   string    `json:"projectName"`
+	SubFlowId     string    `json:"subFlowId"`
+	TriggerType   string    `json:"triggerType"`   //触发方式,手动;定时任务
+	ExecuteResult int       `json:"executeResult"` // 0:失败;1:成功;3:手动停止
+	ErrorMsg      string    `json:"errorMsg"`
+	StartTs       time.Time `json:"startTs"`
+	EndTs         time.Time `json:"endTs"`
 }

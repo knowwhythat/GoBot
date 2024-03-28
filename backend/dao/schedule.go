@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gobot/backend/constants"
 	"gobot/backend/models"
+	"sort"
 	"strings"
 	"time"
 
@@ -24,6 +25,9 @@ func (t *Tx) SelectAllSchedules() (schedules []*models.Schedule, err error) {
 		}
 		schedules = append(schedules, schedule)
 	}
+	sort.Slice(schedules, func(i, j int) bool {
+		return schedules[i].UpdateTs.After(schedules[j].UpdateTs)
+	})
 	return schedules, nil
 }
 
@@ -96,7 +100,7 @@ func (t *Tx) DeleteSchedule(id string) (err error) {
 }
 
 // DeleteAllSchedulesWhereSpiderId 根据项目 ID 删除所有定时调度
-func (t *Tx) DeleteAllSchedulesWhereSpiderId(projectId string) (err error) {
+func (t *Tx) DeleteAllSchedulesWhereProjectId(projectId string) (err error) {
 	b := t.tx.Bucket([]byte(constants.ScheduleBucket))
 	if b == nil {
 		return nil

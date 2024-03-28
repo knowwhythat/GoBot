@@ -110,9 +110,8 @@ func (a *App) DeleteProject(id string) error {
 	return err
 }
 
-func (a *App) AddOrUpdateProject(id, name, desc string, isFlow bool) error {
-	_, err := services.AddOrUpdateProject(id, name, desc, isFlow)
-	return err
+func (a *App) AddOrUpdateProject(project models.Project) error {
+	return services.AddOrUpdateProject(project)
 }
 
 func (a *App) RunMainFlow(id string) error {
@@ -123,7 +122,7 @@ func (a *App) RunMainFlow(id string) error {
 	if project.IsFlow {
 		return errors.New("暂不支持流程图类型的项目运行")
 	} else {
-		return services.RunSubFlow(a.ctx, id, "main")
+		return services.RunSubFlow(a.ctx, id, "main", "手动触发")
 	}
 }
 
@@ -151,15 +150,19 @@ func (a *App) DeleteSubFlow(id, subId string) error {
 }
 
 func (a *App) RunSubFlow(id, subId string) error {
-	return services.RunSubFlow(a.ctx, id, subId)
+	return services.RunSubFlow(a.ctx, id, subId, "手动触发")
+}
+
+func (a *App) GetRunningFlows() (resultList []*models.Project, err error) {
+	return services.GetRunningFlows()
 }
 
 func (a *App) DebugSubFlow(id, subId string) error {
-	return services.DeubugSubFlow(a.ctx, id, subId)
+	return services.DebugSubFlow(a.ctx, id, subId)
 }
 
-func (a *App) TerminateSubFlow(id, subId string) error {
-	return services.TerminateSubFlow(id, subId)
+func (a *App) TerminateSubFlow(id string) error {
+	return services.TerminateSubFlow(id)
 }
 
 func (a *App) DealDebugSignal(command string) error {
@@ -244,4 +247,22 @@ func (a *App) GetNextTriggerTime(cron string) (result string, err error) {
 
 func (a *App) RemoveSchedule(id string) (err error) {
 	return services.RemoveSchedule(id)
+}
+
+func (a *App) QueryAllExecution() (resultList []*forms.ExecutionForm, err error) {
+	return services.QueryAllExecution()
+}
+
+func (a *App) RemoveExecution(executions []forms.ExecutionForm) (err error) {
+	for _, execution := range executions {
+		err := services.RemoveExecution(execution.Id)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a *App) SelectExecutionLog(id string) (logs string, err error) {
+	return services.SelectExecutionLog(id)
 }
