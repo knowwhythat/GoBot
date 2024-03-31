@@ -328,18 +328,14 @@ const run = (item) => {
     detail: "流程启动成功",
     life: 3000,
   });
-  RunMainFlow(item.id)
-    .then(() => {
-      appStore.changeLoadingState(false);
-    })
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "流程运行异常",
-        detail: err,
-        life: 3000,
-      });
+  RunMainFlow(item.id).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "流程运行异常",
+      detail: err,
+      life: 3000,
     });
+  });
 };
 
 const edit = (item) => {

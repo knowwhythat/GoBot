@@ -158,8 +158,12 @@ export function StartPickWindowsElement() {
   return window['go']['backend']['App']['StartPickWindowsElement']();
 }
 
-export function TerminateSubFlow(arg1) {
-  return window['go']['backend']['App']['TerminateSubFlow'](arg1);
+export function TerminateMainFlow(arg1) {
+  return window['go']['backend']['App']['TerminateMainFlow'](arg1);
+}
+
+export function TerminateSubFlow() {
+  return window['go']['backend']['App']['TerminateSubFlow']();
 }
 
 export function ToggleScheduleById(arg1, arg2) {

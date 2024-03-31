@@ -122,8 +122,12 @@ func (a *App) RunMainFlow(id string) error {
 	if project.IsFlow {
 		return errors.New("暂不支持流程图类型的项目运行")
 	} else {
-		return services.RunSubFlow(a.ctx, id, "main", "手动触发")
+		return services.RunSequence(a.ctx, id, "main", "手动触发")
 	}
+}
+
+func (a *App) TerminateMainFlow(id string) error {
+	return services.TerminateFlow(id)
 }
 
 func (a *App) GetMainFlow(id string) (map[string]string, error) {
@@ -150,10 +154,10 @@ func (a *App) DeleteSubFlow(id, subId string) error {
 }
 
 func (a *App) RunSubFlow(id, subId string) error {
-	return services.RunSubFlow(a.ctx, id, subId, "手动触发")
+	return services.RunSubFlow(a.ctx, id, subId)
 }
 
-func (a *App) GetRunningFlows() (resultList []*models.Project, err error) {
+func (a *App) GetRunningFlows() (resultList []forms.RunningInstance, err error) {
 	return services.GetRunningFlows()
 }
 
@@ -161,8 +165,8 @@ func (a *App) DebugSubFlow(id, subId string) error {
 	return services.DebugSubFlow(a.ctx, id, subId)
 }
 
-func (a *App) TerminateSubFlow(id string) error {
-	return services.TerminateSubFlow(id)
+func (a *App) TerminateSubFlow() error {
+	return services.TerminateSubFlow()
 }
 
 func (a *App) DealDebugSignal(command string) error {

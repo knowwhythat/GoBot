@@ -2,6 +2,7 @@ package forms
 
 import (
 	uuid "github.com/google/uuid"
+	"os/exec"
 	"time"
 )
 
@@ -52,4 +53,13 @@ type ExecutionForm struct {
 	ErrorMsg      string    `json:"errorMsg"`
 	StartTs       time.Time `json:"startTs"`
 	EndTs         time.Time `json:"endTs"`
+}
+
+type RunningInstance struct {
+	Id          string    `form:"id" json:"id"`
+	ProjectId   string    `form:"projectId" json:"projectId"`
+	ProjectName string    `form:"projectName" json:"projectName"`
+	StartTs     time.Time `form:"startTs" json:"startTs"`
+	TriggerType string    `form:"triggerType" json:"triggerType"`
+	Process     *exec.Cmd `form:"-" json:"-"`
 }

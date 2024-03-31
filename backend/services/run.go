@@ -6,9 +6,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
+	"gobot/backend/forms"
 	"gobot/backend/log"
 	"gobot/backend/models"
 	"gobot/backend/services/sys_exec"
@@ -16,6 +16,7 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -25,99 +26,124 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var processMap = make(map[string]*exec.Cmd)
+var processQueue []forms.RunningInstance
 
-func RunSubFlow(ctx context.Context, id, subId, triggerType string) error {
-	params := make(map[string]interface{})
+var runningProcess *exec.Cmd
+
+func RunSubFlow(ctx context.Context, id, subId string) error {
 	project, err := QueryProjectById(id)
-	if err != nil {
-		return err
-	}
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
-	logDir := project.Path + string(os.PathSeparator) + constants.LogDir
-	logPath := logDir + string(os.PathSeparator) + uuid.New().String() + ".log"
-	if !utils.PathExist(logDir) {
-		if err = os.MkdirAll(logDir, fs.ModeDir); err != nil {
-			return err
-		}
-	}
-	params["sys_path_list"] = []string{projectPath}
-	params["log_path"] = logPath
-	params["log_level"] = "DEBUG"
-	params["mod"] = subId
-	env := make(map[string]string)
-	env["project_path"] = projectPath
-	params["environment_variables"] = env
-	marshalParam, err := json.Marshal(params)
+	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + uuid.NewString() + ".log"
+	runningProcess, err := generateRunCmd(projectPath, logPath, subId)
 	if err != nil {
 		return err
 	}
-	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
-	log.Logger.Info(base64Param)
-	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param)
-	processMap[id] = command
 	var stderr bytes.Buffer
-	command.Stderr = &stderr
-	execution := models.Execution{Id: uuid.New().String(), ProjectId: id, SubFlowId: subId, TriggerType: triggerType, StartTs: time.Now()}
+	runningProcess.Stderr = &stderr
 	background, cancel := context.WithCancel(context.Background())
-	background = context.WithValue(background, constants.ExecutionId("executionId"), execution.Id)
 
 	go func() {
 		monitorLog(ctx, background, logPath)
 	}()
-	_, err = command.Output()
-	delete(processMap, id)
+	_, err = runningProcess.Output()
+	runningProcess = nil
 	time.AfterFunc(2*time.Second, func() {
 		cancel()
 	})
 	errStr := ""
-	execution.EndTs = time.Now()
 	if err != nil {
 		errStr = stderr.String()
-		_, errStr, founded := strings.Cut(errStr, projectPath)
-		log.Logger.Error(fmt.Sprintf("%t", founded))
-		log.Logger.Error(errStr)
-		if errStr == "" {
-			execution.ExecuteResult = 3
-		} else {
-			execution.ExecuteResult = 0
-		}
-		execution.ErrorMsg = errStr
-	} else {
-		execution.ExecuteResult = 1
-	}
-	if err := dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
-		if err := tx.InsertExecution(&execution); err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return err
+		_, errStr, _ = strings.Cut(errStr, projectPath)
 	}
 	runtime.EventsEmit(ctx, "execute_event")
 	if errStr != "" {
 		return errors.New(errStr)
 	}
-	return err
+	return nil
 }
 
-func TerminateSubFlow(id string) error {
-	if command, ok := processMap[id]; ok {
-		err := sys_exec.KillProcess(command)
+func TerminateSubFlow() error {
+	err := sys_exec.KillProcess(runningProcess)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetRunningFlows() (resultList []*models.Project, err error) {
-	for id := range processMap {
-		project, err := QueryProjectById(id)
-		if err != nil {
-			return nil, err
-		}
-		resultList = append(resultList, project)
+func RunSequence(ctx context.Context, id, subId, triggerType string) error {
+	project, err := QueryProjectById(id)
+	runningInstanceId := uuid.New().String()
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + runningInstanceId + ".log"
+	command, err := generateRunCmd(projectPath, logPath, subId)
+	if err != nil {
+		return err
 	}
-	return resultList, nil
+	processQueue = append(processQueue, forms.RunningInstance{
+		Id:          runningInstanceId,
+		ProjectId:   id,
+		ProjectName: project.Name,
+		StartTs:     time.Now(),
+		TriggerType: triggerType,
+		Process:     command,
+	})
+	var stderr bytes.Buffer
+	command.Stderr = &stderr
+	execution := models.Execution{Id: runningInstanceId, ProjectId: id, SubFlowId: subId, TriggerType: triggerType, StartTs: time.Now()}
+
+	go func() {
+		_, err = command.Output()
+		processQueue = removeValue(processQueue, runningInstanceId)
+		runtime.EventsEmit(ctx, "execute_event")
+		errStr := ""
+		execution.EndTs = time.Now()
+		if err != nil {
+			errStr = stderr.String()
+			if errStr == "" {
+				execution.ExecuteResult = 3
+			} else {
+				execution.ExecuteResult = 0
+			}
+			execution.ErrorMsg = errStr
+		} else {
+			execution.ExecuteResult = 1
+		}
+		_ = dao.WriteTx(dao.MainDB, func(tx dao.Tx) error {
+			if err := tx.InsertExecution(&execution); err != nil {
+				return err
+			}
+			return nil
+		})
+		logs, err := os.ReadFile(logPath)
+		if err == nil {
+			_ = dao.WriteTx(dao.LogDB, func(tx dao.Tx) error {
+				if err := tx.InsertExecutionLog(string(logs), execution.Id); err != nil {
+					return err
+				}
+				return nil
+			})
+		}
+		_ = os.Remove(logPath)
+	}()
+
+	return nil
+}
+
+func TerminateFlow(id string) error {
+	for _, item := range processQueue {
+		if item.Id == id {
+			err := sys_exec.KillProcess(item.Process)
+			if err != nil {
+				return err
+			}
+			processQueue = removeValue(processQueue, id)
+		}
+	}
+	return nil
+}
+
+func GetRunningFlows() (resultList []forms.RunningInstance, err error) {
+	return processQueue, nil
 }
 
 func monitorLog(ctx, background context.Context, logPath string) {
@@ -156,16 +182,39 @@ loop:
 		}
 	}
 	_ = tails.Stop()
-	if executeId, ok := background.Value(constants.ExecutionId("executionId")).(string); ok {
-		logs, err := os.ReadFile(logPath)
-		if err == nil {
-			_ = dao.WriteTx(dao.LogDB, func(tx dao.Tx) error {
-				if err := tx.InsertExecutionLog(string(logs), executeId); err != nil {
-					return err
-				}
-				return nil
-			})
+	_ = os.Remove(logPath)
+}
+
+func removeValue(slice []forms.RunningInstance, id string) []forms.RunningInstance {
+	var temp []forms.RunningInstance
+	for _, item := range slice {
+		if item.Id != id {
+			temp = append(temp, item)
 		}
 	}
-	_ = os.Remove(logPath)
+	return temp
+}
+
+func generateRunCmd(projectPath, logPath, subId string) (*exec.Cmd, error) {
+	params := make(map[string]interface{})
+	logDir := filepath.Dir(logPath)
+	if !utils.PathExist(logDir) {
+		if err := os.MkdirAll(logDir, fs.ModeDir); err != nil {
+			return nil, err
+		}
+	}
+	params["sys_path_list"] = []string{projectPath}
+	params["log_path"] = logPath
+	params["log_level"] = "INFO"
+	params["mod"] = subId
+	env := make(map[string]string)
+	env["project_path"] = projectPath
+	params["environment_variables"] = env
+	marshalParam, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
+	log.Logger.Info(base64Param)
+	return sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param), nil
 }

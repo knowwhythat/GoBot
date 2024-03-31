@@ -15,6 +15,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -25,6 +26,7 @@ import (
 )
 
 var debugChan chan string
+var debugProcess *exec.Cmd
 
 func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	params := make(map[string]interface{})
@@ -54,15 +56,14 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	command := sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param)
-	processMap[subId] = command
+	debugProcess = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param)
 	var stderr bytes.Buffer
-	command.Stderr = &stderr
-	inPipe, err := command.StdinPipe()
+	debugProcess.Stderr = &stderr
+	inPipe, err := debugProcess.StdinPipe()
 	if err != nil {
 		return err
 	}
-	outPipe, err := command.StdoutPipe()
+	outPipe, err := debugProcess.StdoutPipe()
 	if err != nil {
 		return err
 	}
@@ -71,8 +72,8 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	background, cancel := context.WithCancel(context.Background())
 	go monitorLog(ctx, background, logPath)
 	debugChan = make(chan string)
-	err = command.Run()
-	delete(processMap, subId)
+	err = debugProcess.Run()
+	debugProcess = nil
 	cancel()
 	close(debugChan)
 	debugChan = nil
@@ -171,15 +172,15 @@ func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outP
 				}
 			}
 			if err != nil {
-				if command, ok := processMap[filename]; ok {
-					_ = sys_exec.KillProcess(command)
+				if debugProcess != nil {
+					_ = sys_exec.KillProcess(debugProcess)
 				}
 				break
 			}
 			err = writer.Flush()
 			if err != nil {
-				if command, ok := processMap[filename]; ok {
-					_ = sys_exec.KillProcess(command)
+				if debugProcess != nil {
+					_ = sys_exec.KillProcess(debugProcess)
 				}
 				break
 			}

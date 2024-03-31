@@ -21,7 +21,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var command *exec.Cmd
+var replProcess *exec.Cmd
 var replChan chan string
 var globalImport map[string]bool
 var appCtx context.Context
@@ -45,20 +45,22 @@ func startReplCommand(id string) error {
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	command = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
+	replProcess = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
 
 	var stderr bytes.Buffer
-	command.Stderr = &stderr
-	inPipe, err := command.StdinPipe()
+	replProcess.Stderr = &stderr
+	inPipe, err := replProcess.StdinPipe()
 	if err != nil {
 		return err
 	}
-	outPipe, err := command.StdoutPipe()
+	outPipe, err := replProcess.StdoutPipe()
 	if err != nil {
 		return err
 	}
-	go dealRepl(inPipe, outPipe)
-	err = command.Run()
+	go func() {
+		_ = dealRepl(inPipe, outPipe)
+	}()
+	err = replProcess.Run()
 	if err != nil {
 		errStr := stderr.String()
 		_, errStr, founded := strings.Cut(errStr, projectPath)
@@ -81,7 +83,7 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 		code := <-replChan
 		log.Logger.Info(strings.Trim(code, "\n"))
 		_, err = writer.WriteString(base64.StdEncoding.EncodeToString([]byte(strings.Trim(code, "\n"))) + "\n")
-		writer.Flush()
+		_ = writer.Flush()
 		if err != nil {
 			return err
 		}
@@ -116,10 +118,12 @@ func waitToWrite(r io.Reader) (result string, err error) {
 
 func RunActivity(ctx context.Context, id, req string) error {
 	appCtx = ctx
-	if command == nil {
+	if replProcess == nil {
 		globalImport = map[string]bool{}
 		replChan = make(chan string)
-		go startReplCommand(id)
+		go func() {
+			_ = startReplCommand(id)
+		}()
 	}
 	activity := Activity{}
 	err := json.Unmarshal([]byte(req), &activity)
@@ -139,8 +143,8 @@ func RunActivity(ctx context.Context, id, req string) error {
 }
 
 func RestartReplCommand(id string) error {
-	if command != nil {
-		if err := command.Process.Kill(); err != nil {
+	if replProcess != nil {
+		if err := replProcess.Process.Kill(); err != nil {
 			return nil
 		}
 		for k := range globalImport {
@@ -149,6 +153,8 @@ func RestartReplCommand(id string) error {
 	}
 	globalImport = map[string]bool{}
 	replChan = make(chan string)
-	go startReplCommand(id)
+	go func() {
+		_ = startReplCommand(id)
+	}()
 	return nil
 }

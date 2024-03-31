@@ -59,7 +59,7 @@ import Column from "primevue/column";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { ref, onMounted, onUnmounted, watch } from "vue";
-import { GetRunningFlows, TerminateSubFlow } from "@back/go/backend/App";
+import { GetRunningFlows, TerminateMainFlow } from "@back/go/backend/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime";
 import { useAppStore } from "@/stores/app";
 import { useConfirm } from "primevue/useconfirm";
@@ -95,7 +95,7 @@ function terminateFlow(id) {
     acceptLabel: "确定",
     accept: () => {
       appStore.changeLoadingState(true);
-      TerminateSubFlow(id)
+      TerminateMainFlow(id)
         .then((result) => {
           appStore.changeLoadingState(false);
           loadExecutions();

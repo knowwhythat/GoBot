@@ -1,5 +1,4 @@
 //go:build windows
-// +build windows
 
 package sys_exec
 
@@ -30,9 +29,9 @@ func KillProcess(cmd *exec.Cmd) error {
 		if err := cmd.Process.Signal(syscall.SIGKILL); err != nil {
 			return err
 		}
-		if err := cmd.Process.Kill(); err != nil {
-			return err
-		}
+		// if err := cmd.Process.Kill(); err != nil {
+		// 	return err
+		// }
 	}
 	return nil
 }

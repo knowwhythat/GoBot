@@ -26,7 +26,7 @@ export function GetNextTriggerTime(arg1:string):Promise<string>;
 
 export function GetProjectWindowsElements(arg1:string):Promise<string>;
 
-export function GetRunningFlows():Promise<Array<models.Project>>;
+export function GetRunningFlows():Promise<Array<forms.RunningInstance>>;
 
 export function GetSelectedWindowsElement(arg1:string):Promise<string>;
 
@@ -82,6 +82,8 @@ export function StartPick():Promise<string>;
 
 export function StartPickWindowsElement():Promise<string>;
 
-export function TerminateSubFlow(arg1:string):Promise<void>;
+export function TerminateMainFlow(arg1:string):Promise<void>;
+
+export function TerminateSubFlow():Promise<void>;
 
 export function ToggleScheduleById(arg1:string,arg2:boolean):Promise<void>;

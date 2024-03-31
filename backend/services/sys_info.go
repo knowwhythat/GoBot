@@ -11,7 +11,7 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-type LSysInfo struct {
+type SysInfo struct {
 	MemAll         uint64
 	MemFree        uint64
 	MemUsed        uint64
@@ -32,7 +32,7 @@ type LSysInfo struct {
 	HostId           string
 }
 
-func GetSysInfo() (info LSysInfo) {
+func GetSysInfo() (info SysInfo) {
 	unit := uint64(1024 * 1024) // MB
 
 	v, _ := mem.VirtualMemory()
