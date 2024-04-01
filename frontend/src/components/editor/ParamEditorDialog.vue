@@ -291,6 +291,9 @@ const nodeData = reactive({
 function setData() {
   nodeData.label = props.nodeData.label;
   nodeData.parameter = props.nodeData.parameter;
+  if (!nodeData.parameter.exception) {
+    nodeData.parameter.exception = "error";
+  }
 }
 
 function updateInnerValue(key, value) {

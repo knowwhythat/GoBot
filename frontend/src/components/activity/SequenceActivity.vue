@@ -202,7 +202,7 @@ function handleDrop(event) {
   const newBlockId = nanoid(16);
   if (droppedBlock.id) {
     if (id.value == dropBlockId.value) {
-      copyActivities.push({ ...droppedBlock, id: newBlockId, parameter: {} });
+      copyActivities.push({ ...droppedBlock, id: newBlockId });
       dragBlockId.value = "";
     } else {
       const dropIndex = copyActivities.findIndex(
@@ -212,7 +212,6 @@ function handleDrop(event) {
         copyActivities.splice(dropIndex, 0, {
           ...droppedBlock,
           id: newBlockId,
-          parameter: {},
         });
         dragBlockId.value = "";
       } else {

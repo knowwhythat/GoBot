@@ -32,9 +32,12 @@ var runningProcess *exec.Cmd
 
 func RunSubFlow(ctx context.Context, id, subId string) error {
 	project, err := QueryProjectById(id)
+	if err != nil {
+		return nil
+	}
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + uuid.NewString() + ".log"
-	runningProcess, err := generateRunCmd(projectPath, logPath, subId)
+	runningProcess, err = generateRunCmd(projectPath, logPath, subId)
 	if err != nil {
 		return err
 	}
@@ -63,15 +66,26 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 }
 
 func TerminateSubFlow() error {
-	err := sys_exec.KillProcess(runningProcess)
-	if err != nil {
-		return err
+	if runningProcess != nil {
+		err := sys_exec.KillProcess(runningProcess)
+		if err != nil {
+			return err
+		}
+	}
+	if debugProcess != nil {
+		err := sys_exec.KillProcess(debugProcess)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 func RunSequence(ctx context.Context, id, subId, triggerType string) error {
 	project, err := QueryProjectById(id)
+	if err != nil {
+		return nil
+	}
 	runningInstanceId := uuid.New().String()
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + runningInstanceId + ".log"

@@ -15,6 +15,11 @@
           input: (options) => ({
             onkeydown: (e) => e.stopPropagation(),
           }),
+          content: (options) => ({
+            style: {
+              padding: '0rem',
+            },
+          }),
         }"
       >
         <template #default="slotProps">
@@ -36,7 +41,7 @@
             <p class="pr-2">
               <v-remixicon v-bind="getIconPath(slotProps.node.icon_path)" />
             </p>
-            <b class="cursor-default">{{ slotProps.node.label }}</b>
+            <p class="cursor-default">{{ slotProps.node.label }}</p>
           </div>
         </template>
       </Tree>

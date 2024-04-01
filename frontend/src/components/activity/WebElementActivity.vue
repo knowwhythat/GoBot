@@ -19,6 +19,13 @@
       <div class="flex gap-4 justify-center">
         <Button
           class="h-8"
+          icon="pi pi-search"
+          severity="help"
+          label="拾取"
+          @click="pickElement"
+        />
+        <Button
+          class="h-8"
           icon="pi pi-arrow-right-arrow-left"
           severity="help"
           label="校验"
@@ -26,11 +33,48 @@
         />
       </div>
     </template>
+    <Dialog
+      v-model:visible="dialogVisible"
+      modal
+      header="编辑元素选择器"
+      :style="{ width: '45rem' }"
+    >
+      <div class="mt-3 flex justify-content-center">
+        <label for="value" class="mt-3 w-32">Frame选择器</label>
+        <Dropdown
+          v-model="selectedFrame"
+          editable
+          :options="frames"
+          class="w-full md:w-14rem"
+        />
+      </div>
+      <div class="mt-3 flex justify-content-center">
+        <label for="value" class="mt-3 w-32">元素选择器</label>
+        <Dropdown
+          v-model="selectedSelector"
+          editable
+          :options="selectors"
+          class="w-full md:w-14rem"
+        />
+      </div>
+      <template #footer>
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          @click="dialogVisible = false"
+          text
+        />
+        <Button label="校验" icon="pi pi-sun" @click="check" />
+        <Button label="确认" icon="pi pi-check" @click="updateData" />
+      </template>
+    </Dialog>
   </ActivityBase>
 </template>
 <script setup>
-import { StartCheck, RunActivity } from "@back/go/backend/App";
-import { inject } from "vue";
+import Dialog from "primevue/dialog";
+import Dropdown from "primevue/dropdown";
+import { StartCheck, StartPick, RunActivity } from "@back/go/backend/App";
+import { ref, inject } from "vue";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
@@ -93,6 +137,57 @@ async function checkElement() {
       life: 3000,
     });
   }
+}
+const dialogVisible = ref(false);
+const frames = ref([]);
+const selectedFrame = ref("");
+const selectors = ref([]);
+const selectedSelector = ref("");
+async function pickElement() {
+  const result = await StartPick();
+  const resp = JSON.parse(result);
+  frames.value = resp["message"]["framePath"];
+  selectors.value = resp["message"]["elementPath"];
+  if (frames.value.length > 0) {
+    selectedFrame.value = frames.value[0];
+  }
+  if (selectors.value.length > 0) {
+    selectedSelector.value = selectors.value[0];
+  }
+  dialogVisible.value = true;
+}
+async function check() {
+  try {
+    const resp = await StartCheck(selectedFrame.value, selectedSelector.value);
+    const result = JSON.parse(resp);
+    if (result["message"] === "ok") {
+      toast.add({
+        severity: "success",
+        summary: "校验成功",
+        detail: "找到元素",
+        life: 3000,
+      });
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "校验失败",
+        detail: "元素未找到",
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "校验失败",
+      detail: err,
+      life: 3000,
+    });
+  }
+}
+function updateData() {
+  props.element.parameter["frame_selector"] = "0:" + selectedFrame.value;
+  props.element.parameter["element_selector"] = "0:" + selectedSelector.value;
+  dialogVisible.value = false;
 }
 const { projectId } = inject("projectId");
 async function runActivity() {

@@ -14,7 +14,7 @@ require (
 	github.com/rs/zerolog v1.31.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/spf13/viper v1.17.0
-	github.com/wailsapp/wails/v2 v2.7.0
+	github.com/wailsapp/wails/v2 v2.8.0
 	go.etcd.io/bbolt v1.3.8
 )
 
