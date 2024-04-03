@@ -12,7 +12,6 @@
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
-    @update="updateData($event)"
     @run="runActivity"
   >
     <template #top>
@@ -143,6 +142,7 @@ const frames = ref([]);
 const selectedFrame = ref("");
 const selectors = ref([]);
 const selectedSelector = ref("");
+
 async function pickElement() {
   const result = await StartPick();
   const resp = JSON.parse(result);

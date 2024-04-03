@@ -63,7 +63,9 @@ func startWindowsInspectCommand() error {
 
 func StartPickWindowsElement(ctx context.Context) (string, error) {
 	if windowsInspectCommand == nil {
-		go startWindowsInspectCommand()
+		go func() {
+			_ = startWindowsInspectCommand()
+		}()
 	}
 	for retry := 1; retry < 10; retry++ {
 		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
@@ -71,7 +73,9 @@ func StartPickWindowsElement(ctx context.Context) (string, error) {
 			time.Sleep(time.Second)
 			continue
 		}
-		defer conn.Close()
+		defer func(conn *websocket.Conn) {
+			_ = conn.Close()
+		}(conn)
 		messageId := uuid.New().String()
 		sendMessage := make(map[string]interface{})
 		sendMessage["method"] = "highlight_control"
@@ -107,7 +111,9 @@ func StartPickWindowsElement(ctx context.Context) (string, error) {
 
 func StartCheckWindowsElement(ctx context.Context, paths string) (string, error) {
 	if windowsInspectCommand == nil {
-		go startWindowsInspectCommand()
+		go func() {
+			_ = startWindowsInspectCommand()
+		}()
 	}
 	for retry := 1; retry < 10; retry++ {
 		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
@@ -115,7 +121,9 @@ func StartCheckWindowsElement(ctx context.Context, paths string) (string, error)
 			time.Sleep(time.Second)
 			continue
 		}
-		defer conn.Close()
+		defer func(conn *websocket.Conn) {
+			_ = conn.Close()
+		}(conn)
 		messageId := uuid.New().String()
 		sendMessage := make(map[string]interface{})
 		sendMessage["method"] = "check_control"
@@ -152,7 +160,9 @@ func StartCheckWindowsElement(ctx context.Context, paths string) (string, error)
 
 func GetWindowsElementList(parentId string) (string, error) {
 	if windowsInspectCommand == nil {
-		go startWindowsInspectCommand()
+		go func() {
+			_ = startWindowsInspectCommand()
+		}()
 	}
 	for retry := 1; retry < 10; retry++ {
 		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
@@ -160,7 +170,9 @@ func GetWindowsElementList(parentId string) (string, error) {
 			time.Sleep(time.Second)
 			continue
 		}
-		defer conn.Close()
+		defer func(conn *websocket.Conn) {
+			_ = conn.Close()
+		}(conn)
 		messageId := uuid.New().String()
 		sendMessage := make(map[string]interface{})
 		sendMessage["message_id"] = messageId
@@ -199,7 +211,9 @@ func GetWindowsElementList(parentId string) (string, error) {
 
 func HighlightCurrentElement(controlId string) error {
 	if windowsInspectCommand == nil {
-		go startWindowsInspectCommand()
+		go func() {
+			_ = startWindowsInspectCommand()
+		}()
 	}
 	for retry := 1; retry < 10; retry++ {
 		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
@@ -207,7 +221,9 @@ func HighlightCurrentElement(controlId string) error {
 			time.Sleep(time.Second)
 			continue
 		}
-		defer conn.Close()
+		defer func(conn *websocket.Conn) {
+			_ = conn.Close()
+		}(conn)
 		messageId := uuid.New().String()
 		sendMessage := make(map[string]interface{})
 		sendMessage["message_id"] = messageId
@@ -242,7 +258,9 @@ func HighlightCurrentElement(controlId string) error {
 
 func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, error) {
 	if windowsInspectCommand == nil {
-		go startWindowsInspectCommand()
+		go func() {
+			_ = startWindowsInspectCommand()
+		}()
 	}
 	for retry := 1; retry < 10; retry++ {
 		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
@@ -250,7 +268,9 @@ func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, e
 			time.Sleep(time.Second)
 			continue
 		}
-		defer conn.Close()
+		defer func(conn *websocket.Conn) {
+			_ = conn.Close()
+		}(conn)
 		messageId := uuid.New().String()
 		sendMessage := make(map[string]interface{})
 		sendMessage["message_id"] = messageId
@@ -293,13 +313,13 @@ func SaveWindowsElement(id, elementId, image, selector string) error {
 	if len(image) > 0 {
 		imageDirPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator)
 		if !utils.PathExist(imageDirPath) {
-			os.MkdirAll(imageDirPath, os.ModePerm)
+			_ = os.MkdirAll(imageDirPath, os.ModePerm)
 		}
 		imageData, err := base64.StdEncoding.DecodeString(image)
 		if err != nil {
 			return err
 		}
-		os.WriteFile(imageDirPath+string(os.PathSeparator)+elementId+".png", imageData, 0666)
+		_ = os.WriteFile(imageDirPath+string(os.PathSeparator)+elementId+".png", imageData, 0666)
 	}
 
 	selectorPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.Selector
@@ -314,7 +334,7 @@ func SaveWindowsElement(id, elementId, image, selector string) error {
 			return err
 		}
 	}
-	elementData := make(map[string]interface{}, 0)
+	elementData := make(map[string]interface{})
 	err = json.Unmarshal([]byte(selector), &elementData)
 	if err != nil {
 		return err
@@ -359,7 +379,7 @@ func RemoveWindowsElement(id, elementId string) error {
 	}
 	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator) + elementId + ".png"
 	if utils.PathExist(imagePath) {
-		os.Remove(imagePath)
+		_ = os.Remove(imagePath)
 	}
 	selectorPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.Selector
 	selectorData := make(map[string]interface{})
@@ -403,7 +423,7 @@ func GetProjectWindowsElements(id string) (string, error) {
 
 func StopWindowsInspectCommand() {
 	if windowsInspectCommand != nil {
-		sys_exec.KillProcess(windowsInspectCommand)
+		_ = sys_exec.KillProcess(windowsInspectCommand)
 		windowsInspectCommand = nil
 	}
 }
@@ -414,6 +434,8 @@ func PortCheck(port int) bool {
 	if err != nil {
 		return false
 	}
-	defer l.Close()
+	defer func(l net.Listener) {
+		_ = l.Close()
+	}(l)
 	return true
 }

@@ -24,7 +24,7 @@
         >
           <v-remixicon v-bind="getIconPath(props.icon)" />
         </span>
-        <p class="w-64 truncate">{{ nodeData.label }}</p>
+        <p class="w-64 truncate">{{ parameterData.label }}</p>
       </div>
     </template>
 
@@ -36,7 +36,7 @@
             <InputText
               class="w-full mr-2"
               type="text"
-              v-model="nodeData.label"
+              v-model="parameterData.label"
               @keydown="(e) => e.stopPropagation()"
             />
             <a title="提示" target="_blank" rel="noopener" class="my-auto p-4">
@@ -55,10 +55,17 @@
                 {{ input.label }}
               </span>
               <component
+                v-if="extraEditorMap.hasOwnProperty(input.editor_type)"
+                :is="extraEditorMap[input.editor_type]"
+                :parameter="parameterData.parameter"
+                @update="updateInnerValue($event.key, $event.value)"
+              />
+              <component
+                v-else
                 :is="findComponent(input.editor_type)"
                 :value="
-                  nodeData.parameter?.hasOwnProperty(input.key)
-                    ? nodeData.parameter[input.key]
+                  parameterData.parameter?.hasOwnProperty(input.key)
+                    ? parameterData.parameter[input.key]
                     : input.default_value
                 "
                 :input="input"
@@ -89,8 +96,8 @@
             <component
               :is="findComponent(output.editor_type)"
               :value="
-                nodeData.parameter?.hasOwnProperty(output.key)
-                  ? nodeData.parameter[output.key]
+                parameterData.parameter?.hasOwnProperty(output.key)
+                  ? parameterData.parameter[output.key]
                   : output.default_value
               "
               :input="output"
@@ -121,8 +128,8 @@
             <component
               :is="findComponent(input.editor_type)"
               :value="
-                nodeData.parameter?.hasOwnProperty(input.key)
-                  ? nodeData.parameter[input.key]
+                parameterData.parameter?.hasOwnProperty(input.key)
+                  ? parameterData.parameter[input.key]
                   : input.default_value
               "
               :input="input"
@@ -139,7 +146,7 @@
           <div class="flex my-4">
             <span class="mr-2 w-32 truncate my-auto"> 异常处理策略 </span>
             <Dropdown
-              v-model="nodeData.parameter['exception']"
+              v-model="parameterData.parameter['exception']"
               :options="toDoTypes"
               optionLabel="name"
               option-value="value"
@@ -151,13 +158,13 @@
           </div>
           <div class="inline-flex">
             <InputSwitch
-              v-model="nodeData.parameter['retry']"
+              v-model="parameterData.parameter['retry']"
               trueValue="True"
               falseValue="False"
             />
             <span class="ml-2"> 重试操作 </span>
           </div>
-          <div v-if="nodeData.parameter['retry'] == 'True'" class="mr-2">
+          <div v-if="parameterData.parameter['retry'] == 'True'" class="mr-2">
             <div class="inline-flex items-center">
               <span> 次数 </span>
               <v-remixicon
@@ -166,7 +173,7 @@
                 size="20"
                 class="mr-2"
               />
-              <InputText v-model="nodeData.parameter['retry_count']" />
+              <InputText v-model="parameterData.parameter['retry_count']" />
             </div>
             <div class="inline-flex items-center ml-2">
               <span> 间隔(s) </span>
@@ -177,7 +184,7 @@
                 class="mr-2"
               />
               <InputText
-                v-model="nodeData.parameter['retry_interval']"
+                v-model="parameterData.parameter['retry_interval']"
                 @keydown="(e) => e.stopPropagation()"
               />
             </div>
@@ -245,6 +252,17 @@ watch(
   },
   { immediate: true }
 );
+const extraEditorComponents = import.meta.glob(
+  "@/components/editor/extra/*.vue",
+  {
+    eager: true,
+  }
+);
+const extraEditorMap = {};
+for (let each in extraEditorComponents) {
+  const name = extraEditorComponents[each].default.__name;
+  extraEditorMap[`${name}`] = extraEditorComponents[each].default;
+}
 
 const editorComponents = import.meta.glob("@/components/editor/*.vue", {
   eager: true,
@@ -266,8 +284,8 @@ function show(input) {
   }
   const result = input.show_if.every((si) => {
     const [key, value] = si.split("=");
-    if (key in nodeData.parameter) {
-      const v = nodeData.parameter[key];
+    if (key in parameterData.value.parameter) {
+      const v = parameterData.value.parameter[key];
       return v.substring(2) === value;
     } else {
       return (
@@ -283,24 +301,36 @@ const toDoTypes = [
   { value: "error", name: "抛出错误" },
   { value: "continue", name: "继续执行" },
 ];
-const nodeData = reactive({
+const parameterData = ref({
   label: "",
   parameter: {},
 });
 
+watch(
+  () => parameterData,
+  (value, oldValue) => {
+    console.log(value.value.parameter);
+  },
+  { deep: true }
+);
 function setData() {
-  nodeData.label = props.nodeData.label;
-  nodeData.parameter = props.nodeData.parameter;
-  if (!nodeData.parameter.exception) {
-    nodeData.parameter.exception = "error";
+  parameterData.value.label = props.nodeData.label;
+  parameterData.value.parameter = props.nodeData.parameter;
+  if (!parameterData.value.parameter.exception) {
+    parameterData.value.parameter.exception = "error";
   }
+  props.parameter_define.inputs.forEach((param) => {
+    if (!parameterData.value.parameter.hasOwnProperty(param.key)) {
+      parameterData.value.parameter[param.key] = param.default_value;
+    }
+  });
 }
 
 function updateInnerValue(key, value) {
-  nodeData.parameter[key] = value;
+  parameterData.value.parameter[key] = value;
 }
 
 function updateData() {
-  emit("update", { ...nodeData });
+  emit("update", { ...parameterData.value });
 }
 </script>

@@ -55,5 +55,5 @@ func main() {
 	if err != nil {
 		log.Logger.Error("启动失败")
 	}
-	log.Logger.Info("服务启动成功")
+	log.Logger.Info("服务停止")
 }
