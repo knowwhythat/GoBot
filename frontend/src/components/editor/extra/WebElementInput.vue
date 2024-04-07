@@ -2,25 +2,11 @@
   <div class="flex flex-col gap-2 w-full">
     <div class="flex flex-row gap-2 w-full">
       <InputGroup>
-        <Button
-          icon="pi pi-chevron-right"
-          severity="Primary"
-          @click="toggle"
-          aria-haspopup="true"
-          aria-controls="overlay_panel"
-        />
-        <OverlayPanel ref="op" appendTo="body" :unstyled="true">
-          <Tree
-            :value="contextVariable"
-            selectionMode="single"
-            :filter="true"
-            filterPlaceholder="搜索"
-            @node-select="selectedNode($event)"
-          ></Tree>
-        </OverlayPanel>
-        <InputText
+        <Dropdown
           placeholder="frame选择器"
           v-model="frameSelector"
+          editable
+          :options="frames"
           @keydown="(e) => e.stopPropagation()"
         />
         <Button
@@ -33,25 +19,11 @@
         </Button>
       </InputGroup>
       <InputGroup>
-        <Button
-          icon="pi pi-chevron-right"
-          severity="Primary"
-          @click="toggle"
-          aria-haspopup="true"
-          aria-controls="overlay_panel"
-        />
-        <OverlayPanel ref="op" appendTo="body" :unstyled="true">
-          <Tree
-            :value="contextVariable"
-            selectionMode="single"
-            :filter="true"
-            filterPlaceholder="搜索"
-            @node-select="selectedNode($event)"
-          ></Tree>
-        </OverlayPanel>
-        <InputText
+        <Dropdown
           placeholder="元素选择器"
           v-model="elementSelector"
+          editable
+          :options="selectors"
           @keydown="(e) => e.stopPropagation()"
         />
         <Button
@@ -75,12 +47,11 @@
   </div>
 </template>
 <script setup>
-import Tree from "primevue/tree";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
-import OverlayPanel from "primevue/overlaypanel";
+import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-import { ref, computed, inject, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { StartCheck, StartPick } from "@back/go/backend/App";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
@@ -157,7 +128,7 @@ function changeElementValueType() {
 
 async function checkElement() {
   try {
-    if (!frameSelector.value) {
+    if (!elementSelector.value) {
       toast.add({
         severity: "error",
         summary: "校验失败",
@@ -192,6 +163,8 @@ async function checkElement() {
     });
   }
 }
+const frames = ref([]);
+const selectors = ref([]);
 
 async function pickElement() {
   const result = await StartPick();
@@ -199,24 +172,10 @@ async function pickElement() {
   frames.value = resp["message"]["framePath"];
   selectors.value = resp["message"]["elementPath"];
   if (frames.value.length > 0) {
-    selectedFrame.value = frames.value[0];
+    frameSelector.value = frames.value[0];
   }
   if (selectors.value.length > 0) {
-    selectedSelector.value = selectors.value[0];
+    elementSelector.value = selectors.value[0];
   }
-  dialogVisible.value = true;
-}
-
-const { contextVariable } = inject("contextVariable");
-
-const op = ref();
-const toggle = (event) => {
-  op.value.toggle(event);
-};
-
-function selectedNode(node) {
-  op.value.toggle(false);
-  isExpression.value = true;
-  emit("update", "1:" + node.label);
 }
 </script>

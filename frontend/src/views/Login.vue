@@ -5,9 +5,7 @@
       header="登录"
       :pt="{
         header: (options) => ({
-          style: {
-            'user-select': 'none',
-          },
+          style: '--wails-draggable:drag',
         }),
       }"
     >

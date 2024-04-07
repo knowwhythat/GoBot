@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-1 border-none" style="user-select: none">
+    <Toolbar class="p-1 border-none" style="--wails-draggable: drag">
       <template #start>
         <Button
           @click="confirmQuit"
@@ -451,11 +451,13 @@ const running = ref(false);
 var reg = /code_map_id="([^"]*)/;
 async function run() {
   await save();
+  await restartRepl();
   logs.value = [];
   running.value = true;
   try {
     WindowMinimise();
     await RunSubFlow(props.id, props.subflowId);
+    debugingId.value = "";
     toast.add({
       severity: "success",
       summary: "提示",
@@ -483,6 +485,7 @@ const debugingId = ref(nanoid(16));
 const breakpointHit = ref(false);
 provide("debugingId", { debugingId });
 async function debug() {
+  await restartRepl();
   await save();
   debuging.value = true;
   EventsOn("debug", (data) => {
@@ -523,6 +526,7 @@ async function terminate() {
 
 const confirmQuit = () => {
   if (!dataChanged.value && !debuging.value && !running.value) {
+    terminate();
     router.back();
   } else if (debuging.value || running.value) {
     confirm.require({

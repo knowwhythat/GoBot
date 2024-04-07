@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <Toolbar class="p-0 bg-slate-200" style="user-select: none">
+    <Toolbar class="p-0 bg-slate-200" style="--wails-draggable: drag">
       <template #start>
         <Button
           @click="confirmQuit"

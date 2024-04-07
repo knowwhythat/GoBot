@@ -306,24 +306,17 @@ const parameterData = ref({
   parameter: {},
 });
 
-watch(
-  () => parameterData,
-  (value, oldValue) => {
-    console.log(value.value.parameter);
-  },
-  { deep: true }
-);
 function setData() {
   parameterData.value.label = props.nodeData.label;
   parameterData.value.parameter = props.nodeData.parameter;
   if (!parameterData.value.parameter.exception) {
     parameterData.value.parameter.exception = "error";
   }
-  props.parameter_define.inputs.forEach((param) => {
-    if (!parameterData.value.parameter.hasOwnProperty(param.key)) {
-      parameterData.value.parameter[param.key] = param.default_value;
-    }
-  });
+  // props.parameter_define.inputs.forEach((param) => {
+  //   if (!parameterData.value.parameter.hasOwnProperty(param.key)) {
+  //     parameterData.value.parameter[param.key] = param.default_value;
+  //   }
+  // });
 }
 
 function updateInnerValue(key, value) {

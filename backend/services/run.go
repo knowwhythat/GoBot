@@ -78,6 +78,12 @@ func TerminateSubFlow() error {
 			return err
 		}
 	}
+	if replProcess != nil {
+		err := sys_exec.KillProcess(replProcess)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

@@ -5,9 +5,7 @@
       :header="title"
       :pt="{
         header: (options) => ({
-          style: {
-            'user-select': 'none',
-          },
+          style: '--wails-draggable:drag',
         }),
       }"
     >

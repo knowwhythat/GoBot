@@ -1078,7 +1078,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["browser=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1088,7 +1088,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": []
                   },
                   {
@@ -1144,7 +1144,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": []
+                    "show_if": ["browser=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1154,7 +1154,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": []
                   },
                   {
@@ -1223,7 +1223,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1233,7 +1233,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1364,7 +1364,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1374,7 +1374,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1480,7 +1480,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1490,7 +1490,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1591,7 +1591,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1601,7 +1601,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1702,7 +1702,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1712,7 +1712,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1879,7 +1879,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1889,7 +1889,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -1968,7 +1968,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -1978,7 +1978,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -2058,7 +2058,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -2068,7 +2068,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -2138,7 +2138,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -2148,7 +2148,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -2232,7 +2232,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -2242,7 +2242,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -2326,7 +2326,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -2336,7 +2336,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
@@ -2427,7 +2427,7 @@
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
-                    "show_if": ["element_type=locator"]
+                    "show_if": ["element_type=none"]
                   },
                   {
                     "key": "element_selector",
@@ -2437,7 +2437,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WebElementInput",
                     "show_if": ["element_type=locator"]
                   },
                   {
