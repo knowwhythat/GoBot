@@ -1041,6 +1041,71 @@
                 "error": true
               },
               "component": "BasicActivity"
+            },
+            {
+              "key": "browser.page.start_dialog_listen",
+              "label": "开启弹窗监听",
+              "icon_path": "riWirelessChargingLine",
+              "description": "处理页面的弹窗,如alert, prompt, confirm or beforeunload",
+              "namespace": "robot_browser",
+              "method": "start_dialog_listen",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "dialog_message",
+                    "label": "弹窗提示消息",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "accept",
+                    "label": "是否点击确定",
+                    "type": "bool",
+                    "default_value": "1:True",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "BoolValue",
+                    "show_if": []
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:30",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "dialog_wrapper",
+                    "label": "web元素",
+                    "type": "web_dialog",
+                    "default_value": "dialog_wrapper",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
             }
           ]
         },
@@ -1174,6 +1239,85 @@
                     "label": "web元素列表",
                     "type": "array",
                     "default_value": "element_array",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "WebElementActivity"
+            },
+            {
+              "key": "browser",
+              "label": "等待元素出现(消失)",
+              "icon_path": "riRestTimeLine",
+              "description": "等待元素出现(消失)",
+              "namespace": "robot_browser",
+              "method": "wait_element",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "frame_selector",
+                    "label": "frame选择器",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": ["browser=none"]
+                  },
+                  {
+                    "key": "element_selector",
+                    "label": "元素选择器",
+                    "placeholder": "支持xpath和css",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "WebElementInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "display",
+                    "label": "出现/消失",
+                    "required": true,
+                    "type": "str",
+                    "default_value": "0:display",
+                    "options": [
+                      { "label": "出现", "value": "display" },
+                      { "label": "消失", "value": "dispare" }
+                    ],
+                    "editor_type": "SelectDefine",
+                    "show_if": []
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:30",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "element_exist",
+                    "label": "web元素",
+                    "type": "bool",
+                    "default_value": "element_exist",
                     "required": true,
                     "editor_type": "SelectOrInput"
                   }

@@ -13,6 +13,7 @@
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @run="runActivity"
+    @update="updateData($event)"
   >
     <template #top>
       <div class="flex gap-4 justify-center">
@@ -64,7 +65,7 @@
           text
         />
         <Button label="校验" icon="pi pi-sun" @click="check" />
-        <Button label="确认" icon="pi pi-check" @click="updateData" />
+        <Button label="确认" icon="pi pi-check" @click="updateInnerData" />
       </template>
     </Dialog>
   </ActivityBase>
@@ -184,10 +185,18 @@ async function check() {
     });
   }
 }
-function updateData() {
+function updateInnerData() {
   props.element.parameter["frame_selector"] = "0:" + selectedFrame.value;
   props.element.parameter["element_selector"] = "0:" + selectedSelector.value;
   dialogVisible.value = false;
+}
+
+function updateData(data) {
+  for (const key in data) {
+    if (Object.hasOwnProperty.call(data, key)) {
+      props.element[key] = data[key];
+    }
+  }
 }
 const { projectId } = inject("projectId");
 async function runActivity() {

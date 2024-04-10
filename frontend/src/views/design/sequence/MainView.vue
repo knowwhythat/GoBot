@@ -468,7 +468,7 @@ async function run() {
     const match = err.match(reg);
     if (match && match.length > 1) {
       debugingId.value = match[1];
-      document.getElementById(match[1]).scrollIntoView();
+      // document.getElementById(match[1]).scrollIntoView();
     }
     toast.add({
       severity: "error",

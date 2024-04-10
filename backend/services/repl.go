@@ -144,7 +144,7 @@ func RunActivity(ctx context.Context, id, req string) error {
 
 func RestartReplCommand(id string) error {
 	if replProcess != nil {
-		if err := replProcess.Process.Kill(); err != nil {
+		if err := sys_exec.KillProcess(replProcess); err != nil {
 			return nil
 		}
 		for k := range globalImport {

@@ -71,18 +71,21 @@ func TerminateSubFlow() error {
 		if err != nil {
 			return err
 		}
+		runningProcess = nil
 	}
 	if debugProcess != nil {
 		err := sys_exec.KillProcess(debugProcess)
 		if err != nil {
 			return err
 		}
+		debugProcess = nil
 	}
 	if replProcess != nil {
 		err := sys_exec.KillProcess(replProcess)
 		if err != nil {
 			return err
 		}
+		replProcess = nil
 	}
 	return nil
 }
