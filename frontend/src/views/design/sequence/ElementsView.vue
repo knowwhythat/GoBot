@@ -49,7 +49,7 @@
     </template>
     <div class="flex relative h-full">
       <Tree
-        :value="nodes"
+        :value="windowsElement"
         :filter="false"
         filterMode="lenient"
         selectionMode="single"
@@ -102,19 +102,14 @@ import Panel from "primevue/panel";
 import Tree from "primevue/tree";
 import ElementOptionDialog from "@/components/element/ElementOptionDialog.vue";
 import ElementTreeDialog from "@/components/element/ElementTreeDialog.vue";
-import { ref, nextTick, onMounted, toRaw } from "vue";
+import { ref, onMounted, toRaw } from "vue";
 import {
   StartPickWindowsElement,
-  StartCheckWindowsElement,
-  RunActivity,
   SaveWindowsElement,
-  GetWindowsElement,
   GetElementImage,
   GetSelectedWindowsElement,
-  GetProjectWindowsElements,
   RemoveWindowsElement,
 } from "@back/go/backend/App";
-import { nanoid } from "nanoid";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 const toast = useToast();
@@ -125,45 +120,17 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  windowsElement: {
+    type: Array,
+    default: () => [],
+  },
 });
-const nodes = ref([]);
 const selectedKey = ref(null);
 const expandedKeys = ref({});
 
 onMounted(async () => {
   await loadElements();
 });
-
-async function loadElements() {
-  const result = await GetProjectWindowsElements(props.id);
-  nodes.value = [];
-  const elements = JSON.parse(result);
-  for (let [key, value] of Object.entries(elements)) {
-    const processName = value["processName"];
-    const process = nodes.value.find((node) => node.label == processName);
-    if (process) {
-      process["children"].push({
-        key: key,
-        label: value["displayName"],
-        data: value,
-      });
-    } else {
-      nodes.value.push({
-        key: nanoid(16),
-        label: value["processName"],
-        data: [],
-        children: [
-          {
-            key: key,
-            label: value["displayName"],
-            data: value,
-          },
-        ],
-      });
-    }
-  }
-}
-const container = ref();
 
 const treeDialogShow = ref(false);
 const dialogShow = ref(false);
@@ -239,7 +206,6 @@ async function saveElement(element) {
     JSON.stringify(element)
   );
   dialogShow.value = false;
-  await loadElements();
 }
 const imagePath = ref(null);
 async function nodeSelect(node) {

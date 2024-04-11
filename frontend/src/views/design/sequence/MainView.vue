@@ -154,6 +154,7 @@
               />
               <ElementsView
                 :id="props.id"
+                :windowsElement="windowsElement"
                 v-else-if="activeNav == 'ElementsView'"
                 @hide="activeNav = ''"
               />
@@ -200,6 +201,7 @@ import {
   TerminateSubFlow,
   DealDebugSignal,
   RestartReplCommand,
+  GetProjectWindowsElements,
 } from "@back/go/backend/App";
 import {
   EventsOn,
@@ -283,11 +285,50 @@ onMounted(async () => {
   EventsOn("log_event", (data) => {
     logs.value.push(data);
   });
+  await loadElements();
+  EventsOn("windows_element_change", async () => {
+    await loadElements();
+  });
 });
 
 onUnmounted(() => {
   EventsOff("log_event");
+  EventsOff("windows_element_change");
 });
+
+const windowsElement = ref([]);
+provide("windowsElement", { id: props.id, windowsElement: windowsElement });
+async function loadElements() {
+  const result = await GetProjectWindowsElements(props.id);
+  windowsElement.value = [];
+  const elements = JSON.parse(result);
+  for (let [key, value] of Object.entries(elements)) {
+    const processName = value["processName"];
+    const process = windowsElement.value.find(
+      (node) => node.label == processName
+    );
+    if (process) {
+      process["children"].push({
+        key: key,
+        label: value["displayName"],
+        data: value,
+      });
+    } else {
+      windowsElement.value.push({
+        key: nanoid(16),
+        label: value["processName"],
+        data: [],
+        children: [
+          {
+            key: key,
+            label: value["displayName"],
+            data: value,
+          },
+        ],
+      });
+    }
+  }
+}
 
 const dragBlockId = ref("");
 const dropBlockId = ref("");

@@ -44,7 +44,7 @@
           <div
             v-for="(item, index) in slotProps.items"
             :key="index"
-            class="border-gray-200 border-current border rounded-lg"
+            class="border-gray-200 border-current border rounded-lg hover:bg-gray-100"
           >
             <div class="p-4 border-1 surface-border border-round">
               <div

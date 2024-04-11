@@ -16,6 +16,10 @@
       }),
     }"
   >
+    <div class="flex justify-content-center mb-1">
+      <span class="mt-3 w-24">元素名称:</span>
+      <InputText class="w-full" v-model="pathOption.displayName" type="text" />
+    </div>
     <Splitter>
       <SplitterPanel :size="30">
         <Listbox
@@ -25,12 +29,6 @@
           class="w-full"
           listStyle="max-height:650px"
         >
-          <template #header>
-            <div class="text-center mt-1">
-              <span class="mr-2">元素名称:</span>
-              <InputText v-model="pathOption.displayName" type="text" />
-            </div>
-          </template>
           <template #option="slotProps">
             <div class="flex align-items-center">
               <Checkbox

@@ -206,7 +206,7 @@ func (a *App) StartCheckWindowsElement(paths string) (string, error) {
 }
 
 func (a *App) SaveWindowsElement(id, elementId, image, data string) error {
-	return services.SaveWindowsElement(id, elementId, image, data)
+	return services.SaveWindowsElement(a.ctx, id, elementId, image, data)
 }
 
 func (a *App) GetWindowsElement(id, elementId string) (string, error) {

@@ -305,7 +305,7 @@ func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, e
 	return "", errors.New("连接服务失败")
 }
 
-func SaveWindowsElement(id, elementId, image, selector string) error {
+func SaveWindowsElement(ctx context.Context, id, elementId, image, selector string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {
 		return err
@@ -345,6 +345,7 @@ func SaveWindowsElement(id, elementId, image, selector string) error {
 		return err
 	}
 	err = os.WriteFile(selectorPath, saveData, 0666)
+	runtime.EventsEmit(ctx, "windows_element_change", "")
 	return err
 }
 

@@ -163,7 +163,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   }
                 ],
