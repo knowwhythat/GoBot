@@ -29,7 +29,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:  "GoBot",
 		Width:  1440,
-		Height: 720,
+		Height: 880,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

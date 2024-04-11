@@ -12,15 +12,15 @@
       <template #header>
         <Toolbar class="bg-gray-100 p-2">
           <template #start>
-            <div class="flex gap-1">
-              <span class="p-input-icon-left">
+            <InputGroup>
+              <InputGroupAddon>
                 <i class="pi pi-search" />
-                <InputText
-                  v-model="filters['global'].value"
-                  placeholder="输入关键字进行搜索"
-                />
-              </span>
-            </div>
+              </InputGroupAddon>
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="输入关键字进行搜索"
+              />
+            </InputGroup>
           </template>
         </Toolbar>
       </template>
@@ -53,6 +53,8 @@
 </template>
 <script setup>
 import Button from "primevue/button";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import DataTable from "primevue/datatable";
 import { FilterMatchMode } from "primevue/api";
 import Column from "primevue/column";

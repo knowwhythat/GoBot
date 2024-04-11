@@ -10,14 +10,18 @@
       <template #header>
         <Toolbar class="bg-gray-100 p-2">
           <template #start>
-            <div class="flex gap-1">
-              <span class="p-input-icon-left">
+            <InputGroup>
+              <InputGroupAddon>
                 <i class="pi pi-search" />
-                <InputText
-                  v-model="searchText"
-                  placeholder="输入关键字进行搜索"
-                />
-              </span>
+              </InputGroupAddon>
+              <InputText
+                v-model="searchText"
+                placeholder="输入关键字进行搜索"
+              />
+            </InputGroup>
+          </template>
+          <template #end>
+            <div class="flex gap-4">
               <Button label="导入">
                 <template #icon>
                   <v-remixicon name="riDownloadLine" />
@@ -30,72 +34,7 @@
               </Button>
             </div>
           </template>
-          <template #end>
-            <SelectButton
-              v-model="layout"
-              :options="options"
-              optionValue="value"
-              optionLabel="value"
-              dataKey="value"
-              aria-labelledby="custom"
-            >
-              <template #option="slotProps">
-                <i :class="slotProps.option.icon" size="32"></i>
-              </template>
-            </SelectButton>
-          </template>
         </Toolbar>
-      </template>
-
-      <template #list="slotProps">
-        <div
-          class="border-gray-200 border-current border rounded-lg p-2 m-2"
-          v-for="(item, index) in slotProps.items"
-          :key="index"
-        >
-          <div class="activity-node p-4 bg-input flex items-center group">
-            <div class="leading-tight flex-1 overflow-hidden">
-              <div class="text-xl font-bold truncate">
-                {{ item?.name }}
-              </div>
-              <div
-                class="flex flex-wrap align-items-center justify-content-between gap-2 pt-2"
-              >
-                <div class="flex align-items-center gap-2">
-                  <v-remixicon size="18" name="riPriceTag3Line" />
-                  <span class="font-semibold">测试</span>
-                </div>
-              </div>
-              <div
-                class="flex flex-wrap align-items-center justify-content-between gap-2 pt-2"
-              >
-                <div class="flex align-items-center gap-2">
-                  <span class="font-semibold">2023-11-24 10:00</span>
-                </div>
-              </div>
-            </div>
-            <div class="invisible group-hover:visible ml-8">
-              <v-remixicon
-                name="riPencilLine"
-                size="24"
-                class="cursor-pointer inline-block mr-2"
-                @click="edit(item?.id)"
-              />
-              <v-remixicon
-                name="riSettings3Line"
-                size="24"
-                class="cursor-pointer inline-block mr-2"
-                @click="editItemSettings(element)"
-              />
-              <v-remixicon
-                name="riDeleteBin7Line"
-                size="24"
-                class="cursor-pointer inline-block"
-                @click="deleteItem(index, element.itemId)"
-              />
-            </div>
-          </div>
-        </div>
       </template>
 
       <template #grid="slotProps">
@@ -205,11 +144,12 @@
 <script setup>
 import { ref, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import InputSwitch from "primevue/inputswitch";
 import DataView from "primevue/dataview";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
-import SelectButton from "primevue/selectbutton";
 import SplitButton from "primevue/splitbutton";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -232,10 +172,6 @@ const confirm = useConfirm();
 const projects = ref();
 const showProjects = ref();
 const layout = ref("grid");
-const options = ref([
-  { icon: "pi pi-table", value: "grid" },
-  { icon: "pi pi-list", value: "list" },
-]);
 
 onMounted(() => {
   listProject();

@@ -53,6 +53,13 @@
       <div :class="['invisible', 'group-hover/item:visible']">
         <slot name="operate"></slot>
         <button
+          v-if="props.runnable"
+          class="p-panel-header-icon p-link mr-2"
+          @click.stop="$emit('run')"
+        >
+          <span class="pi pi-caret-right"></span>
+        </button>
+        <button
           v-if="props.deleteable"
           class="p-panel-header-icon p-link mr-2"
           @click.stop="$emit('delete')"

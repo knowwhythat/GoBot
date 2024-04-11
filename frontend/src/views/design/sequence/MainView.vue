@@ -129,8 +129,8 @@
       </template>
     </Toolbar>
     <Splitter class="mb-5" stateStorage="local" :gutter-size="5">
-      <SplitterPanel :size="25"> <LeftPaneView /> </SplitterPanel>
-      <SplitterPanel class="h-full" :size="75" :min-size="66">
+      <SplitterPanel :size="15"> <LeftPaneView /> </SplitterPanel>
+      <SplitterPanel class="h-full" :size="85" :min-size="66">
         <div>
           <Splitter id="sequence-designer" layout="vertical" :gutter-size="5">
             <SplitterPanel :size="70" :min-size="30">

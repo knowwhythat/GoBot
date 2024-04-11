@@ -1106,6 +1106,163 @@
                 "error": true
               },
               "component": "BasicActivity"
+            },
+            {
+              "key": "browser.page.start_download_listen",
+              "label": "开始监听文件下载",
+              "icon_path": "riDownloadLine",
+              "description": "开始监听文件下载,会返回一个文件下载的代理,用于处理下载完成事件",
+              "namespace": "robot_browser",
+              "method": "start_download_listen",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "download_wrapper",
+                    "label": "下载完成事件",
+                    "type": "download_wrapper",
+                    "default_value": "download_wrapper",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser.page.wait_download_end",
+              "label": "等待下载完成",
+              "icon_path": "riSaveLine",
+              "description": "等待下载完成,并将文件另存到指定的文件夹",
+              "namespace": "robot_browser",
+              "method": "wait_download_end",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "download_wrapper",
+                    "label": "下载完成事件",
+                    "type": "download_wrapper",
+                    "default_value": "1:download_wrapper",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "download_dir",
+                    "label": "文件保存目录",
+                    "default_value": "0:",
+                    "type": "str",
+                    "required": true,
+                    "options": {
+                      "type": "file"
+                    },
+                    "editor_type": "FileDialogInput"
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:30",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "download_path",
+                    "label": "文件保存路径",
+                    "type": "str",
+                    "default_value": "download_path",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser.page.start_upload_listen",
+              "label": "开始监听文件上传",
+              "icon_path": "riUploadLine",
+              "description": "开始监听文件上传",
+              "namespace": "robot_browser",
+              "method": "start_upload_listen",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "upload_file",
+                    "label": "上传文件地址",
+                    "default_value": "0:",
+                    "type": "str",
+                    "required": true,
+                    "options": {
+                      "type": "directory"
+                    },
+                    "editor_type": "FileDialogInput"
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间",
+                    "type": "number",
+                    "default_value": "1:30",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [
+                  {
+                    "key": "download_wrapper",
+                    "label": "下载完成事件",
+                    "type": "download_wrapper",
+                    "default_value": "download_wrapper",
+                    "required": true,
+                    "editor_type": "SelectOrInput"
+                  }
+                ],
+                "error": true
+              },
+              "component": "BasicActivity"
             }
           ]
         },
