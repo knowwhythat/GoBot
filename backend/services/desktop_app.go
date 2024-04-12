@@ -373,7 +373,7 @@ func GetWindowsElement(id, elementId string) (string, error) {
 	return "", nil
 }
 
-func RemoveWindowsElement(id, elementId string) error {
+func RemoveWindowsElement(ctx context.Context, id, elementId string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {
 		return err
@@ -401,6 +401,7 @@ func RemoveWindowsElement(id, elementId string) error {
 			return err
 		}
 		err = os.WriteFile(selectorPath, saveData, 0666)
+		runtime.EventsEmit(ctx, "windows_element_change", "")
 		return err
 	}
 	return nil

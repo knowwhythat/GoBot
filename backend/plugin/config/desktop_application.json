@@ -131,7 +131,7 @@
                 "default_value": "0:",
                 "required": true,
                 "options": null,
-                "editor_type": "ExpressionTextInput",
+                "editor_type": "WindowsElementInput",
                 "show_if": ["window_type=windows_element"]
               }
             ],
@@ -189,7 +189,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -230,7 +230,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -266,7 +266,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -312,7 +312,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -358,7 +358,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   }
                 ],
@@ -384,7 +384,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   }
                 ],
@@ -427,7 +427,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -524,7 +524,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -594,7 +594,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -665,7 +665,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -736,7 +736,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   }
                 ],
@@ -771,7 +771,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -858,7 +858,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -917,7 +917,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -957,7 +957,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -1015,7 +1015,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   }
                 ],
@@ -1050,7 +1050,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {
@@ -1269,7 +1269,7 @@
                     "default_value": "0:",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "WindowsElementInput",
                     "show_if": []
                   },
                   {

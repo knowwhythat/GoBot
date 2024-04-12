@@ -102,7 +102,7 @@ import Panel from "primevue/panel";
 import Tree from "primevue/tree";
 import ElementOptionDialog from "@/components/element/ElementOptionDialog.vue";
 import ElementTreeDialog from "@/components/element/ElementTreeDialog.vue";
-import { ref, onMounted, toRaw } from "vue";
+import { ref, toRaw } from "vue";
 import {
   StartPickWindowsElement,
   SaveWindowsElement,
@@ -127,10 +127,6 @@ const props = defineProps({
 });
 const selectedKey = ref(null);
 const expandedKeys = ref({});
-
-onMounted(async () => {
-  await loadElements();
-});
 
 const treeDialogShow = ref(false);
 const dialogShow = ref(false);
@@ -232,13 +228,11 @@ const items = ref([
         rejectLabel: "取消",
         acceptLabel: "删除",
         accept: () => {
-          RemoveWindowsElement(props.id, selectedNode.value.key)
-            .then((result) => {
-              loadElements();
-            })
-            .catch((error) => {
+          RemoveWindowsElement(props.id, selectedNode.value.key).catch(
+            (error) => {
               console.error(error);
-            });
+            }
+          );
         },
         reject: () => {},
       });

@@ -45,8 +45,22 @@ const content = computed({
   get() {
     if (props.value.split(":").length > 1) {
       const key = props.value.substring(2);
-
-      return props.value.substring(2);
+      if (key) {
+        let ele;
+        windowsElement.value.forEach((element) => {
+          element.children.forEach((item) => {
+            if (item.key === key) {
+              ele = item;
+            }
+          });
+        });
+        if (ele) {
+          return ele.label;
+        } else {
+          return "元素不存在";
+        }
+      }
+      return "";
     } else {
       return props.value;
     }

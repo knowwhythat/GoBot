@@ -21,9 +21,13 @@
         v-if="imagePath"
         :src="imagePath"
         alt="Image"
-        imageClass="py-auto max-h-8"
+        image-class="max-h-8"
+        :pt="{
+          root: (options) => ({
+            style: 'max-width:500px;max-height:32px',
+          }),
+        }"
         preview
-        width="300"
       />
     </template>
   </ActivityBase>

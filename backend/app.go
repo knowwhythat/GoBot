@@ -230,7 +230,7 @@ func (a *App) GetProjectWindowsElements(projectId string) (string, error) {
 }
 
 func (a *App) RemoveWindowsElement(projectId, controlId string) error {
-	return services.RemoveWindowsElement(projectId, controlId)
+	return services.RemoveWindowsElement(a.ctx, projectId, controlId)
 }
 
 func (a *App) QuerySchedulePage() (resultList []*models.Schedule, err error) {
