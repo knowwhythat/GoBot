@@ -9,5 +9,8 @@ export const useEditorStore = defineStore("editor", {
     addToPasteBlocks(blocks) {
       return (this.copiedBlocks = blocks);
     },
+    clearCopiedBlocks() {
+      return (this.copiedBlocks = []);
+    },
   },
 });

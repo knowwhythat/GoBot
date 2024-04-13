@@ -185,7 +185,7 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import { ref, onMounted, onUnmounted, reactive, provide } from "vue";
+import { ref, onMounted, onUnmounted, reactive, provide, toRaw } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
@@ -301,31 +301,33 @@ provide("windowsElement", { id: props.id, windowsElement: windowsElement });
 async function loadElements() {
   const result = await GetProjectWindowsElements(props.id);
   windowsElement.value = [];
-  const elements = JSON.parse(result);
-  for (let [key, value] of Object.entries(elements)) {
-    const processName = value["processName"];
-    const process = windowsElement.value.find(
-      (node) => node.label == processName
-    );
-    if (process) {
-      process["children"].push({
-        key: key,
-        label: value["displayName"],
-        data: value,
-      });
-    } else {
-      windowsElement.value.push({
-        key: nanoid(16),
-        label: value["processName"],
-        data: [],
-        children: [
-          {
-            key: key,
-            label: value["displayName"],
-            data: value,
-          },
-        ],
-      });
+  if (result) {
+    const elements = JSON.parse(result);
+    for (let [key, value] of Object.entries(elements)) {
+      const processName = value["processName"];
+      const process = windowsElement.value.find(
+        (node) => node.label == processName
+      );
+      if (process) {
+        process["children"].push({
+          key: key,
+          label: value["displayName"],
+          data: value,
+        });
+      } else {
+        windowsElement.value.push({
+          key: nanoid(16),
+          label: value["processName"],
+          data: [],
+          children: [
+            {
+              key: key,
+              label: value["displayName"],
+              data: value,
+            },
+          ],
+        });
+      }
     }
   }
 }
@@ -408,7 +410,8 @@ function innerCopy(children, id, copyBlock) {
     (item) => item.id === id && !item.hasOwnProperty("deleteable")
   );
   if (block) {
-    copyBlock.push({ ...block, id: nanoid(16) });
+    const rawBlock = JSON.parse(JSON.stringify(block));
+    copyBlock.push({ ...rawBlock, id: nanoid(16) });
   } else {
     children.forEach((ele) => {
       if (ele.children) {
@@ -430,6 +433,7 @@ function pasteBlock() {
       dataChanged.value = true;
     }
   }
+  editorStore.clearCopiedBlocks();
 }
 
 function innerPaste(children, id) {
