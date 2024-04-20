@@ -128,11 +128,21 @@
         <SystemOperate @quit="confirmQuit" />
       </template>
     </Toolbar>
-    <Splitter class="mb-5" stateStorage="local" :gutter-size="5">
-      <SplitterPanel :size="15"> <LeftPaneView /> </SplitterPanel>
-      <SplitterPanel class="h-full" :size="85" :min-size="66">
+    <splitpanes class="default-theme" :dblClickSplitter="false">
+      <SplitterPanel :size="15">
+        <div class="m-1">
+          <LeftPaneView />
+        </div>
+      </SplitterPanel>
+      <SplitterPanel :size="70" :min-size="50">
         <div>
-          <Splitter id="sequence-designer" layout="vertical" :gutter-size="5">
+          <splitpanes
+            class="default-theme"
+            :dblClickSplitter="false"
+            id="sequence-designer"
+            horizontal
+            @resized="splitePaneResize"
+          >
             <SplitterPanel :size="70" :min-size="30">
               <div class="flex justify-around">
                 <SequenceActivity
@@ -141,7 +151,11 @@
                 />
               </div>
             </SplitterPanel>
-            <SplitterPanel v-if="activeNav != ''" :size="30" :min-size="10">
+            <SplitterPanel
+              v-if="activeNav != ''"
+              :size="bottomHeight"
+              :min-size="10"
+            >
               <LogsView
                 v-if="activeNav == 'LogsView'"
                 :logs="logs"
@@ -159,7 +173,7 @@
                 @hide="activeNav = ''"
               />
             </SplitterPanel>
-          </Splitter>
+          </splitpanes>
           <div class="flex flex-row h-8 bg-slate-100">
             <div
               v-for="nav in bottomNav"
@@ -176,13 +190,16 @@
           </div>
         </div>
       </SplitterPanel>
-    </Splitter>
+      <SplitterPanel :size="15" max-size="30">
+        <Panel header="项目"></Panel>
+      </SplitterPanel>
+    </splitpanes>
   </div>
 </template>
 <script setup>
 import Button from "primevue/button";
-import Splitter from "primevue/splitter";
-import SplitterPanel from "primevue/splitterpanel";
+import { Splitpanes, Pane as SplitterPanel } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
 import { ref, onMounted, onUnmounted, reactive, provide, toRaw } from "vue";
@@ -209,6 +226,12 @@ import {
   WindowMinimise,
   WindowMaximise,
 } from "@back/runtime/runtime";
+import {
+  deleteSelected,
+  cutSelected,
+  copySelected,
+  innerPaste,
+} from "@/utils/activityUtils.js";
 import { useShortcut, getShortcut } from "@/composable/shortcut";
 
 import { useEditorStore } from "@/stores/editor";
@@ -350,108 +373,54 @@ const shortcuts = useShortcut([
 ]);
 
 function delBlock() {
+  if (selectedActivity.value.length == 0) {
+    return;
+  }
   selectedActivity.value.forEach((id) => {
-    innerDelete(mainActivity.sequence.children, id);
+    deleteSelected(mainActivity.sequence.children, id);
   });
+  dataChanged.value = true;
   selectedActivity.value = [];
 }
 
-function innerDelete(children, id) {
-  const index = children.findIndex(
-    (item) => item.id === id && !item.hasOwnProperty("deleteable")
-  );
-  if (index != -1) {
-    children.splice(index, 1);
-    dataChanged.value = true;
-  } else {
-    children.forEach((ele) => {
-      if (ele.children) {
-        innerDelete(ele.children, id);
-      }
-    });
-  }
-}
 const editorStore = useEditorStore();
 function cutBlock() {
+  if (selectedActivity.value.length == 0) {
+    return;
+  }
   let cutBlock = [];
   selectedActivity.value.forEach((id) => {
-    innerCut(mainActivity.sequence.children, id, cutBlock);
+    cutSelected(mainActivity.sequence.children, id, cutBlock);
   });
+  dataChanged.value = true;
   selectedActivity.value = [];
   editorStore.addToPasteBlocks(cutBlock);
 }
 
-function innerCut(children, id, cutBlock) {
-  const index = children.findIndex(
-    (item) => item.id === id && !item.hasOwnProperty("deleteable")
-  );
-  if (index != -1) {
-    cutBlock.push(children.splice(index, 1)[0]);
-    dataChanged.value = true;
-  } else {
-    children.forEach((ele) => {
-      if (ele.children) {
-        innerCut(ele.children, id, cutBlock);
-      }
-    });
-  }
-}
-
 function copyBlock() {
+  if (selectedActivity.value.length == 0) {
+    return;
+  }
   let copyBlock = [];
   selectedActivity.value.forEach((id) => {
-    innerCopy(mainActivity.sequence.children, id, copyBlock);
+    copySelected(mainActivity.sequence.children, id, copyBlock);
   });
   editorStore.addToPasteBlocks(copyBlock);
 }
 
-function innerCopy(children, id, copyBlock) {
-  const block = children.find(
-    (item) => item.id === id && !item.hasOwnProperty("deleteable")
-  );
-  if (block) {
-    const rawBlock = JSON.parse(JSON.stringify(block));
-    copyBlock.push({ ...rawBlock, id: nanoid(16) });
-  } else {
-    children.forEach((ele) => {
-      if (ele.children) {
-        innerCopy(ele.children, id, copyBlock);
-      }
-    });
-  }
-}
-
 function pasteBlock() {
   if (editorStore.copiedBlocks.length > 0) {
+    dataChanged.value = true;
     if (selectedActivity.value.length > 0) {
       const id = selectedActivity.value[selectedActivity.value.length - 1];
-      innerPaste(mainActivity.sequence.children, id);
+      innerPaste(mainActivity.sequence.children, id, editorStore.copiedBlocks);
     } else {
       editorStore.copiedBlocks.forEach((block) => {
         mainActivity.sequence.children.push({ ...block, id: nanoid(16) });
       });
-      dataChanged.value = true;
     }
   }
   editorStore.clearCopiedBlocks();
-}
-
-function innerPaste(children, id) {
-  const index = children.findIndex(
-    (item) => item.id === id && !item.hasOwnProperty("deleteable")
-  );
-  if (index != -1) {
-    editorStore.copiedBlocks.forEach((block, innerIndex) => {
-      children.splice(index + innerIndex + 1, 0, { ...block, id: nanoid(16) });
-    });
-    dataChanged.value = true;
-  } else {
-    children.forEach((ele) => {
-      if (ele.children) {
-        innerPaste(ele.children, id);
-      }
-    });
-  }
 }
 
 async function save() {
@@ -488,6 +457,14 @@ function bottomNavClick(nav) {
     activeNav.value = nav;
   } else {
     activeNav.value = "";
+  }
+}
+
+const bottomHeight = ref(30);
+
+function splitePaneResize(e) {
+  if (e.length == 2) {
+    bottomHeight.value = e[1].size;
   }
 }
 

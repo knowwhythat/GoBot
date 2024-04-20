@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import Login from "@/views/Login.vue";
 import Main from "@/views/main/MainView.vue";
 import Flow from "@/views/main/FlowView.vue";
@@ -11,42 +11,42 @@ import WorkflowView from "@/views/design/flow/WorkflowView.vue";
 import SequenceView from "@/views/design/sequence/MainView.vue";
 
 export const router = createRouter({
-    history: createWebHistory(),
-    routes: [
+  history: createWebHashHistory(),
+  routes: [
+    {
+      path: "/",
+      component: Login,
+    },
+    {
+      path: "/main",
+      component: Main,
+      children: [
+        { path: "", component: Flow },
+        { path: "trigger", component: Trigger },
+        { path: "record", component: Record },
+        { path: "monitor", component: Monitor },
+        { path: "setting", component: Setting },
+      ],
+    },
+    {
+      path: "/design",
+      component: DesignView,
+      children: [
         {
-            path: '/',
-            component: Login
+          path: "",
+          component: WorkflowView,
+          props: (route) => ({ id: route.query.id }),
         },
         {
-            path: "/main",
-            component: Main,
-            children: [
-                {path: "", component: Flow},
-                {path: "trigger", component: Trigger},
-                {path: "record", component: Record},
-                {path: "monitor", component: Monitor},
-                {path: "setting", component: Setting},
-            ],
+          path: "sequence",
+          component: SequenceView,
+          props: (route) => ({
+            id: route.query.id,
+            subflowId: route.query.subflowId,
+            label: route.query.label,
+          }),
         },
-        {
-            path: "/design",
-            component: DesignView,
-            children: [
-                {
-                    path: "",
-                    component: WorkflowView,
-                    props: (route) => ({id: route.query.id}),
-                },
-                {
-                    path: "sequence",
-                    component: SequenceView,
-                    props: (route) => ({
-                        id: route.query.id,
-                        subflowId: route.query.subflowId,
-                        label: route.query.label,
-                    }),
-                },
-            ],
-        },
-    ],
+      ],
+    },
+  ],
 });

@@ -1,5 +1,5 @@
 <template>
-  <TabView>
+  <TabView class="rounded-2xl">
     <TabPanel header="组件库">
       <Tree
         :value="nodes"
@@ -93,7 +93,7 @@ function toolDragEnd(event) {
 </script>
 <style scoped>
 :deep(.p-tree-wrapper) {
-  height: calc(100vh - 168px);
+  height: calc(100vh - 174px);
 }
 :deep(.p-tree) {
   padding: 0.25rem;

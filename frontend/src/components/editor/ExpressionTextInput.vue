@@ -16,9 +16,13 @@
         @node-select="selectedNode($event)"
       ></Tree>
     </OverlayPanel>
-    <InputText
+    <Textarea
       :placeholder="input.placeholder"
       v-model="content"
+      variant="filled"
+      rows="1"
+      cols="30"
+      style="min-height: 56px"
       @keydown="(e) => e.stopPropagation()"
     />
     <Button
@@ -33,8 +37,8 @@
 </template>
 <script setup>
 import Tree from "primevue/tree";
+import Textarea from "primevue/textarea";
 import InputGroup from "primevue/inputgroup";
-import InputText from "primevue/inputtext";
 import OverlayPanel from "primevue/overlaypanel";
 import Button from "primevue/button";
 import { ref, computed, inject } from "vue";

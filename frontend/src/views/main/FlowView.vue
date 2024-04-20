@@ -45,6 +45,7 @@
             v-for="(item, index) in slotProps.items"
             :key="index"
             class="border-gray-200 border-current border rounded-lg hover:bg-gray-100"
+            @dblclick="edit(item)"
           >
             <div class="p-4 border-1 surface-border border-round">
               <div
@@ -64,18 +65,19 @@
               </div>
               <div class="pb-1">{{}}</div>
               <div class="flex flex-row-reverse gap-1">
-                <SplitButton
+                <Button
                   rounded
                   outlined
-                  label="设置"
-                  icon="pi pi-play"
-                  @click="run(item)"
+                  icon="pi pi-ellipsis-v"
+                  @click="toggle(index, $event)"
+                  v-tooltip="'其他'"
+                />
+                <TieredMenu
+                  ref="operateMenu"
+                  id="overlay_tmenu"
                   :model="getItems(item?.id)"
-                >
-                  <template #icon>
-                    <v-remixicon size="24" name="riSettings3Line" />
-                  </template>
-                </SplitButton>
+                  popup
+                />
                 <Button
                   rounded
                   outlined
@@ -144,13 +146,13 @@
 <script setup>
 import { ref, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
+import TieredMenu from "primevue/tieredmenu";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputSwitch from "primevue/inputswitch";
 import DataView from "primevue/dataview";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
-import SplitButton from "primevue/splitbutton";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Editor from "primevue/editor";
@@ -201,7 +203,10 @@ function listProject() {
       console.error(error);
     });
 }
-
+const operateMenu = ref();
+const toggle = (index, event) => {
+  operateMenu.value[index].toggle(event);
+};
 function getItems(id) {
   return [
     {
@@ -249,8 +254,7 @@ function getItems(id) {
       command: () => {
         toast.add({
           severity: "warn",
-          summary: "Delete",
-          detail: "Data Deleted",
+          detail: "功能尚未发布",
           life: 3000,
         });
       },

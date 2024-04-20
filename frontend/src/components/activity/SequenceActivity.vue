@@ -182,7 +182,6 @@ function dragStart(event, element) {
 
 function dragEnd(event, element) {
   dropBlockId.value = "";
-  // dragBlockId.value = "";
 }
 
 function dragEnter(event, element) {
