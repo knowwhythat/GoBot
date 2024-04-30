@@ -1,4 +1,4 @@
-import { onUnmounted, onMounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import Mousetrap from "mousetrap";
 import { isObject } from "@/utils/helper";
 
@@ -49,11 +49,9 @@ export function getReadableShortcut(str) {
     },
   };
   const regex = /option|mod/g;
-  const replacedStr = str.replace(regex, (match) => {
+  return str.replace(regex, (match) => {
     return list[match]["win"];
   });
-
-  return replacedStr;
 }
 
 export function getShortcut(id, data) {

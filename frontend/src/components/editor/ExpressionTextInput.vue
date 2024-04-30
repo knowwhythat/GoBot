@@ -17,13 +17,21 @@
       ></Tree>
     </OverlayPanel>
     <Textarea
+      v-if="isExpression"
       :placeholder="input.placeholder"
-      v-model="content"
+      v-model="expressionContent"
       variant="filled"
       rows="1"
       cols="30"
-      style="min-height: 56px"
+      style="min-height: 56px; max-height: 200px"
       @keydown="(e) => e.stopPropagation()"
+    />
+    <TagTextarea
+      v-else
+      ref="tagTextarea"
+      v-model="rawContent"
+      :minHight="56"
+      :maxHeight="200"
     />
     <Button
       :severity="isExpression ? 'Primary' : 'secondary'"
@@ -41,7 +49,8 @@ import Textarea from "primevue/textarea";
 import InputGroup from "primevue/inputgroup";
 import OverlayPanel from "primevue/overlaypanel";
 import Button from "primevue/button";
-import { ref, computed, inject } from "vue";
+import TagTextarea from "@/components/common/TagTextarea.vue";
+import { ref, inject, onMounted, watch } from "vue";
 const props = defineProps({
   value: {
     type: String,
@@ -56,27 +65,41 @@ const props = defineProps({
 const emit = defineEmits(["update"]);
 const isExpression = ref(false);
 
-const content = computed({
-  get() {
-    if (props.value.split(":").length > 1) {
-      isExpression.value = props.value.split(":")[0] === "1";
-      return props.value.substring(2);
-    } else {
+const expressionContent = ref();
+watch(expressionContent, (value, oldValue) => {
+  emit("update", "1:" + value);
+});
+const rawContent = ref();
+
+watch(rawContent, (value, oldValue) => {
+  emit("update", "3:" + value);
+});
+const tagTextarea = ref(null);
+
+onMounted(() => {
+  if (props.value.split(":").length > 1) {
+    if (props.value.split(":")[0] === "1") {
+      isExpression.value = true;
+      expressionContent.value = props.value.substring(2);
+    } else if (props.value.split(":")[0] === "0") {
       isExpression.value = false;
-      return props.value;
+      rawContent.value = props.value;
+    } else if (props.value.split(":")[0] === "3") {
+      isExpression.value = false;
+      if (props.value.substring(2)) {
+        rawContent.value = props.value.substring(2);
+      }
     }
-  },
-  set(value) {
-    emit("update", (isExpression.value ? "1:" : "0:") + value);
-  },
+    tagTextarea.value.initData(rawContent.value);
+  }
 });
 
 function changeValueType() {
   isExpression.value = !isExpression.value;
   if (isExpression.value) {
-    emit("update", "1:" + content.value);
+    emit("update", "1:" + expressionContent.value);
   } else {
-    emit("update", "0:" + content.value);
+    emit("update", "3:" + rawContent.value);
   }
 }
 const { contextVariable } = inject("contextVariable");
@@ -87,7 +110,8 @@ const toggle = (event) => {
 
 function selectedNode(node) {
   op.value.toggle(false);
-  isExpression.value = true;
-  emit("update", "1:" + node.label);
+  if (!isExpression.value) {
+    tagTextarea.value.addTag(node.label);
+  }
 }
 </script>

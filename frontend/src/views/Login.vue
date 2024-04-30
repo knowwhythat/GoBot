@@ -126,7 +126,7 @@ async function login() {
   try {
     appStore.changeLoadingState(true);
     await Login(loginForm);
-    router.push("/main");
+    await router.push("/main");
     appStore.changeLoadingState(false);
   } catch (err) {
     appStore.changeLoadingState(false);

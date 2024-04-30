@@ -14,9 +14,29 @@
           @quit="confirmQuit"
           @toggleMax="appStore.changeMainWindowState($event)"
         >
-          <div class="hover:bg-slate-200 p-2" @click="WindowMinimise">
+          <div
+            class="hover:bg-slate-200 p-2"
+            @mouseenter="showUserInfo"
+            @mouseleave="hideUserInfo"
+          >
             <v-remixicon size="20" name="riUser3Line" />
           </div>
+          <OverlayPanel ref="userInfo">
+            <div
+              class="flex flex-column gap-3 w-25rem"
+              @mouseenter="showUserInfo"
+              @mouseleave="hideUserInfo"
+            >
+              <Avatar
+                icon="pi pi-user"
+                class="mr-2"
+                style="background-color: #ece9fc; color: #2a1261"
+                shape="circle"
+              />
+              <p>Admin</p>
+              <Button label="退出" severity="danger" text />
+            </div>
+          </OverlayPanel>
         </SystemOperate>
       </template>
       <router-view v-slot="{ Component }">
@@ -46,7 +66,8 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Quit } from "@back/runtime/runtime";
+import { Quit, WindowMaximise, WindowUnmaximise } from "@back/runtime/runtime";
+import OverlayPanel from "primevue/overlaypanel";
 import Panel from "primevue/panel";
 import Dock from "primevue/dock";
 import TerminalSvg from "@/assets/images/terminal.svg";
@@ -57,7 +78,7 @@ import SettingSvg from "@/assets/images/setting.svg";
 import SystemOperate from "@/components/SystemOperate.vue";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
-import { WindowUnmaximise, WindowMaximise } from "@back/runtime/runtime";
+
 const appStore = useAppStore();
 const confirm = useConfirm();
 
@@ -68,6 +89,22 @@ onMounted(async () => {
     await WindowUnmaximise();
   }
 });
+
+const userInfo = ref();
+const userInfoShow = ref(false);
+
+const showUserInfo = async (e) => {
+  userInfoShow.value = true;
+  userInfo.value.show(e);
+};
+const hideUserInfo = async () => {
+  userInfoShow.value = false;
+  setTimeout(() => {
+    if (!userInfoShow.value) {
+      userInfo.value.hide();
+    }
+  }, 300);
+};
 const router = useRouter();
 const title = ref("工作流");
 const items = ref([
@@ -150,6 +187,7 @@ const confirmQuit = () => {
 .body {
   height: calc(100vh - 98px);
 }
+
 :deep(.p-panel .p-panel-content) {
   border: none;
 }

@@ -50,7 +50,7 @@
       </div>
     </template>
     <template #icons>
-      <div :class="['invisible', 'group-hover/item:visible']" class="w-32">
+      <div :class="['invisible', 'group-hover/item:visible']">
         <slot name="operate"></slot>
         <button
           v-if="props.runnable"
