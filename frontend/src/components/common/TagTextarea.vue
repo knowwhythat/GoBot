@@ -15,9 +15,10 @@
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { nanoid } from "nanoid";
 
 const props = defineProps({
-  minHight: {
+  minHeight: {
     type: Number,
     default: 30,
   },
@@ -31,11 +32,7 @@ const modelValue = defineModel({ type: String });
 
 const wTextarea = ref(null);
 const wTextareaContent = ref(null);
-const contentId = `content${getGuid()}`;
-function getGuid() {
-  // 生成随机ID
-  return `r${new Date().getTime()}d${Math.ceil(Math.random() * 1000)}`;
-}
+const contentId = `content${nanoid(16)}`;
 
 const isLocked = ref(false);
 const currentTagId = ref(null);
@@ -45,13 +42,14 @@ const savedRange = ref(null);
 function initData(content) {
   // 初始化数据
   if (content) {
+    console.log(content);
     const data = JSON.parse(content);
     console.log(data);
     data.forEach((text) => {
       if (text && text.length >= 3) {
         if (text.substring(0, 1) === "0") {
           wTextareaContent.value.appendChild(
-            document.createTextNode(text.substring(2))
+            document.createTextNode(text.substring(2)),
           );
         } else {
           wTextareaContent.value.appendChild(createTag(text.substring(2)));
@@ -76,7 +74,7 @@ function createTag(text) {
   let node = document.createElement("wise");
   node.innerText = text;
   // 添加id便于删除
-  node.id = getGuid();
+  node.id = nanoid(16);
   return node;
 }
 
@@ -97,7 +95,7 @@ function handleInput(target) {
     if (target.childNodes) {
       let data = [];
       target.childNodes.forEach((node) => {
-        if (node.nodeType == 3) {
+        if (node.nodeType === 3) {
           data.push("0:" + node.textContent);
         } else {
           data.push("2:" + node.textContent);

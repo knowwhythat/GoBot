@@ -30,7 +30,7 @@
       v-else
       ref="tagTextarea"
       v-model="rawContent"
-      :minHight="56"
+      :minHeight="56"
       :maxHeight="200"
     />
     <Button

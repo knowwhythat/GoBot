@@ -34,7 +34,6 @@
                 shape="circle"
               />
               <p>Admin</p>
-              <Button label="退出" severity="danger" text />
             </div>
           </OverlayPanel>
         </SystemOperate>

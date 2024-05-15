@@ -3,10 +3,15 @@
     <Toolbar class="p-1 border-none" style="--wails-draggable: drag">
       <template #start>
         <Button
+          text
           @click="confirmQuit"
           lable="返回"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
-          text
+          class="hover:bg-slate-200"
+          v-tooltip.bottom="{
+            value: '返回',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
         >
           <template #icon>
             <v-remixicon name="riArrowLeftCircleLine" />
@@ -20,7 +25,7 @@
             showDelay: 100,
             hideDelay: 300,
           }"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           @click="save"
         >
           <template #icon>
@@ -49,7 +54,7 @@
             hideDelay: 300,
           }"
           :disabled="!(running || debuging)"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           @click="terminate"
         >
           <template #icon>
@@ -65,7 +70,7 @@
             hideDelay: 300,
           }"
           :disabled="debuging"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           @click="run"
           :loading="running"
         >
@@ -82,7 +87,7 @@
             hideDelay: 300,
           }"
           :disabled="running"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           @click="debug"
           :loading="debuging"
         >
@@ -93,7 +98,7 @@
         <Button
           text
           label="单行调试"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('n')"
           v-if="debuging"
@@ -105,7 +110,7 @@
         <Button
           text
           label="下个断点"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('c')"
           v-if="debuging"
@@ -118,7 +123,7 @@
           text
           label="重启Repl"
           icon="pi pi-replay"
-          class="mr-2 px-3 py-2 hover:bg-slate-200"
+          class="hover:bg-slate-200"
           @click="restartRepl"
         >
         </Button>
@@ -169,7 +174,7 @@
               <ElementsView
                 :id="props.id"
                 :windowsElement="windowsElement"
-                v-else-if="activeNav == 'ElementsView'"
+                v-else-if="activeNav === 'ElementsView'"
                 @hide="activeNav = ''"
               />
             </SplitterPanel>
@@ -180,7 +185,7 @@
               @click="bottomNavClick(nav.component)"
               class="text-center w-20 my-auto hover:text-indipurplego-500"
               :class="[
-                nav.component == activeNav
+                nav.component === activeNav
                   ? 'border-b-4 border-purple-500 text-purple-500'
                   : '',
               ]"
@@ -198,11 +203,11 @@
 </template>
 <script setup>
 import Button from "primevue/button";
-import { Splitpanes, Pane as SplitterPanel } from "splitpanes";
+import { Pane as SplitterPanel, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import { ref, onMounted, onUnmounted, reactive, provide, toRaw } from "vue";
+import { onMounted, onUnmounted, provide, reactive, ref } from "vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
@@ -211,32 +216,33 @@ import VariablesView from "@/views/design/sequence/VariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import { nanoid } from "nanoid";
 import {
-  GetSubFlow,
-  SaveSubFlow,
-  RunSubFlow,
-  DebugSubFlow,
-  TerminateSubFlow,
   DealDebugSignal,
-  RestartReplCommand,
+  DebugSubFlow,
   GetProjectWindowsElements,
+  GetSubFlow,
+  RestartReplCommand,
+  RunSubFlow,
+  SaveSubFlow,
+  TerminateSubFlow,
 } from "@back/go/backend/App";
 import {
-  EventsOn,
   EventsOff,
-  WindowMinimise,
+  EventsOn,
   WindowMaximise,
+  WindowMinimise,
 } from "@back/runtime/runtime";
 import {
-  deleteSelected,
-  cutSelected,
   copySelected,
+  cutSelected,
+  deleteSelected,
   innerPaste,
 } from "@/utils/activityUtils.js";
-import { useShortcut, getShortcut } from "@/composable/shortcut";
+import { getShortcut, useShortcut } from "@/composable/shortcut";
 
 import { useEditorStore } from "@/stores/editor";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+
 const toast = useToast();
 const confirm = useConfirm();
 
@@ -321,6 +327,7 @@ onUnmounted(() => {
 
 const windowsElement = ref([]);
 provide("windowsElement", { id: props.id, windowsElement: windowsElement });
+
 async function loadElements() {
   const result = await GetProjectWindowsElements(props.id);
   windowsElement.value = [];
@@ -384,6 +391,7 @@ function delBlock() {
 }
 
 const editorStore = useEditorStore();
+
 function cutBlock() {
   if (selectedActivity.value.length == 0) {
     return;
@@ -471,6 +479,7 @@ function splitePaneResize(e) {
 const running = ref(false);
 
 var reg = /code_map_id="([^"]*)/;
+
 async function run() {
   await save();
   await restartRepl();
@@ -502,10 +511,12 @@ async function run() {
   running.value = false;
   WindowMaximise();
 }
+
 const debuging = ref(false);
 const debugingId = ref(nanoid(16));
 const breakpointHit = ref(false);
 provide("debugingId", { debugingId });
+
 async function debug() {
   await restartRepl();
   await save();
@@ -536,10 +547,12 @@ async function debug() {
   EventsOff("debug");
   WindowMaximise();
 }
+
 function dealDebug(command) {
   breakpointHit.value = false;
   DealDebugSignal(command);
 }
+
 async function terminate() {
   await TerminateSubFlow();
   debuging.value = false;
@@ -588,21 +601,27 @@ async function restartRepl() {
 #sequence-designer {
   height: calc(100vh - 86px);
 }
+
 :deep(.p-splitter .p-splitter-gutter) {
   background: #e5e7eb;
 }
+
 :deep(.p-splitter-panel) {
   overflow: auto;
 }
+
 :deep(.p-tabview-panels) {
   padding: 0rem;
 }
+
 :deep(.p-tabview-nav-link) {
   padding: 0.75rem;
 }
+
 :deep(.p-splitter) {
   margin: 0;
 }
+
 :deep(.p-panel .p-panel-content) {
   padding: 0.25rem;
 }

@@ -7,7 +7,7 @@ log:
     path: D:\code\go\gobot\build\log\
 login:
     autologin: true
-    pwd: CkpdUhFr1wvGHEt2vH40OaCXwesvr1PHTjexuQqn4TA=
+    pwd: gDhMRLEAB6minbFw3V/QnYGKGBSmxcws+r0Kulys9c8=
     rememberme: true
     username: admin
 python:

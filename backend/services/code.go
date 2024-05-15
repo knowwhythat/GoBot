@@ -232,43 +232,15 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 		code = code + activity.Namespace + "." + activity.Method + "("
 		if len(activity.ParameterDefine.Inputs) > 0 {
 			for _, i := range activity.ParameterDefine.Inputs {
-				if inputValue, ok := activity.Parameter[i.Key]; !ok {
-					if i.DefaultValue[0] == '0' {
-						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
-					} else {
-						if len(i.DefaultValue[2:]) > 0 {
-							code += i.Key + "=" + i.DefaultValue[2:] + ","
-						} else {
-							code += i.Key + "=None,"
-						}
-					}
-				} else if len(inputValue) > 1 && inputValue[1] == ':' {
-					if inputValue[0] == '0' {
-						code += i.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
-					} else {
-						code += i.Key + "=" + inputValue[2:] + ","
-					}
+				if ok, param := generateParameter(activity.Parameter, i); ok {
+					code += param
 				}
 			}
 		}
 		if len(activity.ParameterDefine.Extra) > 0 {
 			for _, i := range activity.ParameterDefine.Extra {
-				if inputValue, ok := activity.Parameter[i.Key]; !ok {
-					if i.DefaultValue[0] == '0' {
-						code += i.Key + "=\"" + jsonEscape(i.DefaultValue[2:]) + "\","
-					} else {
-						if len(i.DefaultValue[2:]) > 0 {
-							code += i.Key + "=" + i.DefaultValue[2:] + ","
-						} else {
-							code += i.Key + "=None,"
-						}
-					}
-				} else if len(inputValue) > 1 && inputValue[1] == ':' {
-					if inputValue[0] == '0' {
-						code += i.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
-					} else {
-						code += i.Key + "=" + inputValue[2:] + ","
-					}
+				if ok, param := generateParameter(activity.Parameter, i); ok {
+					code += param
 				}
 			}
 		}
@@ -291,12 +263,44 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	}
 	if len(activity.Children) > 0 {
 		for _, child := range activity.Children {
-			code = code + child.GeneratePythonCode(namespace, indent+1)
+			code += child.GeneratePythonCode(namespace, indent+1)
 		}
 	} else if needPass {
 		code += strings.Repeat(" ", (indent+1)*4) + "pass\n"
 	}
 	return code
+}
+
+// generateParameter
+// 0:字符串
+// 1:表达式
+// 2:变量
+// 3:混合模式
+func generateParameter(parameter map[string]string, input Input) (bool, string) {
+	code := ""
+	if inputValue, ok := parameter[input.Key]; !ok {
+		if input.DefaultValue[0] == '0' {
+			code += input.Key + "=\"" + jsonEscape(input.DefaultValue[2:]) + "\","
+			return true, code
+		} else {
+			if len(input.DefaultValue[2:]) > 0 {
+				code += input.Key + "=" + input.DefaultValue[2:] + ","
+				return true, code
+			} else {
+				code += input.Key + "=None,"
+				return true, code
+			}
+		}
+	} else if len(inputValue) > 1 && inputValue[1] == ':' {
+		if inputValue[0] == '0' {
+			code += input.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
+			return true, code
+		} else {
+			code += input.Key + "=" + inputValue[2:] + ","
+			return true, code
+		}
+	}
+	return false, code
 }
 
 func jsonEscape(s string) string {
