@@ -157,18 +157,18 @@
               </div>
             </SplitterPanel>
             <SplitterPanel
-              v-if="activeNav != ''"
+              v-if="activeNav !== ''"
               :size="bottomHeight"
               :min-size="10"
             >
               <LogsView
-                v-if="activeNav == 'LogsView'"
+                v-if="activeNav === 'LogsView'"
                 :logs="logs"
                 @hide="activeNav = ''"
                 @clear="logs = []"
               />
               <VariablesView
-                v-else-if="activeNav == 'VariablesView'"
+                v-else-if="activeNav === 'VariablesView'"
                 @hide="activeNav = ''"
               />
               <ElementsView
@@ -336,7 +336,7 @@ async function loadElements() {
     for (let [key, value] of Object.entries(elements)) {
       const processName = value["processName"];
       const process = windowsElement.value.find(
-        (node) => node.label == processName
+        (node) => node.label == processName,
       );
       if (process) {
         process["children"].push({
@@ -380,7 +380,7 @@ const shortcuts = useShortcut([
 ]);
 
 function delBlock() {
-  if (selectedActivity.value.length == 0) {
+  if (selectedActivity.value.length === 0) {
     return;
   }
   selectedActivity.value.forEach((id) => {
@@ -393,7 +393,7 @@ function delBlock() {
 const editorStore = useEditorStore();
 
 function cutBlock() {
-  if (selectedActivity.value.length == 0) {
+  if (selectedActivity.value.length === 0) {
     return;
   }
   let cutBlock = [];
@@ -406,7 +406,7 @@ function cutBlock() {
 }
 
 function copyBlock() {
-  if (selectedActivity.value.length == 0) {
+  if (selectedActivity.value.length === 0) {
     return;
   }
   let copyBlock = [];
@@ -461,7 +461,7 @@ const bottomNav = [
 const activeNav = ref("");
 
 function bottomNavClick(nav) {
-  if (activeNav.value != nav) {
+  if (activeNav.value !== nav) {
     activeNav.value = nav;
   } else {
     activeNav.value = "";
@@ -471,14 +471,14 @@ function bottomNavClick(nav) {
 const bottomHeight = ref(30);
 
 function splitePaneResize(e) {
-  if (e.length == 2) {
+  if (e.length === 2) {
     bottomHeight.value = e[1].size;
   }
 }
 
 const running = ref(false);
 
-var reg = /code_map_id="([^"]*)/;
+const reg = /code_map_id="([^"]*)/;
 
 async function run() {
   await save();
@@ -597,9 +597,12 @@ async function restartRepl() {
   await RestartReplCommand(props.id);
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
 #sequence-designer {
-  height: calc(100vh - 86px);
+  height: calc(100vh - 92px);
+  .splitpanes__pane {
+    overflow-y: auto;
+  }
 }
 
 :deep(.p-splitter .p-splitter-gutter) {
@@ -611,7 +614,7 @@ async function restartRepl() {
 }
 
 :deep(.p-tabview-panels) {
-  padding: 0rem;
+  padding: 0;
 }
 
 :deep(.p-tabview-nav-link) {

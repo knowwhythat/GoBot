@@ -13,7 +13,7 @@ var wsConn *websocket.Conn
 
 func StartPick(ctx context.Context) (string, error) {
 	if wsConn == nil {
-		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:8080/ws", nil)
+		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:3000/ws", nil)
 		if err == nil {
 			wsConn = conn
 		} else {
@@ -34,25 +34,21 @@ func StartPick(ctx context.Context) (string, error) {
 		return "", err
 	}
 	runtime.WindowMinimise(ctx)
-	for {
-		_, message, err := wsConn.ReadMessage()
-		if err != nil {
-			return "", nil
-		}
-		resp := make(map[string]interface{})
-		if err = json.Unmarshal(message, &resp); err != nil {
-			return "", nil
-		}
-		if resp["id"] == messageId {
-			runtime.WindowMaximise(ctx)
-			return string(message), nil
-		}
+	_, message, err := wsConn.ReadMessage()
+	if err != nil {
+		return "", nil
 	}
+	resp := make(map[string]interface{})
+	if err = json.Unmarshal(message, &resp); err != nil {
+		return "", nil
+	}
+	runtime.WindowMaximise(ctx)
+	return string(message), nil
 }
 
 func StartCheck(ctx context.Context, frame, selector string) (string, error) {
 	if wsConn == nil {
-		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:8080/ws", nil)
+		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:3000/ws", nil)
 		if err == nil {
 			wsConn = conn
 		} else {
@@ -73,18 +69,14 @@ func StartCheck(ctx context.Context, frame, selector string) (string, error) {
 		return "", err
 	}
 	runtime.WindowMinimise(ctx)
-	for {
-		_, message, err := wsConn.ReadMessage()
-		if err != nil {
-			return "", nil
-		}
-		resp := make(map[string]interface{})
-		if err = json.Unmarshal(message, &resp); err != nil {
-			return "", nil
-		}
-		if resp["id"] == messageId {
-			runtime.WindowMaximise(ctx)
-			return string(message), nil
-		}
+	_, message, err := wsConn.ReadMessage()
+	if err != nil {
+		return "", nil
 	}
+	resp := make(map[string]interface{})
+	if err = json.Unmarshal(message, &resp); err != nil {
+		return "", nil
+	}
+	runtime.WindowMaximise(ctx)
+	return string(message), nil
 }

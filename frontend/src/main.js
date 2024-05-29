@@ -34,7 +34,7 @@ app.use(vRemixicon, icons);
 
 app.config.errorHandler = (err) => {
   console.error(err);
-  LogError(err);
+  LogError("前端异常:" + err);
 };
 
 app.mount("#app");
