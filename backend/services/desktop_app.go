@@ -49,7 +49,7 @@ func startWindowsInspectCommand() error {
 			break
 		}
 	}
-	windowsInspectCommand = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-B", "-m", "robot_desktop.windows_inspect", strconv.Itoa(windowsInspectPort))
+	windowsInspectCommand = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-B", "-m", "robot_desktop.windows_inspect", strconv.Itoa(windowsInspectPort))
 	var stderr bytes.Buffer
 	windowsInspectCommand.Stderr = &stderr
 	err := windowsInspectCommand.Run()

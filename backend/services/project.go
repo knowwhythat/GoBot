@@ -41,9 +41,9 @@ func AddOrUpdateProject(project models.Project) (err error) {
 
 	if project.Id == "" {
 		project.Id = uuid.New().String()
-		path := viper.GetString("python.path")
-		dataPath := viper.GetString("data.path")
-		projectDir := dataPath + constants.BaseDir + string(os.PathSeparator) + project.Id
+		path := viper.GetString(constants.ConfigPythonPath)
+		dataPath := viper.GetString(constants.ConfigDataPath)
+		projectDir := dataPath + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + project.Id
 		if !utils.PathExist(projectDir) {
 			_ = os.MkdirAll(projectDir, fs.ModeDir)
 		}

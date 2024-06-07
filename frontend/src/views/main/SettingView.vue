@@ -5,7 +5,7 @@
         <div class="flex justify-content-center">
           <label class="mt-3 w-64">数据库存储目录</label>
           <FilePathInput
-            v-model="baseConfig.kvdbPath"
+            v-model="baseConfig.db_path"
             type="directory"
             class="w-full ml-6"
           />
@@ -13,7 +13,7 @@
         <div class="flex justify-content-center">
           <label class="mt-3 w-64">日志存储目录</label>
           <FilePathInput
-            v-model="baseConfig.logPath"
+            v-model="baseConfig.log_path"
             type="directory"
             class="w-full ml-6"
           />
@@ -21,7 +21,7 @@
         <div class="flex justify-content-center">
           <label class="mt-3 w-64">日志级别</label>
           <Dropdown
-            v-model="baseConfig.logLevel"
+            v-model="baseConfig.log_level"
             :options="logLevels"
             checkmark
             :highlightOnSelect="false"
@@ -31,7 +31,7 @@
         <div class="flex justify-content-center">
           <label class="mt-3 w-64">项目数据存储目录</label>
           <FilePathInput
-            v-model="baseConfig.dataPath"
+            v-model="baseConfig.data_path"
             type="directory"
             class="w-full ml-6"
           />
@@ -39,7 +39,7 @@
         <div class="flex justify-content-center">
           <label class="mt-3 w-64">Python可执行文件目录</label>
           <FilePathInput
-            v-model="baseConfig.pythonPath"
+            v-model="baseConfig.python_path"
             type="file"
             class="w-full ml-6"
           />
@@ -57,9 +57,16 @@ import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
+import { GetBasicConfigData, SaveBasicConfigData } from "@back/go/backend/App";
 import FilePathInput from "@/components/common/FilePathInput.vue";
 
-import { reactive, ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
+
+let baseConfig = ref({});
+
+onMounted(async () => {
+  baseConfig.value = await GetBasicConfigData();
+});
 
 const logLevels = ref([
   "Trace",
@@ -71,9 +78,8 @@ const logLevels = ref([
   "Panic",
   "Disabled",
 ]);
-const baseConfig = reactive({});
 
-function saveBaseConfig() {
-  console.log(baseConfig);
+async function saveBaseConfig() {
+  await SaveBasicConfigData(baseConfig.value);
 }
 </script>

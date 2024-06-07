@@ -4,9 +4,10 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"fmt"
+	"gobot/backend/constants"
 	"gobot/backend/dao"
 	"gobot/backend/forms"
+	"gobot/backend/log"
 	"gobot/backend/models"
 	"gobot/backend/plugin"
 	"gobot/backend/services"
@@ -60,8 +61,8 @@ func (a *App) OpenDialog(option map[string]string) string {
 }
 
 func (a *App) GetLoginData() forms.LoginForm {
-	username := viper.GetString("login.username")
-	pwd := viper.GetString("login.pwd")
+	username := viper.GetString(constants.ConfigLoginUsername)
+	pwd := viper.GetString(constants.ConfigLoginPwd)
 	if pwd != "" {
 		decryptPwd, err := utils.DecryptAES2Base64([]byte(aesKey), pwd)
 		if err == nil {
@@ -70,8 +71,8 @@ func (a *App) GetLoginData() forms.LoginForm {
 			pwd = ""
 		}
 	}
-	rememberMe := viper.GetBool("login.rememberMe")
-	autoLogin := viper.GetBool("login.autoLogin")
+	rememberMe := viper.GetBool(constants.ConfigLoginRemember)
+	autoLogin := viper.GetBool(constants.ConfigLoginAuto)
 	return forms.LoginForm{
 		Username:   username,
 		Pwd:        pwd,
@@ -80,15 +81,26 @@ func (a *App) GetLoginData() forms.LoginForm {
 	}
 }
 
+func (a *App) GetBasicConfigData() map[string]string {
+	return viper.GetStringMapString("basic")
+}
+
+func (a *App) SaveBasicConfigData(data map[string]string) error {
+	for k, v := range data {
+		viper.Set("basic."+k, v)
+	}
+	return viper.WriteConfig()
+}
+
 func (a *App) Login(form forms.LoginForm) error {
 	sysInfo := services.GetSysInfo()
-	fmt.Printf("sysInfo: %#v\n", sysInfo)
+	log.Logger.Infof("sysInfo: %#v", sysInfo)
 	if form.RememberMe {
 		pwd, _ := utils.EncryptAES2Base64([]byte(aesKey), []byte(form.Pwd))
-		viper.Set("login.username", form.Username)
-		viper.Set("login.pwd", pwd)
-		viper.Set("login.rememberMe", form.RememberMe)
-		viper.Set("login.autoLogin", form.AutoLogin)
+		viper.Set(constants.ConfigLoginUsername, form.Username)
+		viper.Set(constants.ConfigLoginPwd, pwd)
+		viper.Set(constants.ConfigLoginRemember, form.RememberMe)
+		viper.Set(constants.ConfigLoginAuto, form.AutoLogin)
 		_ = viper.WriteConfig()
 	}
 	services.InitSchedule(a.ctx)

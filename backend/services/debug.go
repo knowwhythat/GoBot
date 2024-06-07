@@ -56,7 +56,7 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	debugProcess = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param)
+	debugProcess = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-m", "robot_core.robot_interpreter", base64Param)
 	var stderr bytes.Buffer
 	debugProcess.Stderr = &stderr
 	inPipe, err := debugProcess.StdinPipe()

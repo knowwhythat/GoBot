@@ -16,6 +16,8 @@ export function DeleteProject(arg1:string):Promise<void>;
 
 export function DeleteSubFlow(arg1:string,arg2:string):Promise<void>;
 
+export function GetBasicConfigData():Promise<{[key: string]: string}>;
+
 export function GetElementImage(arg1:string,arg2:string):Promise<string>;
 
 export function GetLoginData():Promise<forms.LoginForm>;
@@ -63,6 +65,8 @@ export function RunActivity(arg1:string,arg2:string):Promise<void>;
 export function RunMainFlow(arg1:string):Promise<void>;
 
 export function RunSubFlow(arg1:string,arg2:string):Promise<void>;
+
+export function SaveBasicConfigData(arg1:{[key: string]: string}):Promise<void>;
 
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 

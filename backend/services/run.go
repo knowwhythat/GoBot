@@ -239,5 +239,5 @@ func generateRunCmd(projectPath, logPath, subId string) (*exec.Cmd, error) {
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	return sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-m", "robot_core.robot_interpreter", base64Param), nil
+	return sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-m", "robot_core.robot_interpreter", base64Param), nil
 }

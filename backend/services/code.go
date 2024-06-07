@@ -1,9 +1,9 @@
 package services
 
 import (
-	"encoding/json"
 	"gobot/backend/log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -200,7 +200,7 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				expression = activity.ParameterDefine.Inputs[0].DefaultValue
 			}
 			if expression[0] == '0' {
-				code += "\"" + jsonEscape(expression[2:]) + "\")\n"
+				code += "\"" + strconv.Quote(expression[2:]) + "\")\n"
 			} else {
 				if len(expression[2:]) > 0 {
 					code += expression[2:] + ")\n"
@@ -280,7 +280,7 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 	code := ""
 	if inputValue, ok := parameter[input.Key]; !ok {
 		if input.DefaultValue[0] == '0' {
-			code += input.Key + "=\"" + jsonEscape(input.DefaultValue[2:]) + "\","
+			code += input.Key + "=\"" + strconv.Quote(input.DefaultValue[2:]) + "\","
 			return true, code
 		} else {
 			if len(input.DefaultValue[2:]) > 0 {
@@ -293,7 +293,7 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 		}
 	} else if len(inputValue) > 1 && inputValue[1] == ':' {
 		if inputValue[0] == '0' {
-			code += input.Key + "=\"" + jsonEscape(inputValue[2:]) + "\","
+			code += input.Key + "=\"" + strconv.Quote(inputValue[2:]) + "\","
 			return true, code
 		} else {
 			code += input.Key + "=" + inputValue[2:] + ","
@@ -301,9 +301,4 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 		}
 	}
 	return false, code
-}
-
-func jsonEscape(s string) string {
-	b, _ := json.Marshal(s)
-	return string(b[1 : len(b)-1])
 }

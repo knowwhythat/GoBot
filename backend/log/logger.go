@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"gobot/backend/constants"
 	"os"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ type LogType zerolog.Logger
 var Logger LogType
 
 func Init() {
-	logLevel := viper.GetString("log.level")
+	logLevel := viper.GetString(constants.ConfigLogLevel)
 	level, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
 		zerolog.SetGlobalLevel(level)
@@ -25,14 +26,14 @@ func Init() {
 	timeFormat := "2006-01-02 15:04:05"
 	zerolog.TimeFieldFormat = timeFormat
 
-	logDir := viper.GetString("log.path")
+	logDir := viper.GetString(constants.ConfigLogPath)
 	err = os.MkdirAll(logDir, os.ModePerm)
 	if err != nil {
 		fmt.Println("Mkdir failed, err:", err)
 		return
 	}
 
-	fileName := logDir + time.Now().Format("2006-01-02") + ".log"
+	fileName := logDir + string(os.PathSeparator) + time.Now().Format("2006-01-02") + ".log"
 	logFile, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: timeFormat}
 	consoleWriter.FormatLevel = func(i interface{}) string {
@@ -48,7 +49,7 @@ func Init() {
 		return fmt.Sprintf("%s;", i)
 	}
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
-	Logger = LogType(zerolog.New(multi).With().Timestamp().Logger().With().Caller().Logger())
+	Logger = LogType(zerolog.New(multi).With().Timestamp().Logger())
 }
 
 func (LogType) Print(message string) {
@@ -66,6 +67,10 @@ func (LogType) Debug(message string) {
 func (LogType) Info(message string) {
 	logger := zerolog.Logger(Logger)
 	logger.Info().Msg(message)
+}
+func (LogType) Infof(message string, args ...interface{}) {
+	logger := zerolog.Logger(Logger)
+	logger.Info().Msgf(message, args)
 }
 func (LogType) Warning(message string) {
 	logger := zerolog.Logger(Logger)

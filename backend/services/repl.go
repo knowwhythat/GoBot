@@ -45,7 +45,7 @@ func startReplCommand(id string) error {
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	replProcess = sys_exec.BuildCmd(viper.GetString("python.path"), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
+	replProcess = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
 
 	var stderr bytes.Buffer
 	replProcess.Stderr = &stderr

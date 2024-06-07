@@ -1,6 +1,7 @@
 package config
 
 import (
+	"gobot/backend/constants"
 	"log"
 	"os"
 	"path/filepath"
@@ -40,13 +41,14 @@ func (c *Config) Init() error {
 	}
 	exePath := filepath.Dir(ex)
 	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		viper.SetDefault("kvdb.path", exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
-		viper.SetDefault("log.path", exePath+string(os.PathSeparator)+"log"+string(os.PathSeparator))
-		viper.SetDefault("log.level", "Info")
-		viper.SetDefault("data.path", exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
-		viper.SetDefault("python.path", exePath+string(os.PathSeparator)+"python"+string(os.PathSeparator)+"python.exe")
-		_ = viper.WriteConfig()
+
 	}
+	viper.SetDefault(constants.ConfigDbPath, exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
+	viper.SetDefault(constants.ConfigLogPath, exePath+string(os.PathSeparator)+"log"+string(os.PathSeparator))
+	viper.SetDefault(constants.ConfigLogLevel, "Info")
+	viper.SetDefault(constants.ConfigDataPath, exePath+string(os.PathSeparator)+"data"+string(os.PathSeparator))
+	viper.SetDefault(constants.ConfigPythonPath, exePath+string(os.PathSeparator)+"python"+string(os.PathSeparator)+"python.exe")
+	_ = viper.WriteConfig()
 
 	return nil
 }

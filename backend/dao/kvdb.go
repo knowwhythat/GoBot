@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"gobot/backend/constants"
 	"gobot/backend/utils"
 	"os"
 	"path/filepath"
@@ -16,7 +17,7 @@ var (
 )
 
 func InitKvDB() error {
-	path := viper.GetString("kvdb.path")
+	path := viper.GetString(constants.ConfigDbPath)
 	if !utils.PathExist(path) {
 		if err := os.MkdirAll(path, os.ModePerm); err != nil {
 			return err

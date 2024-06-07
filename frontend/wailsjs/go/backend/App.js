@@ -26,6 +26,10 @@ export function DeleteSubFlow(arg1, arg2) {
   return window['go']['backend']['App']['DeleteSubFlow'](arg1, arg2);
 }
 
+export function GetBasicConfigData() {
+  return window['go']['backend']['App']['GetBasicConfigData']();
+}
+
 export function GetElementImage(arg1, arg2) {
   return window['go']['backend']['App']['GetElementImage'](arg1, arg2);
 }
@@ -120,6 +124,10 @@ export function RunMainFlow(arg1) {
 
 export function RunSubFlow(arg1, arg2) {
   return window['go']['backend']['App']['RunSubFlow'](arg1, arg2);
+}
+
+export function SaveBasicConfigData(arg1) {
+  return window['go']['backend']['App']['SaveBasicConfigData'](arg1);
 }
 
 export function SaveMainFlow(arg1, arg2) {
