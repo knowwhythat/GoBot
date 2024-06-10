@@ -1,6 +1,6 @@
 <template>
   <TabView class="rounded-2xl">
-    <TabPanel header="组件库">
+    <TabPanel header="标准组件">
       <Tree
         :value="nodes"
         :filter="true"
@@ -46,7 +46,7 @@
         </template>
       </Tree>
     </TabPanel>
-    <TabPanel header="项目树"></TabPanel>
+    <TabPanel header="扩展组件"></TabPanel>
   </TabView>
 </template>
 <script setup>
@@ -93,7 +93,7 @@ function toolDragEnd(event) {
 </script>
 <style scoped>
 :deep(.p-tree-wrapper) {
-  height: calc(100vh - 174px);
+  height: calc(100vh - 170px);
 }
 :deep(.p-tree) {
   padding: 0.25rem;

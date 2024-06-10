@@ -305,7 +305,7 @@
             ],
             "outputs": []
           },
-          "component": "ExpressionActivity"
+          "component": "BasicActivity"
         },
         {
           "key": "base.control.group",
@@ -360,7 +360,7 @@
             ],
             "outputs": []
           },
-          "component": "ExpressionActivity"
+          "component": "BasicActivity"
         }
       ]
     }

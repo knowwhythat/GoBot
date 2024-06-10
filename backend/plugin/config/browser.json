@@ -1336,7 +1336,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.find_elements",
@@ -1402,7 +1402,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser",
@@ -1481,7 +1481,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_click",
@@ -1622,7 +1622,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_tap",
@@ -1738,7 +1738,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_fill",
@@ -1849,7 +1849,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_fill",
@@ -1960,7 +1960,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_content",
@@ -2053,7 +2053,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.element_capture",
@@ -2137,7 +2137,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.get_element_attribute",
@@ -2226,7 +2226,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.set_element_attribute",
@@ -2316,7 +2316,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.remove_element_attribute",
@@ -2396,7 +2396,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.select_option",
@@ -2490,7 +2490,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.upload_file",
@@ -2584,7 +2584,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.down_file",
@@ -2685,7 +2685,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "browser.element.verification_code_identification",
@@ -2764,7 +2764,7 @@
                 ],
                 "error": true
               },
-              "component": "WebElementActivity"
+              "component": "BasicActivity"
             }
           ]
         },

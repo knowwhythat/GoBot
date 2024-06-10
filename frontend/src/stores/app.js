@@ -25,11 +25,11 @@ export const useAppStore = defineStore("app", {
   }),
   getters: {
     inputPosition: (state) =>
-      state.settings.editor.layout == "horizontal"
+      state.settings.editor.layout === "horizontal"
         ? Position.Left
         : Position.Top,
     outputPosition: (state) =>
-      state.settings.editor.layout == "horizontal"
+      state.settings.editor.layout === "horizontal"
         ? Position.Right
         : Position.Bottom,
   },

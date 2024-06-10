@@ -138,7 +138,7 @@
             "outputs": [],
             "error": true
           },
-          "component": "WindowsElementActivity"
+          "component": "BasicActivity"
         },
         {
           "key": "desktop_application.window",
@@ -170,7 +170,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.set_window_visual_state",
@@ -211,7 +211,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.set_window_topmost",
@@ -247,7 +247,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.move_window",
@@ -293,7 +293,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.resize_window",
@@ -339,7 +339,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.close_window",
@@ -365,7 +365,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.window.get_window_text",
@@ -400,7 +400,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             }
           ]
         },
@@ -505,7 +505,7 @@
                 "extra": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_hover",
@@ -575,7 +575,7 @@
                 "extra": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_input",
@@ -646,7 +646,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_fill",
@@ -717,7 +717,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.get_element_text",
@@ -752,7 +752,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_capture",
@@ -839,7 +839,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_set_combox",
@@ -898,7 +898,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.element_set_checkbox",
@@ -938,7 +938,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.wait_element",
@@ -996,7 +996,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.get_element",
@@ -1031,7 +1031,7 @@
                 ],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.element.scroll_element",
@@ -1090,7 +1090,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             }
           ]
         },
@@ -1299,7 +1299,7 @@
                 "outputs": [],
                 "error": true
               },
-              "component": "WindowsElementActivity"
+              "component": "BasicActivity"
             },
             {
               "key": "desktop_application.keyboard.hotkey",

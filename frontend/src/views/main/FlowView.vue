@@ -54,7 +54,7 @@
                 <div class="flex align-items-center gap-2">
                   <v-remixicon size="18" name="riHistoryLine" />
                   <span class="-mt-1">
-                    {{ item?.updateTs.substr(0, 19).replace("T", " ") }}
+                    {{ item?.updateTs.substring(0, 19).replace("T", " ") }}
                   </span>
                 </div>
               </div>
@@ -184,7 +184,7 @@ watch(
   searchText,
   throttle((newVal, oldVal) => {
     showProjects.value = projects.value.filter((p) => p.name.includes(newVal));
-  }, 1000)
+  }, 1000),
 );
 
 function listProject() {
@@ -213,7 +213,7 @@ function getItems(id) {
       label: "编辑",
       icon: "pi pi-file-edit",
       command: () => {
-        const pro = projects.value.find((p) => p.id == id);
+        const pro = projects.value.find((p) => p.id === id);
         newProject.id = pro.id;
         newProject.name = pro.name;
         newProject.desc = pro.description;

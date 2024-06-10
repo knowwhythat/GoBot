@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-1 border-none" style="--wails-draggable: drag">
+    <Toolbar class="p-0" style="--wails-draggable: drag">
       <template #start>
         <Button
           text
@@ -25,7 +25,7 @@
             showDelay: 100,
             hideDelay: 300,
           }"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           @click="save"
         >
           <template #icon>
@@ -54,7 +54,7 @@
             hideDelay: 300,
           }"
           :disabled="!(running || debuging)"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           @click="terminate"
         >
           <template #icon>
@@ -70,7 +70,7 @@
             hideDelay: 300,
           }"
           :disabled="debuging"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           @click="run"
           :loading="running"
         >
@@ -87,7 +87,7 @@
             hideDelay: 300,
           }"
           :disabled="running"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           @click="debug"
           :loading="debuging"
         >
@@ -98,7 +98,7 @@
         <Button
           text
           label="单行调试"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('n')"
           v-if="debuging"
@@ -110,7 +110,7 @@
         <Button
           text
           label="下个断点"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           :disabled="!breakpointHit"
           @click="dealDebug('c')"
           v-if="debuging"
@@ -123,7 +123,7 @@
           text
           label="重启Repl"
           icon="pi pi-replay"
-          class="hover:bg-slate-200"
+          class="py-2 px-4 hover:bg-slate-200"
           @click="restartRepl"
         >
         </Button>
@@ -140,21 +140,33 @@
         </div>
       </SplitterPanel>
       <SplitterPanel :size="70" :min-size="50">
-        <div>
+        <div class="m-1">
           <splitpanes
             class="default-theme"
             :dblClickSplitter="false"
             id="sequence-designer"
             horizontal
-            @resized="splitePaneResize"
+            @resized="splitPaneResize"
           >
             <SplitterPanel :size="70" :min-size="30">
-              <div class="flex justify-around">
-                <SequenceActivity
-                  :element="mainActivity.sequence"
-                  @update="update"
-                />
-              </div>
+              <TabView
+                :scrollable="true"
+                :activeIndex="activeIndex"
+                @update:activeIndex="tabChange"
+              >
+                <TabPanel
+                  v-for="tab in tabs"
+                  :key="tab.subflowId"
+                  :header="tab.title"
+                >
+                  <VisualFlow
+                    ref="flowTabs"
+                    :id="tab.id"
+                    :subflowId="tab.subflowId"
+                    :label="tab.title"
+                  />
+                </TabPanel>
+              </TabView>
             </SplitterPanel>
             <SplitterPanel
               v-if="activeNav !== ''"
@@ -179,7 +191,7 @@
               />
             </SplitterPanel>
           </splitpanes>
-          <div class="flex flex-row h-8 bg-slate-100">
+          <div class="flex flex-row h-8 bg-white">
             <div
               v-for="nav in bottomNav"
               @click="bottomNavClick(nav.component)"
@@ -196,33 +208,35 @@
         </div>
       </SplitterPanel>
       <SplitterPanel :size="15" max-size="30">
-        <Panel header="项目"></Panel>
+        <div class="m-1">
+          <Panel header="流程"></Panel>
+        </div>
       </SplitterPanel>
     </splitpanes>
   </div>
 </template>
 <script setup>
 import Button from "primevue/button";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 import { Pane as SplitterPanel, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import { onMounted, onUnmounted, provide, reactive, ref } from "vue";
-import SequenceActivity from "@/components/activity/SequenceActivity.vue";
+import { onMounted, onUnmounted, provide, ref } from "vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
 import VariablesView from "@/views/design/sequence/VariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
+import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
 import { nanoid } from "nanoid";
 import {
   DealDebugSignal,
   DebugSubFlow,
   GetProjectWindowsElements,
-  GetSubFlow,
   RestartReplCommand,
   RunSubFlow,
-  SaveSubFlow,
   TerminateSubFlow,
 } from "@back/go/backend/App";
 import {
@@ -231,20 +245,14 @@ import {
   WindowMaximise,
   WindowMinimise,
 } from "@back/runtime/runtime";
-import {
-  copySelected,
-  cutSelected,
-  deleteSelected,
-  innerPaste,
-} from "@/utils/activityUtils.js";
 import { getShortcut, useShortcut } from "@/composable/shortcut";
 
-import { useEditorStore } from "@/stores/editor";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 const confirm = useConfirm();
+const router = useRouter();
 
 const props = defineProps({
   id: {
@@ -261,56 +269,28 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
-const dataChanged = ref(false);
-const selectedActivity = ref([]);
-provide("dataChanged", { dataChanged, updateDataChanged });
-provide("contextVariable", { contextVariable: [] });
 provide("projectId", { projectId: props.id });
-provide("selectedActivity", { selectedActivity });
+
+const dataChanged = ref(false);
+
 const logs = ref([]);
 
-function updateDataChanged() {
-  dataChanged.value = true;
-}
+const tabs = ref([]);
+const activeIndex = ref(0);
+const flowTabs = ref();
 
-const mainActivity = reactive({
-  sequence: {
-    id: props.subflowId,
-    key: "main",
-    label: props.label,
-    toggleable: false,
-    deleteable: false,
-    icon_path: "riHome5Line",
-    children: [],
-  },
-});
-
-function update({ children }) {
-  dataChanged.value = true;
-  mainActivity.sequence.children = children;
+function tabChange(index) {
+  dataChanged.value = flowTabs.value[index].isChanged();
+  //Todo  参数，变量
 }
 
 onMounted(async () => {
   await WindowMaximise();
-  GetSubFlow(props.id, props.subflowId)
-    .then((result) => {
-      if (result) {
-        const data = JSON.parse(result);
-        mainActivity.sequence = reactive(data.sequence);
-      } else {
-        mainActivity.sequence.id = props.subflowId;
-        mainActivity.sequence.label = props.label ? props.label : "子流程";
-      }
-    })
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "加载流程异常",
-        detail: err,
-        life: 3000,
-      });
-    });
+  tabs.value.push({
+    id: props.id,
+    subflowId: props.subflowId,
+    title: props.label,
+  });
   EventsOn("log_event", (data) => {
     logs.value.push(data);
   });
@@ -336,7 +316,7 @@ async function loadElements() {
     for (let [key, value] of Object.entries(elements)) {
       const processName = value["processName"];
       const process = windowsElement.value.find(
-        (node) => node.label == processName,
+        (node) => node.label === processName,
       );
       if (process) {
         process["children"].push({
@@ -380,82 +360,30 @@ const shortcuts = useShortcut([
 ]);
 
 function delBlock() {
-  if (selectedActivity.value.length === 0) {
-    return;
-  }
-  selectedActivity.value.forEach((id) => {
-    deleteSelected(mainActivity.sequence.children, id);
-  });
-  dataChanged.value = true;
-  selectedActivity.value = [];
+  flowTabs.value[activeIndex.value].delBlock();
 }
 
-const editorStore = useEditorStore();
-
 function cutBlock() {
-  if (selectedActivity.value.length === 0) {
-    return;
-  }
-  let cutBlock = [];
-  selectedActivity.value.forEach((id) => {
-    cutSelected(mainActivity.sequence.children, id, cutBlock);
-  });
-  dataChanged.value = true;
-  selectedActivity.value = [];
-  editorStore.addToPasteBlocks(cutBlock);
+  flowTabs.value[activeIndex.value].cutBlock();
 }
 
 function copyBlock() {
-  if (selectedActivity.value.length === 0) {
-    return;
-  }
-  let copyBlock = [];
-  selectedActivity.value.forEach((id) => {
-    copySelected(mainActivity.sequence.children, id, copyBlock);
-  });
-  editorStore.addToPasteBlocks(copyBlock);
+  flowTabs.value[activeIndex.value].copyBlock();
 }
 
 function pasteBlock() {
-  if (editorStore.copiedBlocks.length > 0) {
-    dataChanged.value = true;
-    if (selectedActivity.value.length > 0) {
-      const id = selectedActivity.value[selectedActivity.value.length - 1];
-      innerPaste(mainActivity.sequence.children, id, editorStore.copiedBlocks);
-    } else {
-      editorStore.copiedBlocks.forEach((block) => {
-        mainActivity.sequence.children.push({ ...block, id: nanoid(16) });
-      });
-    }
-  }
-  editorStore.clearCopiedBlocks();
+  flowTabs.value[activeIndex.value].pasteBlock();
 }
 
-async function save() {
-  try {
-    await SaveSubFlow(props.id, props.subflowId, JSON.stringify(mainActivity));
-    dataChanged.value = false;
-    toast.add({
-      severity: "success",
-      summary: "提示",
-      detail: "保存成功",
-      life: 3000,
-    });
-  } catch (err) {
-    toast.add({
-      severity: "error",
-      summary: "保存失败",
-      detail: err,
-      life: 3000,
-    });
-  }
+function save() {
+  flowTabs.value[activeIndex.value].save();
 }
 
 //底部工具栏逻辑
 const bottomNav = [
   { title: "日志", component: "LogsView" },
-  { title: "变量库", component: "VariablesView" },
   { title: "元素库", component: "ElementsView" },
+  { title: "变量库", component: "VariablesView" },
 ];
 
 const activeNav = ref("");
@@ -470,7 +398,7 @@ function bottomNavClick(nav) {
 
 const bottomHeight = ref(30);
 
-function splitePaneResize(e) {
+function splitPaneResize(e) {
   if (e.length === 2) {
     bottomHeight.value = e[1].size;
   }
@@ -487,7 +415,7 @@ async function run() {
   running.value = true;
   try {
     WindowMinimise();
-    await RunSubFlow(props.id, props.subflowId);
+    await RunSubFlow(props.id, tabs.value[activeIndex.value].subflowId);
     debugingId.value = "";
     toast.add({
       severity: "success",
@@ -515,6 +443,7 @@ async function run() {
 const debuging = ref(false);
 const debugingId = ref(nanoid(16));
 const breakpointHit = ref(false);
+
 provide("debugingId", { debugingId });
 
 async function debug() {
@@ -527,7 +456,7 @@ async function debug() {
   });
   try {
     WindowMinimise();
-    await DebugSubFlow(props.id, props.subflowId);
+    await DebugSubFlow(props.id, tabs.value[activeIndex.value].subflowId);
     debugingId.value = nanoid(16);
     toast.add({
       severity: "success",
@@ -599,18 +528,11 @@ async function restartRepl() {
 </script>
 <style scoped lang="scss">
 #sequence-designer {
-  height: calc(100vh - 92px);
+  height: calc(100vh - 88px);
+
   .splitpanes__pane {
     overflow-y: auto;
   }
-}
-
-:deep(.p-splitter .p-splitter-gutter) {
-  background: #e5e7eb;
-}
-
-:deep(.p-splitter-panel) {
-  overflow: auto;
 }
 
 :deep(.p-tabview-panels) {
@@ -621,11 +543,7 @@ async function restartRepl() {
   padding: 0.75rem;
 }
 
-:deep(.p-splitter) {
-  margin: 0;
-}
-
-:deep(.p-panel .p-panel-content) {
-  padding: 0.25rem;
+:deep(.p-panel-header) {
+  padding: 0.75rem;
 }
 </style>

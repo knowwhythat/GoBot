@@ -22,7 +22,7 @@
       @dragenter.prevent="dragEnter($event, element)"
     >
       <div
-        v-if="dropBlockId == element.id"
+        v-if="dropBlockId === element.id"
         class="relative w-full h-4 flex items-center"
       >
         <div
@@ -45,7 +45,7 @@
       </div>
       <SequenceActivity
         :index="index"
-        v-if="element.component == 'SequenceActivity'"
+        v-if="element.component === 'SequenceActivity'"
         v-bind="{ element: element }"
         @update="update"
         @delete="deleteNode($event)"
@@ -64,7 +64,10 @@
         @dragend="dragEnd($event, element)"
       />
     </div>
-    <div v-if="dropBlockId == id" class="relative w-full h-4 flex items-center">
+    <div
+      v-if="dropBlockId === id"
+      class="relative w-full h-4 flex items-center"
+    >
       <div
         class="absolute top-0 -left-1"
         style="
@@ -94,13 +97,13 @@
 </template>
 <script setup>
 import {
-  ref,
-  onMounted,
   computed,
   inject,
-  provide,
-  watch,
   nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
 } from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import { nanoid } from "nanoid";
@@ -137,9 +140,10 @@ function findComponent(name) {
 }
 
 const { selectedActivity } = inject("selectedActivity");
+
 function deleteNode({ id }) {
   const blockIndex = props.element.children.findIndex(
-    (activity) => activity.id === id
+    (activity) => activity.id === id,
   );
 
   if (blockIndex !== -1) {
@@ -166,7 +170,9 @@ const { dropBlockId } = inject("dropBlockId");
 watch(dragBlockId, (value, oldValue) => {
   if (oldValue && !value) {
     const copyActivities = [...props.element.children];
-    const removeIndex = copyActivities.findIndex((item) => item.id == oldValue);
+    const removeIndex = copyActivities.findIndex(
+      (item) => item.id === oldValue,
+    );
     if (removeIndex > -1) {
       copyActivities.splice(removeIndex, 1);
       emit("update", { id: props.element.id, children: copyActivities });
@@ -188,24 +194,26 @@ function dragEnter(event, element) {
   event.stopPropagation();
   dropBlockId.value = element.id;
 }
+
 const newAddBlockId = ref(null);
 provide("newAddBlockId", { newAddBlockId: newAddBlockId });
+
 function handleDrop(event) {
   event.preventDefault();
   const droppedBlock = JSON.parse(
-    event.dataTransfer.getData("activity") || null
+    event.dataTransfer.getData("activity") || null,
   );
-  if (!droppedBlock || dropBlockId.value == "") return;
+  if (!droppedBlock || dropBlockId.value === "") return;
 
   const copyActivities = [...props.element.children];
   const newBlockId = nanoid(16);
   if (droppedBlock.id) {
-    if (id.value == dropBlockId.value) {
+    if (id.value === dropBlockId.value) {
       copyActivities.push({ ...droppedBlock, id: newBlockId });
       dragBlockId.value = "";
     } else {
       const dropIndex = copyActivities.findIndex(
-        (item) => item.id == dropBlockId.value
+        (item) => item.id === dropBlockId.value,
       );
       if (dropIndex > -1) {
         copyActivities.splice(dropIndex, 0, {
@@ -218,11 +226,11 @@ function handleDrop(event) {
       }
     }
   } else {
-    if (id.value == dropBlockId.value) {
+    if (id.value === dropBlockId.value) {
       copyActivities.push({ ...droppedBlock, id: newBlockId, parameter: {} });
     } else {
       const dropIndex = copyActivities.findIndex(
-        (item) => item.id == dropBlockId.value
+        (item) => item.id === dropBlockId.value,
       );
       if (dropIndex > -1) {
         copyActivities.splice(dropIndex, 0, {
@@ -252,6 +260,7 @@ function updateData(data) {
     }
   }
 }
+
 const { contextVariable } = inject("contextVariable");
 const currentContextVariable = computed({
   get() {
@@ -274,11 +283,7 @@ const currentContextVariable = computed({
       contextVariable.value.forEach((variable) => {
         if (
           !variables.some((v) => {
-            if (v.label === variable.label) {
-              return true;
-            } else {
-              return false;
-            }
+            return v.label === variable.label;
           })
         ) {
           variables.push(variable);

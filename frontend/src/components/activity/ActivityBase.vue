@@ -43,7 +43,7 @@
         >
           <v-remixicon v-bind="getIconPath(props?.icon)" />
         </span>
-        <span class="w-48 truncate p-1">
+        <span class="w-96 truncate p-1">
           {{ label }}
         </span>
         <slot name="top"></slot>
@@ -154,7 +154,7 @@ const { newAddBlockId } = inject("newAddBlockId");
 const isSelected = computed(() => selectedActivity.value.includes(props.id));
 
 watch(newAddBlockId, (value, oldValue) => {
-  if (value && value == props.id) {
+  if (value && value === props.id) {
     dialogShow.value = true;
   }
 });
@@ -197,3 +197,8 @@ function updateData(data) {
   emit("update", { ...data });
 }
 </script>
+<style scoped>
+:deep(.p-panel-content) {
+  padding: 0.25rem;
+}
+</style>

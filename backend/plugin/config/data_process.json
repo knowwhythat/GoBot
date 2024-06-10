@@ -60,7 +60,7 @@
             "extra": [],
             "error": false
           },
-          "component": "AssignActivity"
+          "component": "BasicActivity"
         }
       ]
     }
