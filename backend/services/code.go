@@ -78,99 +78,19 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	needPass := false
 	if activity.IsPseudo {
 		if activity.Method == "if" || activity.Method == "elif" {
-			indent = indent - 1
-			code += strings.Repeat(" ", indent*4)
-			expression := activity.Parameter["expression"]
-			if len(expression) >= 2 {
-				code += activity.Method + " " + expression[2:] + " :\n"
-			} else {
-				code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
-			}
-			needPass = true
+			indent, code, needPass = generateIfExpression(indent, *activity)
 		} else if activity.Key == "base.control.group" {
-			code += strings.Repeat(" ", indent*4)
-			indent = indent - 1
-			code += "#" + activity.Label + "\n"
+			indent, code, needPass = generateCommentExpression(indent, *activity)
 		} else if activity.Method == "else" {
-			indent = indent - 1
-			code += strings.Repeat(" ", indent*4)
-			code += activity.Key + ":\n"
-			needPass = true
+			indent, code, needPass = generateElseExpression(indent, *activity)
 		} else if activity.Method == "while" {
-			code += strings.Repeat(" ", indent*4)
-			expression := activity.Parameter["expression"]
-			if len(expression) >= 2 {
-				code += activity.Method + " " + expression[2:] + " :\n"
-			} else {
-				code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
-			}
-			needPass = true
+			indent, code, needPass = generateWhileExpression(indent, *activity)
 		} else if activity.Key == "base.control.loop.foreach_loop_list" {
-			code += strings.Repeat(" ", indent*4)
-			code += activity.Method + " "
-			if loopValue, ok := activity.Parameter["loop_value"]; !ok {
-				code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
-			} else {
-				code += loopValue[2:]
-			}
-			code += " in "
-			if arrayValue, ok := activity.Parameter["array"]; !ok {
-				code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
-			} else {
-				code += arrayValue[2:]
-			}
-			code += ":\n"
-			needPass = true
+			indent, code, needPass = generateForEachListExpression(indent, *activity)
 		} else if activity.Key == "base.control.loop.foreach_loop_map" {
-			code += strings.Repeat(" ", indent*4)
-			code += activity.Method + " "
-			if loopKey, ok := activity.Parameter["loop_key"]; !ok {
-				code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
-			} else {
-				code += loopKey[2:]
-			}
-			code += ","
-			if loopValue, ok := activity.Parameter["loop_value"]; !ok {
-				code += activity.ParameterDefine.Outputs[1].DefaultValue[2:]
-			} else {
-				code += loopValue[2:]
-			}
-			code += " in "
-			if arrayValue, ok := activity.Parameter["map"]; !ok {
-				code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
-			} else {
-				code += arrayValue[2:]
-			}
-			code += ":\n"
-			needPass = true
+			indent, code, needPass = generateForEachMapExpression(indent, *activity)
 		} else if activity.Key == "base.control.loop.for_i_loop" {
-			code += strings.Repeat(" ", indent*4)
-			code += activity.Method + " "
-			if loopIndex, ok := activity.Parameter["loop_index"]; !ok {
-				code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
-			} else {
-				code += loopIndex[2:]
-			}
-			code += " in range("
-			if start, ok := activity.Parameter["start"]; !ok {
-				code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
-			} else {
-				code += start[2:]
-			}
-			code += ", "
-			if end, ok := activity.Parameter["end"]; !ok {
-				code += activity.ParameterDefine.Inputs[1].DefaultValue[2:]
-			} else {
-				code += end[2:]
-			}
-			code += ", "
-			if add, ok := activity.Parameter["add"]; !ok {
-				code += activity.ParameterDefine.Inputs[2].DefaultValue[2:]
-			} else {
-				code += add[2:]
-			}
-			code += "):\n"
-			needPass = true
+			indent, code, needPass = generateForLoopIndexExpression(indent, *activity)
 		} else if activity.Method == "continue" || activity.Method == "break" {
 			code += strings.Repeat(" ", indent*4)
 			code += activity.Method + "\n"
@@ -271,6 +191,115 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	return code
 }
 
+func generateIfExpression(indent int, activity Activity) (int, string, bool) {
+	indent = indent - 1
+	code := strings.Repeat(" ", indent*4)
+	expression := activity.Parameter["expression"]
+	if len(expression) >= 2 {
+		code += activity.Method + " " + expression[2:] + " :\n"
+	} else {
+		code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
+	}
+	return indent, code, true
+}
+
+func generateCommentExpression(indent int, activity Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	indent = indent - 1
+	code += "#" + activity.Label + "\n"
+	return indent, code, false
+}
+
+func generateElseExpression(indent int, activity Activity) (int, string, bool) {
+	indent = indent - 1
+	code := strings.Repeat(" ", indent*4)
+	code += activity.Key + ":\n"
+	return indent, code, true
+}
+
+func generateWhileExpression(indent int, activity Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	expression := activity.Parameter["expression"]
+	if len(expression) >= 2 {
+		code += activity.Method + " " + expression[2:] + " :\n"
+	} else {
+		code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
+	}
+	return indent, code, true
+}
+
+func generateForEachListExpression(indent int, activity Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	code += activity.Method + " "
+	if loopValue, ok := activity.Parameter["loop_value"]; !ok {
+		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+	} else {
+		code += loopValue[2:]
+	}
+	code += " in "
+	if arrayValue, ok := activity.Parameter["array"]; !ok {
+		code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
+	} else {
+		code += arrayValue[2:]
+	}
+	code += ":\n"
+	return indent, code, true
+}
+
+func generateForEachMapExpression(indent int, activity Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	code += activity.Method + " "
+	if loopKey, ok := activity.Parameter["loop_key"]; !ok {
+		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+	} else {
+		code += loopKey[2:]
+	}
+	code += ","
+	if loopValue, ok := activity.Parameter["loop_value"]; !ok {
+		code += activity.ParameterDefine.Outputs[1].DefaultValue[2:]
+	} else {
+		code += loopValue[2:]
+	}
+	code += " in "
+	if arrayValue, ok := activity.Parameter["map"]; !ok {
+		code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
+	} else {
+		code += arrayValue[2:]
+	}
+	code += ":\n"
+	return indent, code, true
+}
+
+func generateForLoopIndexExpression(indent int, activity Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	code += activity.Method + " "
+	if loopIndex, ok := activity.Parameter["loop_index"]; !ok {
+		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+	} else {
+		code += loopIndex[2:]
+	}
+	code += " in range("
+	if start, ok := activity.Parameter["start"]; !ok {
+		code += activity.ParameterDefine.Inputs[0].DefaultValue[2:]
+	} else {
+		code += start[2:]
+	}
+	code += ", "
+	if end, ok := activity.Parameter["end"]; !ok {
+		code += activity.ParameterDefine.Inputs[1].DefaultValue[2:]
+	} else {
+		code += end[2:]
+	}
+	code += ", "
+	if add, ok := activity.Parameter["add"]; !ok {
+		code += activity.ParameterDefine.Inputs[2].DefaultValue[2:]
+	} else {
+		code += add[2:]
+	}
+	code += "):\n"
+	return indent, code, true
+}
+
 // generateParameter
 // 0:字符串
 // 1:表达式
@@ -296,8 +325,13 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 			code += input.Key + "=" + strconv.Quote(inputValue[2:]) + ","
 			return true, code
 		} else {
-			code += input.Key + "=" + inputValue[2:] + ","
-			return true, code
+			if len(input.DefaultValue[2:]) > 0 {
+				code += input.Key + "=" + inputValue[2:] + ","
+				return true, code
+			} else {
+				code += input.Key + "=None,"
+				return true, code
+			}
 		}
 	}
 	return false, code
