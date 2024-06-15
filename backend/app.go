@@ -142,6 +142,11 @@ func (a *App) TerminateMainFlow(id string) error {
 	return services.TerminateFlow(id)
 }
 
+func (a *App) ReadProjectConfig(id string) (models.ProjectConfig, error) {
+	result, err := services.ReadProjectConfig(id)
+	return result, err
+}
+
 func (a *App) GetMainFlow(id string) (map[string]string, error) {
 	name, data, err := services.ReadMainFlow(id)
 	result := map[string]string{"name": name, "data": data}

@@ -23,6 +23,14 @@ const defaultShortcut = {
     id: "editor:del-block",
     combo: "del",
   },
+  "editor:undo": {
+    id: "editor:undo",
+    combo: "mod+z",
+  },
+  "editor:redo": {
+    id: "editor:undo",
+    combo: "mod+y",
+  },
   "editor:execute-flow": {
     id: "editor:execute-flow",
     combo: "shift+f10",

@@ -184,7 +184,7 @@ watch(
   searchText,
   throttle((newVal, oldVal) => {
     showProjects.value = projects.value.filter((p) => p.name.includes(newVal));
-  }, 1000),
+  }, 1000)
 );
 
 function listProject() {

@@ -78,4 +78,7 @@ const filter = ref(false);
   height: 100%;
   overflow: auto;
 }
+:deep(.p-panel-content) {
+  padding: 0.75rem;
+}
 </style>

@@ -281,4 +281,7 @@ function onContextMenuClick(options) {
 :deep(.p-tree-wrapper) {
   height: 100%;
 }
+:deep(.p-panel-content) {
+  padding: 0.75rem;
+}
 </style>

@@ -98,6 +98,10 @@ export function QuerySchedulePage() {
   return window['go']['backend']['App']['QuerySchedulePage']();
 }
 
+export function ReadProjectConfig(arg1) {
+  return window['go']['backend']['App']['ReadProjectConfig'](arg1);
+}
+
 export function RemoveExecution(arg1) {
   return window['go']['backend']['App']['RemoveExecution'](arg1);
 }

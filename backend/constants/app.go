@@ -14,6 +14,7 @@ const (
 	LogDir              = "log"
 	VenvDir             = "venv"
 	MainFlow            = "project.flow"
+	ProjectConfig       = "project.json"
 	DevDir              = ".dev"
 	SnapshotDir         = "snapshot"
 	Selector            = "selector.json"

@@ -127,6 +127,49 @@ func RemoveProject(id string) (err error) {
 	return nil
 }
 
+func ReadProjectConfig(id string) (models.ProjectConfig, error) {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return models.ProjectConfig{}, err
+	}
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
+	if !utils.PathExist(devPath) {
+		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
+			return models.ProjectConfig{}, err
+		}
+	}
+	projectConfigPath := devPath + string(os.PathSeparator) + constants.ProjectConfig
+	if !utils.PathExist(projectConfigPath) {
+		if project.IsFlow {
+			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "flow", Children: []*models.ProjectConfig{}}
+			value, err := json.Marshal(&proConfig)
+			if err != nil {
+				return models.ProjectConfig{}, err
+			}
+			err = os.WriteFile(projectConfigPath, []byte(value), 0666)
+			return proConfig, err
+		} else {
+			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "sequence", Children: []*models.ProjectConfig{{Key: "main", Label: "主流程", NodeType: "sequence"}}}
+			value, err := json.Marshal(&proConfig)
+			if err != nil {
+				return models.ProjectConfig{}, err
+			}
+			err = os.WriteFile(projectConfigPath, []byte(value), 0666)
+			return proConfig, err
+		}
+	}
+	data, err := os.ReadFile(projectConfigPath)
+	if err != nil {
+		return models.ProjectConfig{}, err
+	}
+	proConfig := models.ProjectConfig{}
+	if err = json.Unmarshal(data, &proConfig); err != nil {
+		return proConfig, err
+	}
+	return proConfig, nil
+}
+
 func ReadMainFlow(id string) (string, string, error) {
 	project, err := QueryProjectById(id)
 	if err != nil {

@@ -179,4 +179,7 @@ const onCellEditComplete = (event) => {
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
   padding: 8px;
 }
+:deep(.p-panel-content) {
+  padding: 0.75rem;
+}
 </style>

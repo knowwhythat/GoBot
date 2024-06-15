@@ -1,6 +1,6 @@
 <template>
-  <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
-    <Toolbar class="p-0" style="--wails-draggable: drag">
+  <div style="height: 100vh;flex; overflow: hidden" class="overflow-hidden">
+    <Toolbar class="flex-none p-0" style="--wails-draggable: drag">
       <template #start>
         <Button
           text
@@ -133,105 +133,164 @@
         <SystemOperate @quit="confirmQuit" />
       </template>
     </Toolbar>
-    <splitpanes class="default-theme" :dblClickSplitter="false">
-      <SplitterPanel :size="15">
-        <div class="m-1">
-          <LeftPaneView />
-        </div>
-      </SplitterPanel>
-      <SplitterPanel :size="70" :min-size="50">
-        <div class="m-1">
-          <splitpanes
-            class="default-theme"
-            :dblClickSplitter="false"
-            id="sequence-designer"
-            horizontal
-            @resized="splitPaneResize"
-          >
-            <SplitterPanel :size="70" :min-size="30">
-              <TabView
-                :scrollable="true"
-                :activeIndex="activeIndex"
-                @update:activeIndex="tabChange"
+    <div class="flex-1">
+      <splitpanes class="default-theme" :dblClickSplitter="false">
+        <SplitterPanel :size="15">
+          <div class="m-1">
+            <LeftPaneView />
+          </div>
+        </SplitterPanel>
+        <SplitterPanel :size="70" :min-size="50">
+          <div class="m-1">
+            <splitpanes
+              class="default-theme"
+              :dblClickSplitter="false"
+              id="sequence-designer"
+              horizontal
+              @resized="splitPaneResize"
+            >
+              <SplitterPanel :size="70" :min-size="30">
+                <TabView v-model:activeIndex="activeIndex">
+                  <TabPanel v-for="(tab, index) in tabs" :key="tab.subflowId">
+                    <template #header>
+                      <div class="flex align-items-center gap-2">
+                        <span class="font-bold white-space-nowrap">
+                          {{ tab.title }}
+                        </span>
+                        <div
+                          v-if="index !== 0"
+                          class="hover:bg-slate-200 -mt-px"
+                          @click.stop="closeTab(index)"
+                        >
+                          <v-remixicon
+                            size="20"
+                            viewBox="0 0 1024 1024"
+                            name="closeIcon"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                    <VisualFlow
+                      ref="flowTabs"
+                      :id="tab.id"
+                      :subflowId="tab.subflowId"
+                      :label="tab.title"
+                    />
+                  </TabPanel>
+                </TabView>
+              </SplitterPanel>
+              <SplitterPanel
+                v-if="activeNav !== ''"
+                :size="bottomHeight"
+                :min-size="10"
               >
-                <TabPanel
-                  v-for="tab in tabs"
-                  :key="tab.subflowId"
-                  :header="tab.title"
-                >
-                  <VisualFlow
-                    ref="flowTabs"
-                    :id="tab.id"
-                    :subflowId="tab.subflowId"
-                    :label="tab.title"
-                  />
-                </TabPanel>
-              </TabView>
-            </SplitterPanel>
-            <SplitterPanel
-              v-if="activeNav !== ''"
-              :size="bottomHeight"
-              :min-size="10"
-            >
-              <LogsView
-                v-if="activeNav === 'LogsView'"
-                :logs="logs"
-                @hide="activeNav = ''"
-                @clear="logs = []"
-              />
-              <VariablesView
-                v-else-if="activeNav === 'VariablesView'"
-                @hide="activeNav = ''"
-              />
-              <ElementsView
-                :id="props.id"
-                :windowsElement="windowsElement"
-                v-else-if="activeNav === 'ElementsView'"
-                @hide="activeNav = ''"
-              />
-            </SplitterPanel>
-          </splitpanes>
-          <div class="flex flex-row h-8 bg-white">
-            <div
-              v-for="nav in bottomNav"
-              @click="bottomNavClick(nav.component)"
-              class="text-center w-20 my-auto hover:text-indipurplego-500"
-              :class="[
-                nav.component === activeNav
-                  ? 'border-b-4 border-purple-500 text-purple-500'
-                  : '',
-              ]"
-            >
-              {{ nav.title }}
+                <LogsView
+                  v-if="activeNav === 'LogsView'"
+                  :logs="logs"
+                  @hide="activeNav = ''"
+                  @clear="logs = []"
+                />
+                <VariablesView
+                  v-else-if="activeNav === 'VariablesView'"
+                  @hide="activeNav = ''"
+                />
+                <ElementsView
+                  :id="props.id"
+                  :windowsElement="windowsElement"
+                  v-else-if="activeNav === 'ElementsView'"
+                  @hide="activeNav = ''"
+                />
+              </SplitterPanel>
+            </splitpanes>
+            <div class="flex flex-row h-8 bg-white">
+              <div
+                v-for="nav in bottomNav"
+                @click="bottomNavClick(nav.component)"
+                class="text-center w-20 my-auto hover:text-indipurplego-500"
+                :class="[
+                  nav.component === activeNav
+                    ? 'border-b-4 border-purple-500 text-purple-500'
+                    : '',
+                ]"
+              >
+                {{ nav.title }}
+              </div>
             </div>
           </div>
-        </div>
-      </SplitterPanel>
-      <SplitterPanel :size="15" max-size="30">
-        <div class="m-1">
-          <Panel header="流程"></Panel>
-        </div>
-      </SplitterPanel>
-    </splitpanes>
+        </SplitterPanel>
+        <SplitterPanel :size="15" max-size="30" id="right-pane">
+          <div class="m-1 h-full flex flex-col flex-1">
+            <Panel class="flex-1">
+              <template #header>
+                <div class="flex flex-1">
+                  <div class="flex-none">流程</div>
+                  <div class="flex-1 flex flex-row-reverse -mt-1">
+                    <div
+                      class="hover:bg-slate-200 px-1"
+                      v-tooltip="'新建可视化流程'"
+                      @click="addNewVisualFlow"
+                    >
+                      <v-remixicon size="20" name="riMapPinAddLine" />
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <Tree
+                filterPlaceholder="搜索"
+                :value="projectConfig"
+                selectionMode="single"
+                filterMode="lenient"
+                class="w-full"
+              >
+                <template #default="slotProps">
+                  <div class="transform select-none text-ellipsis max-w-xs">
+                    {{ slotProps.node.label }}
+                  </div>
+                </template>
+              </Tree>
+            </Panel>
+            <Panel class="flex-1">
+              <template #header>
+                <div class="flex flex-1">
+                  <div class="flex-none">全局变量</div>
+                  <div class="flex-1 flex flex-row-reverse -mt-1">
+                    <div
+                      class="hover:bg-slate-200 px-1"
+                      v-tooltip="'新建可视化流程'"
+                      @click="addNewVisualFlow"
+                    >
+                      <v-remixicon size="20" name="riMapPinAddLine" />
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <div class="h-full"></div>
+            </Panel>
+          </div>
+        </SplitterPanel>
+      </splitpanes>
+    </div>
   </div>
 </template>
 <script setup>
 import Button from "primevue/button";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
+import Tree from "primevue/tree";
 import { Pane as SplitterPanel, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import { onMounted, onUnmounted, provide, ref } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
 import VariablesView from "@/views/design/sequence/VariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
-import { nanoid } from "nanoid";
+import { customAlphabet, nanoid } from "nanoid";
 import {
+  ReadProjectConfig,
   DealDebugSignal,
   DebugSubFlow,
   GetProjectWindowsElements,
@@ -279,13 +338,36 @@ const tabs = ref([]);
 const activeIndex = ref(0);
 const flowTabs = ref();
 
-function tabChange(index) {
-  dataChanged.value = flowTabs.value[index].isChanged();
-  //Todo  参数，变量
+const generateSubflowId = customAlphabet("abcdefghijklmnopqrstuvwxyz", 12);
+
+const projectConfig = ref([]);
+
+function addNewVisualFlow() {
+  tabs.value.push({
+    id: props.id,
+    subflowId: generateSubflowId(8),
+    title: `子流程${tabs.value.length}`,
+  });
+  activeIndex.value = tabs.value.length - 1;
 }
 
+function closeTab(index) {
+  activeIndex.value = index - 1;
+  let tabArray = tabs.value;
+  tabArray.splice(index, 1);
+  tabs.value = tabArray;
+}
+
+watch(activeIndex, (now, old) => {
+  nextTick(() => {
+    dataChanged.value = flowTabs.value[now].isChanged();
+  });
+});
+
 onMounted(async () => {
-  await WindowMaximise();
+  WindowMaximise();
+  projectConfig.value = [await ReadProjectConfig(props.id)];
+  console.log(projectConfig.value);
   tabs.value.push({
     id: props.id,
     subflowId: props.subflowId,
@@ -316,7 +398,7 @@ async function loadElements() {
     for (let [key, value] of Object.entries(elements)) {
       const processName = value["processName"];
       const process = windowsElement.value.find(
-        (node) => node.label === processName,
+        (node) => node.label === processName
       );
       if (process) {
         process["children"].push({
@@ -409,7 +491,7 @@ const running = ref(false);
 const reg = /code_map_id="([^"]*)/;
 
 async function run() {
-  await save();
+  save();
   await restartRepl();
   logs.value = [];
   running.value = true;
@@ -448,7 +530,7 @@ provide("debugingId", { debugingId });
 
 async function debug() {
   await restartRepl();
-  await save();
+  save();
   debuging.value = true;
   EventsOn("debug", (data) => {
     debugingId.value = data;
@@ -489,7 +571,8 @@ async function terminate() {
 }
 
 const confirmQuit = () => {
-  if (!dataChanged.value && !debuging.value && !running.value) {
+  let isChanged = flowTabs.value.some((tab) => tab.isChanged());
+  if (!isChanged && !debuging.value && !running.value) {
     terminate();
     router.back();
   } else if (debuging.value || running.value) {
@@ -528,13 +611,15 @@ async function restartRepl() {
 </script>
 <style scoped lang="scss">
 #sequence-designer {
-  height: calc(100vh - 88px);
+  height: calc(100vh - 96px);
 
   .splitpanes__pane {
     overflow-y: auto;
   }
 }
-
+#right-pane {
+  height: calc(100vh - 54px);
+}
 :deep(.p-tabview-panels) {
   padding: 0;
 }
@@ -545,5 +630,12 @@ async function restartRepl() {
 
 :deep(.p-panel-header) {
   padding: 0.75rem;
+}
+:deep(.p-panel-content) {
+  padding: 0;
+}
+:deep(.p-tree) {
+  padding: 0;
+  border: none;
 }
 </style>

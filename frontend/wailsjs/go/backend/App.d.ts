@@ -52,6 +52,8 @@ export function QueryAllExecution():Promise<Array<forms.ExecutionForm>>;
 
 export function QuerySchedulePage():Promise<Array<models.Schedule>>;
 
+export function ReadProjectConfig(arg1:string):Promise<models.ProjectConfig>;
+
 export function RemoveExecution(arg1:Array<forms.ExecutionForm>):Promise<void>;
 
 export function RemoveSchedule(arg1:string):Promise<void>;

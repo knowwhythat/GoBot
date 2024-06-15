@@ -14,3 +14,10 @@ type Project struct {
 	CreateTs    time.Time `json:"createTs"`
 	UpdateTs    time.Time `json:"updateTs"`
 }
+
+type ProjectConfig struct {
+	Key      string           `json:"key"`
+	Label    string           `json:"label"`
+	NodeType string           `json:"nodeType"`
+	Children []*ProjectConfig `json:"children"`
+}
