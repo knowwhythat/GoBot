@@ -138,6 +138,10 @@ export function SaveMainFlow(arg1, arg2) {
   return window['go']['backend']['App']['SaveMainFlow'](arg1, arg2);
 }
 
+export function SaveProjectConfig(arg1, arg2) {
+  return window['go']['backend']['App']['SaveProjectConfig'](arg1, arg2);
+}
+
 export function SaveSubFlow(arg1, arg2, arg3) {
   return window['go']['backend']['App']['SaveSubFlow'](arg1, arg2, arg3);
 }

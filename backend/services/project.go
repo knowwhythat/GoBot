@@ -150,7 +150,7 @@ func ReadProjectConfig(id string) (models.ProjectConfig, error) {
 			err = os.WriteFile(projectConfigPath, []byte(value), 0666)
 			return proConfig, err
 		} else {
-			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "sequence", Children: []*models.ProjectConfig{{Key: "main", Label: "主流程", NodeType: "sequence"}}}
+			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "sequence", Children: []*models.ProjectConfig{{Key: "main", Label: "主流程", NodeType: "sequence", Opened: true}}}
 			value, err := json.Marshal(&proConfig)
 			if err != nil {
 				return models.ProjectConfig{}, err
@@ -168,6 +168,23 @@ func ReadProjectConfig(id string) (models.ProjectConfig, error) {
 		return proConfig, err
 	}
 	return proConfig, nil
+}
+
+func SaveProjectConfig(id, data string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
+	if !utils.PathExist(devPath) {
+		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
+			return err
+		}
+	}
+	projectConfigPath := devPath + string(os.PathSeparator) + constants.ProjectConfig
+	err = os.WriteFile(projectConfigPath, []byte(data), 0666)
+	return err
 }
 
 func ReadMainFlow(id string) (string, string, error) {

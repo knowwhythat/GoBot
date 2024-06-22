@@ -72,6 +72,8 @@ export function SaveBasicConfigData(arg1:{[key: string]: string}):Promise<void>;
 
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
+export function SaveProjectConfig(arg1:string,arg2:string):Promise<void>;
+
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SaveWindowsElement(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;

@@ -150,17 +150,17 @@
               @resized="splitPaneResize"
             >
               <SplitterPanel :size="70" :min-size="30">
-                <TabView v-model:activeIndex="activeIndex">
+                <TabView v-model:activeIndex="activeIndex" :scrollable="true">
                   <TabPanel v-for="(tab, index) in tabs" :key="tab.subflowId">
                     <template #header>
                       <div class="flex align-items-center gap-2">
-                        <span class="font-bold white-space-nowrap">
+                        <span class="font-bold text-nowrap">
                           {{ tab.title }}
                         </span>
                         <div
                           v-if="index !== 0"
                           class="hover:bg-slate-200 -mt-px"
-                          @click.stop="closeTab(index)"
+                          @click.stop="closeTab(tab.subflowId)"
                         >
                           <v-remixicon
                             size="20"
@@ -219,47 +219,92 @@
           </div>
         </SplitterPanel>
         <SplitterPanel :size="15" max-size="30" id="right-pane">
-          <div class="m-1 h-full flex flex-col flex-1">
-            <Panel class="flex-1">
+          <div class="m-1 h-full flex flex-col">
+            <Panel class="h-1/2">
               <template #header>
                 <div class="flex flex-1">
                   <div class="flex-none">流程</div>
-                  <div class="flex-1 flex flex-row-reverse -mt-1">
+                  <div class="flex-1 flex flex-row-reverse -mt-1 gap-4">
                     <div
                       class="hover:bg-slate-200 px-1"
                       v-tooltip="'新建可视化流程'"
                       @click="addNewVisualFlow"
                     >
-                      <v-remixicon size="20" name="riMapPinAddLine" />
+                      <v-remixicon size="20" name="riNodeTree" />
+                    </div>
+                    <div
+                      class="hover:bg-slate-200 px-1"
+                      v-tooltip.left="'新建代码流程'"
+                      @click="addNewVisualFlow"
+                    >
+                      <v-remixicon size="20" name="riCodeBoxLine" />
                     </div>
                   </div>
                 </div>
               </template>
               <Tree
+                v-model:expandedKeys="expandedKeys"
                 filterPlaceholder="搜索"
                 :value="projectConfig"
                 selectionMode="single"
                 filterMode="lenient"
                 class="w-full"
+                :pt="{
+                  content: (options) => ({
+                    oncontextmenu: onContextMenuClick(options),
+                  }),
+                }"
               >
                 <template #default="slotProps">
-                  <div class="transform select-none text-ellipsis max-w-xs">
+                  <div
+                    class="truncate max-w-48"
+                    @dblclick="openTab(slotProps.node)"
+                  >
                     {{ slotProps.node.label }}
                   </div>
                 </template>
               </Tree>
+              <ContextMenu ref="menu" :model="items" />
+              <Dialog
+                v-model:visible="renameDialogVisible"
+                modal
+                header="重命名"
+                :style="{ width: '25rem' }"
+              >
+                <div class="flex align-items-center gap-3 mb-5">
+                  <InputText
+                    v-model="tempLable"
+                    id="email"
+                    class="flex-auto"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="flex justify-content-end gap-2">
+                  <Button
+                    type="button"
+                    label="取消"
+                    severity="secondary"
+                    @click="renameDialogVisible = false"
+                  ></Button>
+                  <Button
+                    type="button"
+                    label="确定"
+                    @click="doRenameFlowName"
+                  ></Button>
+                </div>
+              </Dialog>
             </Panel>
-            <Panel class="flex-1">
+            <Panel class="h-1/2">
               <template #header>
                 <div class="flex flex-1">
                   <div class="flex-none">全局变量</div>
                   <div class="flex-1 flex flex-row-reverse -mt-1">
                     <div
                       class="hover:bg-slate-200 px-1"
-                      v-tooltip="'新建可视化流程'"
+                      v-tooltip="'新建全局变量'"
                       @click="addNewVisualFlow"
                     >
-                      <v-remixicon size="20" name="riMapPinAddLine" />
+                      <v-remixicon size="20" name="riPlayListAddFill" />
                     </div>
                   </div>
                 </div>
@@ -277,11 +322,21 @@ import Button from "primevue/button";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import Tree from "primevue/tree";
+import ContextMenu from "primevue/contextmenu";
+import Dialog from "primevue/dialog";
 import { Pane as SplitterPanel, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  watch,
+} from "vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
@@ -297,6 +352,8 @@ import {
   RestartReplCommand,
   RunSubFlow,
   TerminateSubFlow,
+  SaveProjectConfig,
+  DeleteSubFlow,
 } from "@back/go/backend/App";
 import {
   EventsOff,
@@ -334,7 +391,7 @@ const dataChanged = ref(false);
 
 const logs = ref([]);
 
-const tabs = ref([]);
+const expandedKeys = ref({});
 const activeIndex = ref(0);
 const flowTabs = ref();
 
@@ -342,37 +399,126 @@ const generateSubflowId = customAlphabet("abcdefghijklmnopqrstuvwxyz", 12);
 
 const projectConfig = ref([]);
 
+const tabs = computed(() => {
+  let openFlows = [];
+  if (projectConfig.value.length > 0 && projectConfig.value[0].children) {
+    projectConfig.value[0].children.forEach((config) => {
+      if (config.opened) {
+        openFlows.push({
+          id: props.id,
+          subflowId: config.key,
+          title: config.label,
+        });
+      }
+    });
+  }
+
+  return openFlows;
+});
+
 function addNewVisualFlow() {
-  tabs.value.push({
-    id: props.id,
-    subflowId: generateSubflowId(8),
-    title: `子流程${tabs.value.length}`,
-  });
-  activeIndex.value = tabs.value.length - 1;
+  if (projectConfig.value.length > 0 && projectConfig.value[0].children) {
+    projectConfig.value[0].children.push({
+      key: generateSubflowId(8),
+      label: `子流程${tabs.value.length}`,
+      nodeType: "sequence",
+      opened: true,
+      children: [],
+    });
+    activeIndex.value = tabs.value.length - 1;
+  }
 }
 
-function closeTab(index) {
-  activeIndex.value = index - 1;
-  let tabArray = tabs.value;
-  tabArray.splice(index, 1);
-  tabs.value = tabArray;
+function openTab(node) {
+  node.opened = true;
+  activeIndex.value = tabs.value.findIndex((tab) => tab.subflowId === node.key);
+}
+
+function closeTab(id) {
+  let current = 0;
+  projectConfig.value[0].children.forEach((config, index) => {
+    if (config.key === id) {
+      config.opened = false;
+      current = index;
+    }
+  });
+  activeIndex.value = current - 1;
+}
+const selectedNode = ref(null);
+const renameDialogVisible = ref(false);
+const tempLable = ref("");
+const menu = ref();
+const items = ref([
+  {
+    label: "编辑",
+    icon: "pi pi-file-edit",
+    command: () => {
+      renameDialogVisible.value = true;
+      tempLable.value = selectedNode.value.label;
+    },
+  },
+  {
+    label: "删除",
+    icon: "pi pi-times-circle",
+    command: () => {
+      confirm.require({
+        header: "提示",
+        message: "确定要删除这条记录吗?",
+        icon: "pi pi-info-circle",
+        rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+        acceptClass: "p-button-danger p-button-sm",
+        rejectLabel: "取消",
+        acceptLabel: "删除",
+        accept: () => {
+          if (selectedNode.value.key === "main") {
+            toast.add({
+              severity: "warn",
+              detail: "主流程不能删除",
+              life: 1000,
+            });
+            return;
+          }
+          let config = projectConfig.value;
+          let current = config[0].children.findIndex(
+            (child) => child.key === selectedNode.value.key
+          );
+          config[0].children = config[0].children.filter(
+            (child) => child.key !== selectedNode.value.key
+          );
+          projectConfig.value = config;
+          SaveProjectConfig(props.id, JSON.stringify(projectConfig.value[0]));
+          DeleteSubFlow(props.id, selectedNode.value.key);
+          activeIndex.value = current - 1;
+        },
+        reject: () => {},
+      });
+    },
+  },
+]);
+
+function doRenameFlowName() {
+  selectedNode.value.label = tempLable.value;
+  renameDialogVisible.value = false;
+}
+function onContextMenuClick(options) {
+  return async function (event) {
+    if (options.props.level !== 1) {
+      selectedNode.value = options.props.node;
+      menu.value.show(event);
+    }
+  };
 }
 
 watch(activeIndex, (now, old) => {
   nextTick(() => {
-    dataChanged.value = flowTabs.value[now].isChanged();
+    dataChanged.value = flowTabs.value[now]?.isChanged();
   });
 });
 
 onMounted(async () => {
   WindowMaximise();
   projectConfig.value = [await ReadProjectConfig(props.id)];
-  console.log(projectConfig.value);
-  tabs.value.push({
-    id: props.id,
-    subflowId: props.subflowId,
-    title: props.label,
-  });
+  expandNode(projectConfig.value[0]);
   EventsOn("log_event", (data) => {
     logs.value.push(data);
   });
@@ -386,6 +532,16 @@ onUnmounted(() => {
   EventsOff("log_event");
   EventsOff("windows_element_change");
 });
+
+const expandNode = (node) => {
+  if (node.children && node.children.length) {
+    expandedKeys.value[node.key] = true;
+
+    for (let child of node.children) {
+      expandNode(child);
+    }
+  }
+};
 
 const windowsElement = ref([]);
 provide("windowsElement", { id: props.id, windowsElement: windowsElement });
@@ -459,6 +615,7 @@ function pasteBlock() {
 
 function save() {
   flowTabs.value[activeIndex.value].save();
+  SaveProjectConfig(props.id, JSON.stringify(projectConfig.value[0]));
 }
 
 //底部工具栏逻辑

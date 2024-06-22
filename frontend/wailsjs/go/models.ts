@@ -160,6 +160,7 @@ export namespace models {
 	    key: string;
 	    label: string;
 	    nodeType: string;
+	    opened: boolean;
 	    children: ProjectConfig[];
 	
 	    static createFrom(source: any = {}) {
@@ -171,6 +172,7 @@ export namespace models {
 	        this.key = source["key"];
 	        this.label = source["label"];
 	        this.nodeType = source["nodeType"];
+	        this.opened = source["opened"];
 	        this.children = this.convertValues(source["children"], ProjectConfig);
 	    }
 	

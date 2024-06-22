@@ -93,7 +93,7 @@ function toolDragEnd(event) {
 </script>
 <style scoped>
 :deep(.p-tree-wrapper) {
-  height: calc(100vh - 170px);
+  height: calc(100vh - 166px);
 }
 :deep(.p-tree) {
   padding: 0.25rem;

@@ -19,5 +19,6 @@ type ProjectConfig struct {
 	Key      string           `json:"key"`
 	Label    string           `json:"label"`
 	NodeType string           `json:"nodeType"`
+	Opened   bool             `json:"opened"`
 	Children []*ProjectConfig `json:"children"`
 }
