@@ -16,9 +16,26 @@ type Project struct {
 }
 
 type ProjectConfig struct {
-	Key      string           `json:"key"`
-	Label    string           `json:"label"`
-	NodeType string           `json:"nodeType"`
-	Opened   bool             `json:"opened"`
-	Children []*ProjectConfig `json:"children"`
+	Key                  string      `json:"key"`
+	Label                string      `json:"label"`
+	NodeType             string      `json:"nodeType"`
+	Opened               bool        `json:"opened"`
+	Children             []*Flow     `json:"children"`
+	Variables            []*Variable `json:"variables"`
+	ExternalDependencies []string    `json:"externalDependencies"`
+}
+
+type Flow struct {
+	Key      string  `json:"key"`
+	Label    string  `json:"label"`
+	NodeType string  `json:"nodeType"`
+	Opened   bool    `json:"opened"`
+	Children []*Flow `json:"children"`
+}
+
+type Variable struct {
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
+	Kind  string `json:"kind"`
 }

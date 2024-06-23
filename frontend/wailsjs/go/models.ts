@@ -156,12 +156,70 @@ export namespace models {
 		    return a;
 		}
 	}
+	export class Variable {
+	    name: string;
+	    type: string;
+	    value: string;
+	    kind: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Variable(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.type = source["type"];
+	        this.value = source["value"];
+	        this.kind = source["kind"];
+	    }
+	}
+	export class Flow {
+	    key: string;
+	    label: string;
+	    nodeType: string;
+	    opened: boolean;
+	    children: Flow[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Flow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.key = source["key"];
+	        this.label = source["label"];
+	        this.nodeType = source["nodeType"];
+	        this.opened = source["opened"];
+	        this.children = this.convertValues(source["children"], Flow);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class ProjectConfig {
 	    key: string;
 	    label: string;
 	    nodeType: string;
 	    opened: boolean;
-	    children: ProjectConfig[];
+	    children: Flow[];
+	    variables: Variable[];
+	    externalDependencies: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new ProjectConfig(source);
@@ -173,7 +231,9 @@ export namespace models {
 	        this.label = source["label"];
 	        this.nodeType = source["nodeType"];
 	        this.opened = source["opened"];
-	        this.children = this.convertValues(source["children"], ProjectConfig);
+	        this.children = this.convertValues(source["children"], Flow);
+	        this.variables = this.convertValues(source["variables"], Variable);
+	        this.externalDependencies = source["externalDependencies"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

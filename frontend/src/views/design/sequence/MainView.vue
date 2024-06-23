@@ -245,7 +245,7 @@
               <Tree
                 v-model:expandedKeys="expandedKeys"
                 filterPlaceholder="搜索"
-                :value="projectConfig"
+                :value="projectTreeData"
                 selectionMode="single"
                 filterMode="lenient"
                 class="w-full"
@@ -269,9 +269,9 @@
                 v-model:visible="renameDialogVisible"
                 modal
                 header="重命名"
-                :style="{ width: '25rem' }"
+                :style="{ width: '35rem' }"
               >
-                <div class="flex align-items-center gap-3 mb-5">
+                <div class="flex items-center gap-3 mb-5">
                   <InputText
                     v-model="tempLable"
                     id="email"
@@ -279,7 +279,7 @@
                     autocomplete="off"
                   />
                 </div>
-                <div class="flex justify-content-end gap-2">
+                <div class="flex justify-end gap-2">
                   <Button
                     type="button"
                     label="取消"
@@ -294,23 +294,9 @@
                 </div>
               </Dialog>
             </Panel>
-            <Panel class="h-1/2">
-              <template #header>
-                <div class="flex flex-1">
-                  <div class="flex-none">全局变量</div>
-                  <div class="flex-1 flex flex-row-reverse -mt-1">
-                    <div
-                      class="hover:bg-slate-200 px-1"
-                      v-tooltip="'新建全局变量'"
-                      @click="addNewVisualFlow"
-                    >
-                      <v-remixicon size="20" name="riPlayListAddFill" />
-                    </div>
-                  </div>
-                </div>
-              </template>
-              <div class="h-full"></div>
-            </Panel>
+            <div class="h-1/2">
+              <GlobalVariable v-model="projectConfig.variables" />
+            </div>
           </div>
         </SplitterPanel>
       </splitpanes>
@@ -343,6 +329,7 @@ import LogsView from "@/views/design/sequence/LogsView.vue";
 import VariablesView from "@/views/design/sequence/VariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
+import GlobalVariable from "@/views/design/sequence/GlobalVariable.vue";
 import { customAlphabet, nanoid } from "nanoid";
 import {
   ReadProjectConfig,
@@ -397,12 +384,12 @@ const flowTabs = ref();
 
 const generateSubflowId = customAlphabet("abcdefghijklmnopqrstuvwxyz", 12);
 
-const projectConfig = ref([]);
+const projectConfig = ref({});
 
 const tabs = computed(() => {
   let openFlows = [];
-  if (projectConfig.value.length > 0 && projectConfig.value[0].children) {
-    projectConfig.value[0].children.forEach((config) => {
+  if (projectConfig.value && projectConfig.value.children) {
+    projectConfig.value.children.forEach((config) => {
       if (config.opened) {
         openFlows.push({
           id: props.id,
@@ -416,9 +403,19 @@ const tabs = computed(() => {
   return openFlows;
 });
 
+const projectTreeData = computed(() => {
+  return [
+    {
+      key: projectConfig.value.key,
+      label: projectConfig.value.label,
+      children: projectConfig.value.children,
+    },
+  ];
+});
+
 function addNewVisualFlow() {
   if (projectConfig.value.length > 0 && projectConfig.value[0].children) {
-    projectConfig.value[0].children.push({
+    projectConfig.value.children.push({
       key: generateSubflowId(8),
       label: `子流程${tabs.value.length}`,
       nodeType: "sequence",
@@ -436,7 +433,7 @@ function openTab(node) {
 
 function closeTab(id) {
   let current = 0;
-  projectConfig.value[0].children.forEach((config, index) => {
+  projectConfig.value.children.forEach((config, index) => {
     if (config.key === id) {
       config.opened = false;
       current = index;
@@ -479,14 +476,14 @@ const items = ref([
             return;
           }
           let config = projectConfig.value;
-          let current = config[0].children.findIndex(
+          let current = projectConfig.value.children.findIndex(
             (child) => child.key === selectedNode.value.key
           );
-          config[0].children = config[0].children.filter(
+          projectConfig.value.children = projectConfig.value.children.filter(
             (child) => child.key !== selectedNode.value.key
           );
           projectConfig.value = config;
-          SaveProjectConfig(props.id, JSON.stringify(projectConfig.value[0]));
+          SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
           DeleteSubFlow(props.id, selectedNode.value.key);
           activeIndex.value = current - 1;
         },
@@ -517,8 +514,8 @@ watch(activeIndex, (now, old) => {
 
 onMounted(async () => {
   WindowMaximise();
-  projectConfig.value = [await ReadProjectConfig(props.id)];
-  expandNode(projectConfig.value[0]);
+  projectConfig.value = await ReadProjectConfig(props.id);
+  expandedKeys.value[props.id] = true;
   EventsOn("log_event", (data) => {
     logs.value.push(data);
   });
@@ -532,16 +529,6 @@ onUnmounted(() => {
   EventsOff("log_event");
   EventsOff("windows_element_change");
 });
-
-const expandNode = (node) => {
-  if (node.children && node.children.length) {
-    expandedKeys.value[node.key] = true;
-
-    for (let child of node.children) {
-      expandNode(child);
-    }
-  }
-};
 
 const windowsElement = ref([]);
 provide("windowsElement", { id: props.id, windowsElement: windowsElement });
@@ -615,7 +602,7 @@ function pasteBlock() {
 
 function save() {
   flowTabs.value[activeIndex.value].save();
-  SaveProjectConfig(props.id, JSON.stringify(projectConfig.value[0]));
+  SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
 }
 
 //底部工具栏逻辑

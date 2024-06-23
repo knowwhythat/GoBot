@@ -43,13 +43,27 @@ func AddOrUpdateProject(project models.Project) (err error) {
 		project.Id = uuid.New().String()
 		path := viper.GetString(constants.ConfigPythonPath)
 		dataPath := viper.GetString(constants.ConfigDataPath)
-		projectDir := dataPath + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + project.Id
+		projectDir := dataPath + string(os.PathSeparator) + project.Id
 		if !utils.PathExist(projectDir) {
 			_ = os.MkdirAll(projectDir, fs.ModeDir)
 		}
 		project.Path = projectDir
 		command := sys_exec.BuildCmd(path, "-m", "venv", project.Path+"\\venv")
 		_, err := command.Output()
+		if err != nil {
+			return err
+		}
+		projectDir = projectDir + string(os.PathSeparator) + constants.BaseDir
+		if !utils.PathExist(projectDir) {
+			if err = os.MkdirAll(projectDir, fs.ModeDir); err != nil {
+				return err
+			}
+		}
+		err = os.WriteFile(projectDir+string(os.PathSeparator)+"__init__.py", []byte("from .import package\n"), 0666)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(projectDir+string(os.PathSeparator)+"package.py", []byte("variables = {} \n"), 0666)
 		if err != nil {
 			return err
 		}
@@ -142,7 +156,7 @@ func ReadProjectConfig(id string) (models.ProjectConfig, error) {
 	projectConfigPath := devPath + string(os.PathSeparator) + constants.ProjectConfig
 	if !utils.PathExist(projectConfigPath) {
 		if project.IsFlow {
-			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "flow", Children: []*models.ProjectConfig{}}
+			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "flow", Children: []*models.Flow{}, Variables: []*models.Variable{}}
 			value, err := json.Marshal(&proConfig)
 			if err != nil {
 				return models.ProjectConfig{}, err
@@ -150,7 +164,7 @@ func ReadProjectConfig(id string) (models.ProjectConfig, error) {
 			err = os.WriteFile(projectConfigPath, []byte(value), 0666)
 			return proConfig, err
 		} else {
-			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "sequence", Children: []*models.ProjectConfig{{Key: "main", Label: "主流程", NodeType: "sequence", Opened: true}}}
+			proConfig := models.ProjectConfig{Key: project.Id, Label: project.Name, NodeType: "sequence", Variables: []*models.Variable{}, Children: []*models.Flow{{Key: "main", Label: "主流程", NodeType: "sequence", Opened: true}}}
 			value, err := json.Marshal(&proConfig)
 			if err != nil {
 				return models.ProjectConfig{}, err
@@ -184,6 +198,14 @@ func SaveProjectConfig(id, data string) error {
 	}
 	projectConfigPath := devPath + string(os.PathSeparator) + constants.ProjectConfig
 	err = os.WriteFile(projectConfigPath, []byte(data), 0666)
+	if err != nil {
+		return err
+	}
+	proConfig := models.ProjectConfig{}
+	if err = json.Unmarshal([]byte(data), &proConfig); err != nil {
+		return err
+	}
+	err = GenerateGlobalVariable(proConfig.Variables, projectPath+string(os.PathSeparator)+"package.py")
 	return err
 }
 

@@ -58,7 +58,8 @@ onMounted(() => {
       deleteable: false,
       icon_path: "riHome5Line",
       parameter_define: {
-        inputs: [
+        inputs: [],
+        outputs: [
           {
             category: null,
             key: "expression",
@@ -71,7 +72,6 @@ onMounted(() => {
             show_if: [],
           },
         ],
-        outputs: [],
       },
       children: [],
     });
@@ -91,7 +91,6 @@ onMounted(() => {
 
 function update({ id, children }) {
   if (id) {
-    console.log(id);
     let target = props.element.children.filter((element) => element.id === id);
     target[0].children = children;
   } else {

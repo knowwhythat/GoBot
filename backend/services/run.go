@@ -226,12 +226,18 @@ func generateRunCmd(projectPath, logPath, subId string) (*exec.Cmd, error) {
 			return nil, err
 		}
 	}
-	params["sys_path_list"] = []string{projectPath}
+	params["sys_path_list"] = []string{projectPath, filepath.Dir(projectPath)}
 	params["log_path"] = logPath
 	params["log_level"] = "INFO"
 	params["mod"] = subId
 	env := make(map[string]string)
 	env["project_path"] = projectPath
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exePath := filepath.Dir(ex)
+	env["execute_path"] = exePath
 	params["environment_variables"] = env
 	marshalParam, err := json.Marshal(params)
 	if err != nil {

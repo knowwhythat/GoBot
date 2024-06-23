@@ -2,6 +2,7 @@ package services
 
 import (
 	"gobot/backend/log"
+	"gobot/backend/models"
 	"os"
 	"strconv"
 	"strings"
@@ -53,6 +54,19 @@ type Activity struct {
 	Children        []Activity        `json:"children,omitempty"`
 }
 
+func GenerateGlobalVariable(variables []*models.Variable, path string) error {
+	code := "variables = {} \n"
+	for _, v := range variables {
+		if v.Kind == "expression" {
+			code += "variables['" + v.Name + "'] = " + v.Value + "\n"
+		} else {
+			code += "variables['" + v.Name + "'] = " + strconv.Quote(v.Value) + "\n"
+		}
+	}
+	err := os.WriteFile(path, []byte(code), 0666)
+	return err
+}
+
 func (flow *Flow) GeneratePythonCode(filepath string) error {
 	log.Logger.Info("开始生成代码")
 	activities := flow.Sequence.Children
@@ -61,7 +75,7 @@ func (flow *Flow) GeneratePythonCode(filepath string) error {
 	for _, activity := range activities {
 		code = code + activity.GeneratePythonCode(namespace, 1)
 	}
-	importStr := ""
+	importStr := "from package import variables as glv\n"
 	for key := range namespace {
 		importStr += "import " + key + "\n"
 	}
@@ -107,7 +121,7 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			if len(expression) >= 2 {
 				code += expression[2:] + " :\n"
 			} else {
-				code += activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
+				code += activity.ParameterDefine.Outputs[0].DefaultValue[2:] + ":\n"
 			}
 			needPass = true
 		} else if activity.Method == "raise" {
@@ -325,7 +339,7 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 			code += input.Key + "=" + strconv.Quote(inputValue[2:]) + ","
 			return true, code
 		} else {
-			if len(input.DefaultValue[2:]) > 0 {
+			if len(inputValue[2:]) > 0 {
 				code += input.Key + "=" + inputValue[2:] + ","
 				return true, code
 			} else {
