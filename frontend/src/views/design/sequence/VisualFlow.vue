@@ -47,6 +47,7 @@ function updateDataChanged() {
 }
 
 const mainActivity = ref({
+  params: [],
   sequence: {
     id: props.subflowId,
     key: "main",
@@ -90,7 +91,7 @@ async function save() {
     await SaveSubFlow(
       props.id,
       props.subflowId,
-      JSON.stringify(mainActivity.value),
+      JSON.stringify(mainActivity.value)
     );
     dataChanged.value = false;
     toast.add({
@@ -154,7 +155,7 @@ function pasteBlock() {
       innerPaste(
         mainActivity.value.sequence.children,
         id,
-        editorStore.copiedBlocks,
+        editorStore.copiedBlocks
       );
     } else {
       editorStore.copiedBlocks.forEach((block) => {

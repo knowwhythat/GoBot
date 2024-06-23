@@ -14,7 +14,14 @@
         </div>
       </div>
     </template>
-    <DataTable :value="variables" size="small" showGridlines>
+    <DataTable
+      :value="variables"
+      size="small"
+      showGridlines
+      contextMenu
+      v-model:contextMenuSelection="selectedRow"
+      @rowContextmenu="onRowContextMenu"
+    >
       <Column field="name" header="变量名称"></Column>
       <Column field="type" header="类型">
         <template #body="slotProps">
@@ -23,6 +30,7 @@
       </Column>
       <Column field="value" header="值"></Column>
     </DataTable>
+    <ContextMenu ref="menu" :model="items" />
     <Dialog
       v-model:visible="showGlobalVariableDialog"
       modal
@@ -92,6 +100,12 @@ import Panel from "primevue/panel";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Textarea from "primevue/textarea";
+import ContextMenu from "primevue/contextmenu";
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
 
 import { ref, watch } from "vue";
 
@@ -149,9 +163,86 @@ function addGlobalVariable() {
     kind: "text",
   };
 }
-
+let editIndex = -1;
 function doAddGlobalVariable() {
+  if (editIndex > -1) {
+    let index = variables.value.findIndex(
+      (v, currentIndex) =>
+        v.name === newVariable.value.name && currentIndex !== editIndex
+    );
+    if (index === -1) {
+      variables.value[editIndex] = newVariable.value;
+    } else {
+      toast.add({
+        severity: "warn",
+        detail: "变量名称重复",
+        life: 1000,
+      });
+      return;
+    }
+  } else {
+    let index = variables.value.findIndex(
+      (v) => v.name === newVariable.value.name
+    );
+    if (index === -1) {
+      variables.value.push(newVariable.value);
+    } else {
+      toast.add({
+        severity: "warn",
+        detail: "变量名称重复",
+        life: 1000,
+      });
+      return;
+    }
+  }
   showGlobalVariableDialog.value = false;
-  variables.value.push(newVariable.value);
+
+  editIndex = -1;
 }
+
+const menu = ref();
+const selectedRow = ref();
+const onRowContextMenu = (event) => {
+  menu.value.show(event.originalEvent);
+};
+
+const items = ref([
+  {
+    label: "编辑",
+    icon: "pi pi-file-edit",
+    command: () => {
+      editIndex = variables.value.findIndex(
+        (v) => v.name === selectedRow.value.name
+      );
+      newVariable.value = {
+        name: selectedRow.value.name,
+        type: selectedRow.value.type,
+        value: selectedRow.value.value,
+        kind: selectedRow.value.kind,
+      };
+      showGlobalVariableDialog.value = true;
+    },
+  },
+  {
+    label: "删除",
+    icon: "pi pi-times-circle",
+    command: () => {
+      confirm.require({
+        header: "提示",
+        message: "确定要删除这条记录吗?",
+        icon: "pi pi-info-circle",
+        rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+        acceptClass: "p-button-danger p-button-sm",
+        rejectLabel: "取消",
+        acceptLabel: "删除",
+        accept: () => {
+          variables.value = variables.value.filter(
+            (v) => v.name !== selectedRow.value.name
+          );
+        },
+        reject: () => {},
+      });
+    },
+  },
+]);
 </script>

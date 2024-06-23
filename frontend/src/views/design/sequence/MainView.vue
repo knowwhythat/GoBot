@@ -190,14 +190,19 @@
                   @hide="activeNav = ''"
                   @clear="logs = []"
                 />
-                <VariablesView
-                  v-else-if="activeNav === 'VariablesView'"
-                  @hide="activeNav = ''"
-                />
                 <ElementsView
                   :id="props.id"
                   :windowsElement="windowsElement"
                   v-else-if="activeNav === 'ElementsView'"
+                  @hide="activeNav = ''"
+                />
+                <ParamsView
+                  :id="props.id"
+                  v-else-if="activeNav === 'ParamsView'"
+                  @hide="activeNav = ''"
+                />
+                <LocalVariablesView
+                  v-else-if="activeNav === 'LocalVariablesView'"
                   @hide="activeNav = ''"
                 />
               </SplitterPanel>
@@ -206,7 +211,7 @@
               <div
                 v-for="nav in bottomNav"
                 @click="bottomNavClick(nav.component)"
-                class="text-center w-20 my-auto hover:text-indipurplego-500"
+                class="text-center w-20 my-auto py-1 hover:text-indipurplego-500"
                 :class="[
                   nav.component === activeNav
                     ? 'border-b-4 border-purple-500 text-purple-500'
@@ -295,7 +300,7 @@
               </Dialog>
             </Panel>
             <div class="h-1/2">
-              <GlobalVariable v-model="projectConfig.variables" />
+              <GlobalVariableView v-model="projectConfig.variables" />
             </div>
           </div>
         </SplitterPanel>
@@ -326,10 +331,11 @@ import {
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
-import VariablesView from "@/views/design/sequence/VariablesView.vue";
+import LocalVariablesView from "@/views/design/sequence/LocalVariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
+import ParamsView from "@/views/design/sequence/ParamsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
-import GlobalVariable from "@/views/design/sequence/GlobalVariable.vue";
+import GlobalVariableView from "@/views/design/sequence/GlobalVariableView.vue";
 import { customAlphabet, nanoid } from "nanoid";
 import {
   ReadProjectConfig,
@@ -414,7 +420,7 @@ const projectTreeData = computed(() => {
 });
 
 function addNewVisualFlow() {
-  if (projectConfig.value.length > 0 && projectConfig.value[0].children) {
+  if (projectConfig.value.children) {
     projectConfig.value.children.push({
       key: generateSubflowId(8),
       label: `子流程${tabs.value.length}`,
@@ -475,14 +481,12 @@ const items = ref([
             });
             return;
           }
-          let config = projectConfig.value;
           let current = projectConfig.value.children.findIndex(
             (child) => child.key === selectedNode.value.key
           );
           projectConfig.value.children = projectConfig.value.children.filter(
             (child) => child.key !== selectedNode.value.key
           );
-          projectConfig.value = config;
           SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
           DeleteSubFlow(props.id, selectedNode.value.key);
           activeIndex.value = current - 1;
@@ -609,7 +613,8 @@ function save() {
 const bottomNav = [
   { title: "日志", component: "LogsView" },
   { title: "元素库", component: "ElementsView" },
-  { title: "变量库", component: "VariablesView" },
+  { title: "参数库", component: "ParamsView" },
+  { title: "变量库", component: "LocalVariablesView" },
 ];
 
 const activeNav = ref("");

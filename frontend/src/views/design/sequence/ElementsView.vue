@@ -1,5 +1,6 @@
 <template>
   <Panel
+    header="元素库"
     :pt="{
       header: (options) => ({
         class: ['bg-slate-100', 'p-1'],
@@ -13,11 +14,6 @@
     }"
     :toggleable="false"
   >
-    <template #header>
-      <div class="flex align-items-center gap-4">
-        <span class="mt-1">元素库</span>
-      </div>
-    </template>
     <template #icons>
       <div class="flex align-items-center gap-2">
         <button
