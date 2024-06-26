@@ -35,6 +35,7 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["mounted"]);
 const selectedActivity = ref([]);
 provide("contextVariable", { contextVariable: [] });
 provide("selectedActivity", { selectedActivity });
@@ -64,11 +65,12 @@ onMounted(async () => {
     const result = await GetSubFlow(props.id, props.subflowId);
     if (result) {
       const data = JSON.parse(result);
-      mainActivity.value.sequence = data.sequence;
+      mainActivity.value = data;
     } else {
       mainActivity.value.sequence.id = props.subflowId;
       mainActivity.value.sequence.label = props.label ? props.label : "子流程";
     }
+    emit("mounted");
   } catch (error) {
     toast.add({
       severity: "error",
@@ -170,6 +172,14 @@ function isChanged() {
   return dataChanged.value;
 }
 
+function getParams() {
+  return mainActivity.value.params;
+}
+
+function setParams(params) {
+  mainActivity.value.params = params;
+}
+
 defineExpose({
   save,
   delBlock,
@@ -177,6 +187,8 @@ defineExpose({
   copyBlock,
   pasteBlock,
   isChanged,
+  getParams,
+  setParams,
 });
 </script>
 

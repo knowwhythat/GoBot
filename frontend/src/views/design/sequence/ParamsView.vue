@@ -16,7 +16,39 @@
   >
     <template #icons>
       <div class="flex align-items-center gap-2">
-        <button class="mr-4 hover:text-purple-500" @click="addParam">
+        <button
+          v-if="selectedRow"
+          class="mr-4 hover:text-purple-500"
+          v-tooltip.left="{
+            value: '删除参数',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
+          @click="removeparam"
+        >
+          <span class="pi pi-delete-left"></span>
+        </button>
+        <button
+          v-if="selectedRow"
+          class="mr-4 hover:text-purple-500"
+          v-tooltip.left="{
+            value: '修改参数',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
+          @click="editParam"
+        >
+          <span class="pi pi-file-edit"></span>
+        </button>
+        <button
+          class="mr-4 hover:text-purple-500"
+          v-tooltip.left="{
+            value: '新建参数',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
+          @click="addParam"
+        >
           <span class="pi pi-plus-circle"></span>
         </button>
         <button class="hover:text-purple-500" @click="$emit('hide')">
@@ -24,89 +56,267 @@
         </button>
       </div>
     </template>
-    <div ref="tableContainer">
-      <DataTable
-        :value="flowParams"
-        v-model:selection="selectedRow"
-        showGridlines
-        scrollable
-        scrollHeight="flex"
-        editMode="cell"
-        @cell-edit-complete="onCellEditComplete"
-        v-model:filters="filters"
-        :globalFilterFields="['name']"
-        :pt="{
-          column: {
-            bodycell: ({ state }) => ({
-              class: [{ 'pt-0 pb-0': state['d_editing'] }],
-            }),
-          },
-        }"
+    <DataTable
+      class="p-2"
+      size="small"
+      :value="flowParams"
+      v-model:selection="selectedRow"
+      showGridlines
+      scrollable
+      resizableColumns
+      columnResizeMode="fit"
+      selectionMode="single"
+      scrollHeight="flex"
+      v-model:filters="filters"
+      :globalFilterFields="['name']"
+      @rowReorder="flowParams = $event.value"
+      :pt="{
+        column: {
+          bodycell: ({ state }) => ({
+            class: [{ 'pt-0 pb-0': state['d_editing'] }],
+          }),
+        },
+      }"
+    >
+      <Column rowReorder headerStyle="width: 3rem" />
+      <Column field="name" header="参数名称"> </Column>
+      <Column field="direction" header="方向">
+        <template #body="slotProps">
+          {{ slotProps.data.direction === "In" ? "输入" : "输出" }}
+        </template>
+      </Column>
+      <Column field="type" header="类型">
+        <template #body="slotProps">
+          {{
+            paramTypes.filter((type) => slotProps.data.type == type.code)[0]
+              .name
+          }}
+        </template>
+      </Column>
+      <Column field="value" header="默认值"></Column>
+    </DataTable>
+    <Dialog
+      v-model:visible="showParamDialog"
+      modal
+      header="参数"
+      :style="{ width: '35rem' }"
+    >
+      <div class="flex items-center gap-3 mb-3">
+        <label for="param_name" class="w-16"> 参数名称 </label>
+        <InputText
+          id="param_name"
+          v-model="newParam.name"
+          class="flex-auto"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex items-center gap-3 mb-5">
+        <label for="param_direction" class="w-16">方向</label>
+        <Dropdown
+          v-model="newParam.direction"
+          :options="directionTypes"
+          optionValue="code"
+          optionLabel="name"
+          class="flex-auto"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <label for="param_type" class="w-16">类型</label>
+        <Dropdown
+          v-model="newParam.type"
+          :options="paramTypes"
+          optionValue="code"
+          optionLabel="name"
+          class="flex-auto"
+        />
+      </div>
+      <template
+        v-if="newParam.type === 'single' || newParam.type === 'multiple'"
       >
-        <Column selectionMode="multiple" headerStyle="width: 2rem"></Column>
-        <Column sortable field="name" header="变量名" style="width: 25%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" autofocus />
-          </template>
-        </Column>
-        <Column field="defaultValue" header="默认值" style="width: 25%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" autofocus />
-          </template>
-        </Column>
-        <Column field="remark" header="备注" style="width: 35%">
-          <template #editor="{ data, field }">
-            <InputText v-model="data[field]" autofocus />
-          </template>
-        </Column>
-        <Column field="remark" header="备注" style="width: 15%"></Column>
-      </DataTable>
-    </div>
+        <div
+          class="flex items-center gap-3 mt-5"
+          v-for="(item, i) in newParam.options"
+          :key="item.id"
+        >
+          <label for="param_type" class="w-16">选项{{ i + 1 }}</label>
+          <InputText
+            v-model="item.key"
+            class="w-1/2 mx-1"
+            autocomplete="off"
+            placeholder="选项标签"
+          />
+          <InputText
+            v-model="item.value"
+            class="w-1/2 mx-1"
+            autocomplete="off"
+            placeholder="选项值"
+          />
+          <button @click="removeOption(item.id)" v-tooltip="'删除选项'">
+            <v-remixicon name="riDeleteBin7Line" size="24" />
+          </button>
+        </div>
+        <div class="flex items-center">
+          <button @click="addOption" v-tooltip="'添加选项'">
+            <v-remixicon name="riAddLine" size="24" />
+          </button>
+        </div>
+      </template>
+
+      <div class="flex relative items-center gap-3 mb-5 mt-5">
+        <label for="param_value" class="w-16">默认值</label>
+        <Textarea
+          id="param_value"
+          class="flex-auto"
+          v-model="newParam.value"
+          rows="2"
+        >
+        </Textarea>
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="取消"
+          severity="secondary"
+          @click="showParamDialog = false"
+        ></Button>
+        <Button type="button" label="确定" @click="doAddParam"></Button>
+      </div>
+    </Dialog>
   </Panel>
 </template>
 <script setup>
 import Panel from "primevue/panel";
 import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { ref } from "vue";
 import { nanoid } from "nanoid";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
 const emit = defineEmits(["hide"]);
-const flowParams = ref([]);
-const selectedRow = ref([]);
+
+const flowParams = defineModel(Array);
+
+const selectedRow = ref();
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const tableContainer = ref();
+const showParamDialog = ref(false);
+const newParam = ref({});
+const directionTypes = [
+  { name: "输入", code: "In" },
+  { name: "输出", code: "Out" },
+];
+const paramTypes = [
+  { name: "普通文本", code: "str" },
+  { name: "文件路径", code: "filePath" },
+  { name: "文件目录", code: "dirPath" },
+  { name: "数字", code: "number" },
+  { name: "布尔", code: "bool" },
+  { name: "单选", code: "single" },
+  { name: "多选", code: "multiple" },
+  { name: "任意", code: "any" },
+];
+
 function addParam() {
-  flowParams.value.push({
-    id: nanoid(16),
-    name: "g_variable_" + flowParams.value.length,
-    defaultValue: "",
-    remark: "",
-    reference: 0,
-  });
-  nextTick(() => {
-    const trs = tableContainer.value.getElementsByTagName("tr");
-    trs[trs.length - 1].scrollIntoViewIfNeeded();
-  });
+  newParam.value = {
+    name: "",
+    direction: "In",
+    type: "str",
+    options: [],
+    value: "",
+  };
+  showParamDialog.value = true;
 }
-function removeVariable() {
-  if (activeTab.value == "global") {
-    flowParams.value = flowParams.value.filter(
-      (v) => !selectedRow.value?.includes(v)
-    );
-    selectedRow.value = [];
+let editIndex = -1;
+function editParam() {
+  editIndex = flowParams.value.findIndex(
+    (v) => v.name === selectedRow.value.name
+  );
+  newParam.value = {
+    name: selectedRow.value.name,
+    direction: selectedRow.value.direction,
+    type: selectedRow.value.type,
+    options: selectedRow.value.options,
+    value: selectedRow.value.value,
+  };
+
+  showParamDialog.value = true;
+}
+function addOption() {
+  newParam.value.options.push({ id: nanoid(8), key: "", value: "" });
+}
+
+function removeOption(id) {}
+
+function doAddParam() {
+  if (!newParam.value.name) {
+    toast.add({
+      severity: "warn",
+      detail: "参数名称不能为空",
+      life: 1000,
+    });
+    return;
   }
+  if (editIndex > -1) {
+    let index = flowParams.value.findIndex(
+      (v, currentIndex) =>
+        v.name === newParam.value.name && currentIndex !== editIndex
+    );
+    if (index === -1) {
+      flowParams.value[editIndex] = newParam.value;
+    } else {
+      toast.add({
+        severity: "warn",
+        detail: "变量名称重复",
+        life: 1000,
+      });
+      return;
+    }
+  } else {
+    let index = flowParams.value.findIndex(
+      (v) => v.name === newParam.value.name
+    );
+    if (index === -1) {
+      flowParams.value.push(newParam.value);
+    } else {
+      toast.add({
+        severity: "warn",
+        detail: "参数名称重复",
+        life: 1000,
+      });
+      return;
+    }
+  }
+  selectedRow.value = null;
+  showParamDialog.value = false;
 }
-const onCellEditComplete = (event) => {
-  let { data, newValue, field } = event;
-  data[field] = newValue;
-  console.log(event);
-};
+function removeparam() {
+  confirm.require({
+    header: "提示",
+    message: "确定要删除这条记录吗?",
+    icon: "pi pi-info-circle",
+    rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+    acceptClass: "p-button-danger p-button-sm",
+    rejectLabel: "取消",
+    acceptLabel: "删除",
+    accept: () => {
+      flowParams.value = flowParams.value.filter(
+        (v) => v !== selectedRow.value
+      );
+      selectedRow.value = null;
+    },
+    reject: () => {},
+  });
+}
 </script>
 <style scoped>
 :deep(.p-splitter-panel) {
@@ -121,15 +331,12 @@ const onCellEditComplete = (event) => {
 }
 :deep(.p-panel-content) {
   height: 100%;
-  overflow: auto;
 }
 :deep(.p-datatable .p-datatable-thead > tr > th) {
   padding: 4px;
   font-weight: 500;
 }
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 8px;
-}
+
 :deep(.p-panel-content) {
   padding: 0.75rem;
 }

@@ -171,6 +171,7 @@
                       </div>
                     </template>
                     <VisualFlow
+                      @mounted="visualFlowMounted"
                       ref="flowTabs"
                       :id="tab.id"
                       :subflowId="tab.subflowId"
@@ -200,6 +201,7 @@
                   :id="props.id"
                   v-else-if="activeNav === 'ParamsView'"
                   @hide="activeNav = ''"
+                  v-model="params"
                 />
                 <LocalVariablesView
                   v-else-if="activeNav === 'LocalVariablesView'"
@@ -510,11 +512,29 @@ function onContextMenuClick(options) {
   };
 }
 
-watch(activeIndex, (now, old) => {
-  nextTick(() => {
+const params = ref([]);
+
+function visualFlowMounted() {
+  dataChanged.value = flowTabs.value[activeIndex.value]?.isChanged();
+  params.value = flowTabs.value[activeIndex.value]?.getParams();
+}
+
+watch(
+  () => activeIndex.value,
+  (now, old) => {
     dataChanged.value = flowTabs.value[now]?.isChanged();
-  });
-});
+    params.value = flowTabs.value[now]?.getParams();
+  },
+  { deep: true }
+);
+
+watch(
+  () => params.value,
+  (now, old) => {
+    flowTabs.value[activeIndex.value]?.setParams(now);
+  },
+  { deep: true }
+);
 
 onMounted(async () => {
   WindowMaximise();

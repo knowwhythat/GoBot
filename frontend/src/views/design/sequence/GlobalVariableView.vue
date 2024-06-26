@@ -34,7 +34,7 @@
     <Dialog
       v-model:visible="showGlobalVariableDialog"
       modal
-      header="新建全局变量"
+      header="全局变量"
       :style="{ width: '35rem' }"
     >
       <div class="flex items-center gap-3 mb-3">
