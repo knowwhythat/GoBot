@@ -85,15 +85,19 @@
                   @click="edit(item)"
                   v-tooltip="'编辑'"
                 />
-                <Button
-                  icon="pi pi-caret-right"
-                  rounded
-                  outlined
-                  @click="run(item)"
-                  v-tooltip="'运行'"
-                >
+                <Button rounded outlined @click="run(item)" v-tooltip="'运行'">
                   <template #icon>
                     <v-remixicon size="24" name="riPlayLine" />
+                  </template>
+                </Button>
+                <Button
+                  rounded
+                  outlined
+                  @click="openParamDialog(item)"
+                  v-tooltip="'设置参数'"
+                >
+                  <template #icon>
+                    <v-remixicon size="24" name="riGridLine" />
                   </template>
                 </Button>
               </div>
@@ -102,15 +106,12 @@
         </div>
       </template>
     </DataView>
-    <Dialog v-model:visible="dialogVisible" modal maximizable header="Header">
-      <template #header>
-        <div
-          class="inline-flex align-items-center justify-content-center gap-2"
-        >
-          <v-remixicon size="20" name="riAddLine" />
-          <span class="font-bold white-space-nowrap">新建流程</span>
-        </div>
-      </template>
+    <Dialog
+      v-model:visible="dialogVisible"
+      modal
+      maximizable
+      :header="(newProject.id ? '修改' : '新建') + '流程'"
+    >
       <div class="flex justify-content-center">
         <label for="value" class="mt-3 w-32">流程名称</label>
         <InputText
@@ -140,6 +141,25 @@
         <Button label="确定" icon="pi pi-check" @click="doCreateProject" />
       </template>
     </Dialog>
+    <Dialog
+      v-model:visible="paramDiaglogVisible"
+      modal
+      maximizable
+      header="流程参数"
+      :style="{ width: '60rem' }"
+    >
+      <ParamSettingView :params="projectParamDefine" v-model="projectParam" />
+      <template #footer>
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          outlined
+          severity="secondary"
+          @click="paramDiaglogVisible = false"
+        />
+        <Button label="确定" icon="pi pi-check" @click="saveParams" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -156,6 +176,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Editor from "primevue/editor";
+import ParamSettingView from "@/views/main/ParamSettingView.vue";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "lodash-es";
 import {
@@ -163,6 +184,7 @@ import {
   ListProject,
   DeleteProject,
   RunMainFlow,
+  GetSubFlow,
 } from "@back/go/backend/App";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
@@ -261,6 +283,43 @@ function getItems(id) {
     },
   ];
 }
+
+const paramDiaglogVisible = ref(false);
+
+const projectParamDefine = ref([]);
+const projectParam = ref({});
+const selectedProject = ref({});
+
+const openParamDialog = async (item) => {
+  selectedProject.value = item;
+  const flow = await GetSubFlow(item.id, "main");
+  projectParamDefine.value = JSON.parse(flow).params;
+  let inputParam = item.inputParam ?? {};
+  projectParamDefine.value.forEach((element) => {
+    if (!(element.name in inputParam)) {
+      inputParam[element.name] = element.value;
+    }
+  });
+  projectParam.value = inputParam;
+  paramDiaglogVisible.value = true;
+};
+
+const saveParams = () => {
+  selectedProject.value.inputParam = projectParam.value;
+  AddOrUpdateProject(selectedProject.value)
+    .then((result) => {
+      paramDiaglogVisible.value = false;
+      listProject();
+    })
+    .catch((error) => {
+      toast.add({
+        severity: "error",
+        summary: "异常",
+        detail: error,
+        life: 3000,
+      });
+    });
+};
 
 const run = (item) => {
   toast.add({

@@ -25,6 +25,9 @@ app.use(PrimeVue, {
     mergeProps: false,
   },
   ripple: true,
+  locale: {
+    emptyMessage: "当前没有记录",
+  },
 });
 app.use(ToastService);
 app.use(ConfirmationService);

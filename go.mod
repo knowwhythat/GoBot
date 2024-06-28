@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.21.3
 
 require (
+	github.com/duke-git/lancet/v2 v2.3.1
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getlantern/systray v1.2.2
 	github.com/google/uuid v1.4.0

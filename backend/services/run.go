@@ -37,7 +37,7 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 	}
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + uuid.NewString() + ".log"
-	runningProcess, err = generateRunCmd(projectPath, logPath, subId)
+	runningProcess, err = generateRunCmd(project, projectPath, logPath, subId)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func RunSequence(ctx context.Context, id, subId, triggerType string) error {
 	runningInstanceId := uuid.New().String()
 	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + runningInstanceId + ".log"
-	command, err := generateRunCmd(projectPath, logPath, subId)
+	command, err := generateRunCmd(project, projectPath, logPath, subId)
 	if err != nil {
 		return err
 	}
@@ -218,7 +218,7 @@ func removeValue(slice []forms.RunningInstance, id string) []forms.RunningInstan
 	return temp
 }
 
-func generateRunCmd(projectPath, logPath, subId string) (*exec.Cmd, error) {
+func generateRunCmd(project *models.Project, projectPath, logPath, subId string) (*exec.Cmd, error) {
 	params := make(map[string]interface{})
 	logDir := filepath.Dir(logPath)
 	if !utils.PathExist(logDir) {
@@ -239,6 +239,7 @@ func generateRunCmd(projectPath, logPath, subId string) (*exec.Cmd, error) {
 	exePath := filepath.Dir(ex)
 	env["execute_path"] = exePath
 	params["environment_variables"] = env
+	params["inputs"] = project.InputParam
 	marshalParam, err := json.Marshal(params)
 	if err != nil {
 		return nil, err

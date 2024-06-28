@@ -116,6 +116,7 @@ export namespace models {
 	    path: string;
 	    icon: string;
 	    isFlow: boolean;
+	    inputParam: {[key: string]: any};
 	    description: string;
 	    // Go type: time
 	    createTs: any;
@@ -133,6 +134,7 @@ export namespace models {
 	        this.path = source["path"];
 	        this.icon = source["icon"];
 	        this.isFlow = source["isFlow"];
+	        this.inputParam = source["inputParam"];
 	        this.description = source["description"];
 	        this.createTs = this.convertValues(source["createTs"], null);
 	        this.updateTs = this.convertValues(source["updateTs"], null);

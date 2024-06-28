@@ -6,10 +6,26 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/duke-git/lancet/v2/slice"
 )
 
 type Flow struct {
+	Params   []Param  `json:"params,omitempty"`
 	Sequence Activity `json:"sequence,omitempty"`
+}
+
+type Param struct {
+	Name      string   `json:"name,omitempty"`
+	Direction string   `json:"direction,omitempty"`
+	Type      string   `json:"type,omitempty"`
+	Options   []Option `json:"options,omitempty"`
+	Value     string   `json:"value,omitempty"`
+}
+
+type Option struct {
+	Key   string `json:"key,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 type Input struct {
@@ -72,9 +88,18 @@ func (flow *Flow) GeneratePythonCode(filepath string) error {
 	activities := flow.Sequence.Children
 	namespace := make(map[string]string)
 	code := "def main(args):\n"
-	for _, activity := range activities {
-		code = code + activity.GeneratePythonCode(namespace, 1)
+	inParams := slice.Filter(flow.Params, func(index int, item Param) bool { return item.Direction == "In" })
+	if len(inParams) > 0 {
+		code += generateParams(inParams)
 	}
+	if len(activities) > 0 {
+		for _, activity := range activities {
+			code = code + activity.GeneratePythonCode(namespace, 1)
+		}
+	} else {
+		code += strings.Repeat(" ", 1*4) + "pass"
+	}
+
 	importStr := "from package import variables as glv\n"
 	for key := range namespace {
 		importStr += "import " + key + "\n"
@@ -82,6 +107,22 @@ func (flow *Flow) GeneratePythonCode(filepath string) error {
 	log.Logger.Info(importStr + code)
 	err := os.WriteFile(filepath, []byte(importStr+code), 0666)
 	return err
+}
+
+func generateParams(params []Param) string {
+	ifExpression := strings.Repeat(" ", 1*4) + "if args is None:\n"
+	elseExpression := strings.Repeat(" ", 1*4) + "else:\n"
+	for _, param := range params {
+		defaultValue := "None"
+		if param.Type == "str" || param.Type == "filePath" || param.Type == "dirPath" || param.Type == "password" || param.Type == "single" || param.Type == "multiple" {
+			defaultValue = strconv.Quote(param.Value)
+		} else {
+			defaultValue = param.Value
+		}
+		ifExpression += strings.Repeat(" ", 2*4) + param.Name + " = " + defaultValue + "\n"
+		elseExpression += strings.Repeat(" ", 2*4) + param.Name + " = args.get(\"" + param.Name + "\", " + defaultValue + ")" + "\n"
+	}
+	return ifExpression + elseExpression
 }
 
 func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent int) string {

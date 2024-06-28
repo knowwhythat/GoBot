@@ -219,6 +219,7 @@ const paramTypes = [
   { name: "普通文本", code: "str" },
   { name: "文件路径", code: "filePath" },
   { name: "文件目录", code: "dirPath" },
+  { name: "密码", code: "password" },
   { name: "数字", code: "number" },
   { name: "布尔", code: "bool" },
   { name: "单选", code: "single" },
