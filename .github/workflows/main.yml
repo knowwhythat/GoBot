@@ -39,7 +39,7 @@ jobs:
           wails build -upx -ldflags "-s -w"
 
       - name: 上传Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gobot-darwin-amd64-${{ env.VERSION }}
           path: build/bin
@@ -79,7 +79,7 @@ jobs:
           wails build -upx
 
       - name: 上传Artifacts(zip)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gobot-windows-amd64-${{ env.VERSION }}
           path: |
@@ -123,7 +123,7 @@ jobs:
           wails build -upx -ldflags "-s -w"
 
       - name: 上传Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gobot-linux-amd64-${{ env.VERSION }}
           path: build/bin
