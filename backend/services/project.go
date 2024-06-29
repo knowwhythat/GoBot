@@ -209,6 +209,29 @@ func SaveProjectConfig(id, data string) error {
 	return err
 }
 
+func SaveProjectDependency(id string, packages []string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectConfigPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.ProjectConfig
+	data, err := os.ReadFile(projectConfigPath)
+	if err != nil {
+		return err
+	}
+	proConfig := models.ProjectConfig{}
+	if err = json.Unmarshal(data, &proConfig); err != nil {
+		return err
+	}
+	proConfig.ExternalDependencies = packages
+	jsonData, err := json.Marshal(proConfig)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(projectConfigPath, jsonData, 0666)
+	return err
+}
+
 func ReadMainFlow(id string) (string, string, error) {
 	project, err := QueryProjectById(id)
 	if err != nil {

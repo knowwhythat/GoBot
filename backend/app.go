@@ -292,3 +292,19 @@ func (a *App) RemoveExecution(executions []forms.ExecutionForm) (err error) {
 func (a *App) SelectExecutionLog(id string) (logs string, err error) {
 	return services.SelectExecutionLog(id)
 }
+
+func (a *App) PipInstallPackage(id string, pip forms.PipPackage) (err error) {
+	return services.InstallPackage(a.ctx, id, pip)
+}
+
+func (a *App) PipListInstallPackage(id string) (output string, err error) {
+	return services.ListInstallPackage(id)
+}
+
+func (a *App) PipUnInstallPackage(id, name string) (err error) {
+	return services.UnInstallPackage(id, name)
+}
+
+func (a *App) SaveProjectDependency(id string, packages []string) (err error) {
+	return services.SaveProjectDependency(id, packages)
+}

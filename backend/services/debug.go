@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -50,13 +49,14 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	env := make(map[string]string)
 	env["project_path"] = projectPath
 	params["environment_variables"] = env
+	params["inputs"] = project.InputParam
 	marshalParam, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	debugProcess = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-m", "robot_core.robot_interpreter", base64Param)
+	debugProcess = sys_exec.BuildCmd(utils.GetVenvPython(project.Path), "-u", "-m", "robot_core.robot_interpreter", base64Param)
 	var stderr bytes.Buffer
 	debugProcess.Stderr = &stderr
 	inPipe, err := debugProcess.StdinPipe()

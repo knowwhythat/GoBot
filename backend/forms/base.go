@@ -63,3 +63,13 @@ type RunningInstance struct {
 	TriggerType string    `form:"triggerType" json:"triggerType"`
 	Process     *exec.Cmd `form:"-" json:"-"`
 }
+
+type PipPackage struct {
+	Name         string `form:"name" json:"name"`
+	UpgradePip   bool   `form:"upgradePip" json:"upgradePip"`
+	Upgrade      bool   `form:"upgrade" json:"upgrade"`
+	InputVersion bool   `form:"inputVersion" json:"inputVersion"`
+	Version      string `form:"version" json:"version"`
+	InputMirror  bool   `form:"inputMirror" json:"inputMirror"`
+	MirrorUrl    string `form:"mirrorUrl" json:"mirrorUrl"`
+}

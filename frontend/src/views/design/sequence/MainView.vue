@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh;flex; overflow: hidden" class="overflow-hidden">
+  <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
     <Toolbar class="flex-none p-0" style="--wails-draggable: drag">
       <template #start>
         <Button
@@ -234,7 +234,7 @@
                   <div class="flex-1 flex flex-row-reverse -mt-1 gap-4">
                     <div
                       class="hover:bg-slate-200 px-1"
-                      v-tooltip="'新建可视化流程'"
+                      v-tooltip.left="'新建可视化流程'"
                       @click="addNewVisualFlow"
                     >
                       <v-remixicon size="20" name="riNodeTree" />
@@ -245,6 +245,17 @@
                       @click="addNewVisualFlow"
                     >
                       <v-remixicon size="20" name="riCodeBoxLine" />
+                    </div>
+                    <div
+                      class="hover:bg-slate-200 px-1"
+                      v-tooltip.left="'依赖管理'"
+                      @click="pipDialogVisible = true"
+                    >
+                      <v-remixicon
+                        size="20"
+                        viewBox="0 0 1024 1024"
+                        name="pythonIcon"
+                      />
                     </div>
                   </div>
                 </div>
@@ -300,6 +311,14 @@
                   ></Button>
                 </div>
               </Dialog>
+              <Dialog
+                v-model:visible="pipDialogVisible"
+                modal
+                header="依赖管理"
+                :style="{ width: '48rem' }"
+              >
+                <PipInstallView @close="pipDialogVisible = false" />
+              </Dialog>
             </Panel>
             <div class="h-1/2">
               <GlobalVariableView v-model="projectConfig.variables" />
@@ -338,6 +357,7 @@ import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import ParamsView from "@/views/design/sequence/ParamsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
 import GlobalVariableView from "@/views/design/sequence/GlobalVariableView.vue";
+import PipInstallView from "@/views/design/sequence/PipInstallView.vue";
 import { customAlphabet, nanoid } from "nanoid";
 import {
   ReadProjectConfig,
@@ -511,6 +531,8 @@ function onContextMenuClick(options) {
     }
   };
 }
+
+const pipDialogVisible = ref(false);
 
 const params = ref([]);
 

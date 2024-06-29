@@ -11,13 +11,13 @@ import (
 	"gobot/backend/constants"
 	"gobot/backend/log"
 	"gobot/backend/services/sys_exec"
+	"gobot/backend/utils"
 	"io"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 
-	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -39,13 +39,14 @@ func startReplCommand(id string) error {
 	env := make(map[string]string)
 	env["project_path"] = projectPath
 	params["environment_variables"] = env
+	params["inputs"] = project.InputParam
 	marshalParam, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	replProcess = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
+	replProcess = sys_exec.BuildCmd(utils.GetVenvPython(project.Path), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
 
 	var stderr bytes.Buffer
 	replProcess.Stderr = &stderr

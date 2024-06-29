@@ -22,7 +22,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hpcloud/tail"
-	"github.com/spf13/viper"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -246,5 +245,5 @@ func generateRunCmd(project *models.Project, projectPath, logPath, subId string)
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
 	log.Logger.Info(base64Param)
-	return sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-u", "-m", "robot_core.robot_interpreter", base64Param), nil
+	return sys_exec.BuildCmd(utils.GetVenvPython(project.Path), "-u", "-m", "robot_core.robot_interpreter", base64Param), nil
 }

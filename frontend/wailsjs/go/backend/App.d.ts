@@ -48,6 +48,12 @@ export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activity>>;
 
+export function PipInstallPackage(arg1:string,arg2:forms.PipPackage):Promise<void>;
+
+export function PipListInstallPackage(arg1:string):Promise<string>;
+
+export function PipUnInstallPackage(arg1:string,arg2:string):Promise<void>;
+
 export function QueryAllExecution():Promise<Array<forms.ExecutionForm>>;
 
 export function QuerySchedulePage():Promise<Array<models.Schedule>>;
@@ -73,6 +79,8 @@ export function SaveBasicConfigData(arg1:{[key: string]: string}):Promise<void>;
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveProjectConfig(arg1:string,arg2:string):Promise<void>;
+
+export function SaveProjectDependency(arg1:string,arg2:Array<string>):Promise<void>;
 
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
 

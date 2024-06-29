@@ -90,6 +90,18 @@ export function ParseAllPlugin() {
   return window['go']['backend']['App']['ParseAllPlugin']();
 }
 
+export function PipInstallPackage(arg1, arg2) {
+  return window['go']['backend']['App']['PipInstallPackage'](arg1, arg2);
+}
+
+export function PipListInstallPackage(arg1) {
+  return window['go']['backend']['App']['PipListInstallPackage'](arg1);
+}
+
+export function PipUnInstallPackage(arg1, arg2) {
+  return window['go']['backend']['App']['PipUnInstallPackage'](arg1, arg2);
+}
+
 export function QueryAllExecution() {
   return window['go']['backend']['App']['QueryAllExecution']();
 }
@@ -140,6 +152,10 @@ export function SaveMainFlow(arg1, arg2) {
 
 export function SaveProjectConfig(arg1, arg2) {
   return window['go']['backend']['App']['SaveProjectConfig'](arg1, arg2);
+}
+
+export function SaveProjectDependency(arg1, arg2) {
+  return window['go']['backend']['App']['SaveProjectDependency'](arg1, arg2);
 }
 
 export function SaveSubFlow(arg1, arg2, arg3) {

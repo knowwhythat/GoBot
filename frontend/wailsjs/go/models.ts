@@ -66,6 +66,30 @@ export namespace forms {
 	        this.autoLogin = source["autoLogin"];
 	    }
 	}
+	export class PipPackage {
+	    name: string;
+	    upgradePip: boolean;
+	    upgrade: boolean;
+	    inputVersion: boolean;
+	    version: string;
+	    inputMirror: boolean;
+	    mirrorUrl: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PipPackage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.upgradePip = source["upgradePip"];
+	        this.upgrade = source["upgrade"];
+	        this.inputVersion = source["inputVersion"];
+	        this.version = source["version"];
+	        this.inputMirror = source["inputMirror"];
+	        this.mirrorUrl = source["mirrorUrl"];
+	    }
+	}
 	export class RunningInstance {
 	    id: string;
 	    projectId: string;
