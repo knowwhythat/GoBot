@@ -1,11 +1,22 @@
 <template>
-  <base-edge :id="id" :style="style" :path="path[0]" :marker-end="markerEnd" :label="label" :label-x="path[1]"
-    :label-y="path[2]" :label-style="{ fill: 'white' }" :label-show-bg="true" :label-bg-style="{ fill: '#3b82f6' }"
-    :label-bg-padding="[2, 4]" :label-bg-border-radius="2" />
+  <base-edge
+    :id="id"
+    :style="style"
+    :path="path[0]"
+    :marker-end="markerEnd"
+    :label="label"
+    :label-x="path[1]"
+    :label-y="path[2]"
+    :label-style="{ fill: 'white' }"
+    :label-show-bg="true"
+    :label-bg-style="{ fill: '#3b82f6' }"
+    :label-bg-padding="[2, 4]"
+    :label-bg-border-radius="2"
+  />
 </template>
 <script setup>
-import { computed } from 'vue';
-import { BaseEdge, getBezierPath, getSmoothStepPath } from '@vue-flow/core';
+import { computed } from "vue";
+import { BaseEdge, getBezierPath, getSmoothStepPath } from "@vue-flow/core";
 
 const props = defineProps({
   id: {
@@ -44,12 +55,12 @@ const props = defineProps({
   markerEnd: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   label: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   style: {
     type: Object,

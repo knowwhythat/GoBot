@@ -1,105 +1,25 @@
 <template>
-  <div class="flex flex-col">
-    <Toolbar class="p-0 bg-slate-200" style="--wails-draggable: drag">
-      <template #start>
-        <Button
-          @click="confirmQuit"
-          v-tooltip="'返回'"
-          class="mr-2 px-3 py-2 hover:bg-slate-300"
-          text
-        >
-          <template #icon>
-            <v-remixicon name="riArrowLeftCircleLine" />
-          </template>
-        </Button>
-        <Button
-          text
-          v-tooltip="'运行'"
-          class="mr-2 px-3 py-2 hover:bg-slate-300"
-        >
-          <template #icon>
-            <v-remixicon name="riPlayLine" />
-          </template>
-        </Button>
-        <Button
-          text
-          v-tooltip="'发布'"
-          class="mr-2 px-3 py-2 hover:bg-slate-300"
-        >
-          <template #icon>
-            <v-remixicon name="riSendPlaneLine" />
-          </template>
-        </Button>
-        <Button
-          text
-          v-tooltip="'保存'"
-          @click="save"
-          class="px-3 py-2 hover:bg-slate-300"
-        >
-          <template #icon>
-            <span>
-              <span
-                v-if="state.dataChanged"
-                class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
-              >
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"
-                ></span>
-                <span
-                  class="relative inline-flex rounded-full h-3 w-3 bg-red-600"
-                ></span>
-              </span>
-              <v-remixicon name="riSaveLine" />
-            </span>
-          </template>
-        </Button>
-      </template>
-
-      <template #center>
-        <span class="flex">
-          <p class="pt-3 text-xl font-serif font-semibold">
-            {{ projectName }}
-          </p>
-          <Button text v-tooltip="'编辑'" class="hover:bg-slate-300">
-            <template #icon>
-              <v-remixicon name="riEditBoxLine" />
-            </template>
-          </Button>
-        </span>
-      </template>
-
-      <template #end>
-        <SystemOperate @quit="confirmQuit" />
-      </template>
-    </Toolbar>
-    <WorkflowEditor
-      v-if="loaded"
-      :id="props.id"
-      :data="workflow"
-      class="workflow-editor"
-      @init="onEditorInit"
-      @edit="editBlock"
-      @update:flow="state.dataChanged = true"
-      @update:node="state.dataChanged = true"
-      @update:settings="state.dataChanged = true"
-      @delete:node="deleteNode"
-    />
-  </div>
+  <WorkflowEditor
+    v-if="loaded"
+    :id="props.id"
+    :data="workflow"
+    class="workflow-editor"
+    @init="onEditorInit"
+    @edit="editBlock"
+    @update:flow="state.dataChanged = true"
+    @update:node="state.dataChanged = true"
+    @update:settings="state.dataChanged = true"
+    @delete:node="deleteNode"
+  />
 </template>
 
 <script setup>
 import { reactive, ref, shallowRef, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-import Toolbar from "primevue/toolbar";
-import Button from "primevue/button";
-import SystemOperate from "@/components/SystemOperate.vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
-import { useToast } from "primevue/usetoast";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
-import { WindowMaximise, WindowUnmaximise } from "@back/runtime/runtime";
 import { trim } from "lodash-es";
-import { useConfirm } from "primevue/useconfirm";
-const confirm = useConfirm();
+import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
 const props = defineProps({
@@ -111,13 +31,10 @@ const props = defineProps({
 
 const workflow = ref(null);
 const loaded = ref(false);
-const projectName = ref("");
 
 onBeforeMount(async () => {
-  await WindowMaximise();
   GetMainFlow(props.id)
     .then(({ name, data }) => {
-      projectName.value = name;
       if (trim(data).length > 0) {
         workflow.value = JSON.parse(data);
       }
@@ -130,34 +47,14 @@ onBeforeMount(async () => {
         severity: "error",
         summary: "错误",
         detail: error,
-        life: 3000,
+        life: 1000,
       });
     });
 });
+
 const state = reactive({
   dataChanged: false,
 });
-
-const confirmQuit = () => {
-  if (!state.dataChanged) {
-    router.back();
-    WindowUnmaximise();
-  } else {
-    confirm.require({
-      message: "工作空间的修改尚未保存,确认将丢弃所有修改,是否确认?",
-      header: "确认",
-      icon: "pi pi-exclamation-triangle",
-      rejectClass: "p-button-secondary p-button-outlined",
-      rejectLabel: "取消",
-      acceptLabel: "确认",
-      accept: () => {
-        router.back();
-        WindowUnmaximise();
-      },
-      reject: () => {},
-    });
-  }
-};
 
 const router = useRouter();
 const editor = shallowRef(null);
@@ -195,18 +92,35 @@ async function editBlock(data) {
     } catch (ex) {
       toast.add({ severity: "error", summary: "错误", detail: ex, life: 3000 });
     }
-    router.push(
-      `design/sequence?id=${props.id}&subflowId=${data.blockId}&label=${data.data.label}`
-    );
+    //打开子流程的Tab
   }
 }
 async function deleteNode(nodeId) {
   state.dataChanged = true;
   await DeleteSubFlow(props.id, nodeId);
 }
+function isChanged() {
+  return state.dataChanged;
+}
+
+function getParams() {
+  return [];
+}
+
+function setParams(params) {}
+defineExpose({
+  save,
+  // delBlock,
+  // cutBlock,
+  // copyBlock,
+  // pasteBlock,
+  isChanged,
+  getParams,
+  setParams,
+});
 </script>
 <style scoped>
 .workflow-editor {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 150px);
 }
 </style>

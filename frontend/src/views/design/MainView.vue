@@ -135,12 +135,18 @@
     </Toolbar>
     <div class="flex-1">
       <splitpanes class="default-theme" :dblClickSplitter="false">
-        <SplitterPanel :size="15">
+        <SplitterPanel
+          :size="15"
+          v-if="tabs[activeIndex]?.nodeType === 'sequence'"
+        >
           <div class="m-1">
             <LeftPaneView />
           </div>
         </SplitterPanel>
-        <SplitterPanel :size="70" :min-size="50">
+        <SplitterPanel
+          :size="tabs[activeIndex]?.nodeType === 'sequence' ? 70 : 85"
+          :min-size="50"
+        >
           <div class="m-1">
             <splitpanes
               class="default-theme"
@@ -172,10 +178,16 @@
                     </template>
                     <VisualFlow
                       @mounted="visualFlowMounted"
+                      v-if="tab.nodeType === 'sequence'"
                       ref="flowTabs"
                       :id="tab.id"
                       :subflowId="tab.subflowId"
                       :label="tab.title"
+                    />
+                    <WorkflowView
+                      :id="id"
+                      v-else-if="tab.nodeType === 'flow'"
+                      ref="flowTabs"
                     />
                   </TabPanel>
                 </TabView>
@@ -209,7 +221,10 @@
                 />
               </SplitterPanel>
             </splitpanes>
-            <div class="flex flex-row h-8 bg-white">
+            <div
+              v-if="tabs[activeIndex]?.nodeType === 'sequence'"
+              class="flex flex-row h-8 bg-white"
+            >
               <div
                 v-for="nav in bottomNav"
                 @click="bottomNavClick(nav.component)"
@@ -343,6 +358,7 @@ import Toolbar from "primevue/toolbar";
 import {
   computed,
   nextTick,
+  onBeforeMount,
   onMounted,
   onUnmounted,
   provide,
@@ -358,6 +374,7 @@ import ParamsView from "@/views/design/sequence/ParamsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
 import GlobalVariableView from "@/views/design/sequence/GlobalVariableView.vue";
 import PipInstallView from "@/views/design/sequence/PipInstallView.vue";
+import WorkflowView from "@/views/design/flow/WorkflowView.vue";
 import { customAlphabet, nanoid } from "nanoid";
 import {
   ReadProjectConfig,
@@ -416,6 +433,14 @@ const projectConfig = ref({});
 
 const tabs = computed(() => {
   let openFlows = [];
+  if (projectConfig.value.nodeType === "flow") {
+    openFlows.push({
+      id: props.id,
+      subflowId: projectConfig.value.key,
+      title: "主流程",
+      nodeType: projectConfig.value.nodeType,
+    });
+  }
   if (projectConfig.value && projectConfig.value.children) {
     projectConfig.value.children.forEach((config) => {
       if (config.opened) {
@@ -423,6 +448,7 @@ const tabs = computed(() => {
           id: props.id,
           subflowId: config.key,
           title: config.label,
+          nodeType: config.nodeType,
         });
       }
     });

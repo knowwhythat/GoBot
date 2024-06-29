@@ -338,11 +338,7 @@ const run = (item) => {
 };
 
 const edit = (item) => {
-  if (item.isFlow) {
-    router.push("/design?id=" + item.id);
-  } else {
-    router.push(`design/sequence?id=${item.id}&subflowId=main&label=主流程`);
-  }
+  router.push("/design?id=" + item.id);
 };
 
 const dialogVisible = ref(false);

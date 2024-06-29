@@ -1,20 +1,31 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg">
+  <div
+    class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg"
+  >
     <Button class="hoverable p-3" icon @click="toggleActiveSearch">
       <v-remixicon name="riSearch2Line" />
     </Button>
-    <AutoComplete v-if="state.active" inputId="search-blocks" v-model="state.query" :suggestions="state.autocompleteItems"
-      :completeOnFocus="true" @item-select="onItemSelected" @complete="search" optionLabel="name" placeholder="搜索"
-      :forceSelection="true" />
+    <AutoComplete
+      v-if="state.active"
+      inputId="search-blocks"
+      v-model="state.query"
+      :suggestions="state.autocompleteItems"
+      :completeOnFocus="true"
+      @item-select="onItemSelected"
+      @complete="search"
+      optionLabel="name"
+      placeholder="搜索"
+      :forceSelection="true"
+    />
   </div>
 </template>
 <script setup>
-import { reactive, ref } from 'vue';
-import AutoComplete from 'primevue/autocomplete';
-import Button from 'primevue/button'
-import { getBlocks } from '@/utils/getSharedData'
+import { reactive, ref } from "vue";
+import AutoComplete from "primevue/autocomplete";
+import Button from "primevue/button";
+import { getBlocks } from "@/utils/getSharedData";
 
-const blocks = getBlocks()
+const blocks = getBlocks();
 const props = defineProps({
   editor: {
     type: Object,
@@ -33,28 +44,27 @@ const initialState = {
 };
 
 const state = reactive({
-  query: '',
+  query: "",
   active: false,
   selected: false,
   allItems: [],
   autocompleteItems: [],
 });
 
-
 function toggleActiveSearch() {
   state.active = !state.active;
 
   if (state.active) {
-    extractBlocks()
-    document.querySelector('#search-blocks')?.focus();
+    extractBlocks();
+    document.querySelector("#search-blocks")?.focus();
   } else {
-    clearState()
+    clearState();
   }
 }
 
 function extractBlocks() {
-  const editorContainer = document.querySelector('.vue-flow');
-  editorContainer.classList.add('add-transition');
+  const editorContainer = document.querySelector(".vue-flow");
+  editorContainer.classList.add("add-transition");
   const { width, height } = editorContainer.getBoundingClientRect();
 
   initialState.rectX = width / 2;
@@ -65,7 +75,7 @@ function extractBlocks() {
     ({ computedPosition, id, data, label }) => ({
       id,
       position: computedPosition,
-      description: data.description || '',
+      description: data.description || "",
       name: data.label || blocks[label].name,
     })
   );
@@ -80,8 +90,8 @@ function search(event) {
   }
 }
 function clearHighlightedNodes() {
-  document.querySelectorAll('.search-select-node').forEach((el) => {
-    el.classList.remove('search-select-node');
+  document.querySelectorAll(".search-select-node").forEach((el) => {
+    el.classList.remove("search-select-node");
   });
 }
 function clearState() {
@@ -89,7 +99,7 @@ function clearState() {
     props.editor.setTransform(initialState.position);
   }
 
-  state.query = '';
+  state.query = "";
   state.active = false;
   state.selected = false;
 
@@ -106,19 +116,19 @@ function clearState() {
   clearHighlightedNodes();
 
   setTimeout(() => {
-    const editorContainer = document.querySelector('.vue-flow');
-    editorContainer.classList.remove('add-transition');
+    const editorContainer = document.querySelector(".vue-flow");
+    editorContainer.classList.remove("add-transition");
   }, 500);
 }
 function onSelectItem(event) {
-  const item = event.value
+  const item = event.value;
   const { x, y } = item.position;
   const { rectX, rectY } = initialState;
 
   clearHighlightedNodes();
   document
     .querySelector(`[data-id="${item.id}"]`)
-    ?.classList.add('search-select-node');
+    ?.classList.add("search-select-node");
 
   props.editor.setTransform({
     zoom: 1,
@@ -144,7 +154,7 @@ input {
 }
 </style>
 <style>
-.search-select-node>div {
+.search-select-node > div {
   @apply ring-4;
 }
 

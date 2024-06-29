@@ -6,9 +6,7 @@ import Trigger from "@/views/main/TriggerView.vue";
 import Record from "@/views/main/RecordView.vue";
 import Setting from "@/views/main/SettingView.vue";
 import Monitor from "@/views/main/MonitorView.vue";
-import DesignView from "@/views/design/DesignView.vue";
-import WorkflowView from "@/views/design/flow/WorkflowView.vue";
-import SequenceView from "@/views/design/sequence/MainView.vue";
+import DesignView from "@/views/design/MainView.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -31,22 +29,7 @@ export const router = createRouter({
     {
       path: "/design",
       component: DesignView,
-      children: [
-        {
-          path: "",
-          component: WorkflowView,
-          props: (route) => ({ id: route.query.id }),
-        },
-        {
-          path: "sequence",
-          component: SequenceView,
-          props: (route) => ({
-            id: route.query.id,
-            subflowId: route.query.subflowId,
-            label: route.query.label,
-          }),
-        },
-      ],
+      props: (route) => ({ id: route.query.id }),
     },
   ],
 });
