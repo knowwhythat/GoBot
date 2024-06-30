@@ -22,7 +22,7 @@ export function GetElementImage(arg1:string,arg2:string):Promise<string>;
 
 export function GetLoginData():Promise<forms.LoginForm>;
 
-export function GetMainFlow(arg1:string):Promise<{[key: string]: string}>;
+export function GetMainFlow(arg1:string):Promise<string>;
 
 export function GetNextTriggerTime(arg1:string):Promise<string>;
 

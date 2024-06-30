@@ -6,16 +6,15 @@
     class="workflow-editor"
     @init="onEditorInit"
     @edit="editBlock"
-    @update:flow="state.dataChanged = true"
-    @update:node="state.dataChanged = true"
-    @update:settings="state.dataChanged = true"
+    @update:flow="dataChanged = true"
+    @update:node="dataChanged = true"
+    @update:settings="dataChanged = true"
     @delete:node="deleteNode"
   />
 </template>
 
 <script setup>
-import { reactive, ref, shallowRef, onBeforeMount } from "vue";
-import { useRouter } from "vue-router";
+import { ref, shallowRef, onBeforeMount } from "vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
 import { trim } from "lodash-es";
@@ -29,34 +28,31 @@ const props = defineProps({
   },
 });
 
-const workflow = ref(null);
+const emit = defineEmits(["edit:block", "delete:block"]);
+
+const workflow = ref({});
 const loaded = ref(false);
 
 onBeforeMount(async () => {
-  GetMainFlow(props.id)
-    .then(({ name, data }) => {
-      if (trim(data).length > 0) {
-        workflow.value = JSON.parse(data);
-      }
-      loaded.value = true;
-    })
-    .catch((error) => {
-      loaded.value = true;
-      console.error(error);
-      toast.add({
-        severity: "error",
-        summary: "错误",
-        detail: error,
-        life: 1000,
-      });
+  try {
+    const data = await GetMainFlow(props.id);
+    if (trim(data).length > 0) {
+      workflow.value = JSON.parse(data);
+    }
+    loaded.value = true;
+  } catch (err) {
+    loaded.value = true;
+    toast.add({
+      severity: "error",
+      summary: "错误",
+      detail: err,
+      life: 1000,
     });
+  }
 });
 
-const state = reactive({
-  dataChanged: false,
-});
+const dataChanged = ref(false);
 
-const router = useRouter();
 const editor = shallowRef(null);
 
 function onEditorInit(instance) {
@@ -82,38 +78,50 @@ async function save() {
     });
     return;
   }
-  await SaveMainFlow(props.id, JSON.stringify(flow));
-  state.dataChanged = false;
+  flow.params = workflow.value.params;
+  try {
+    await SaveMainFlow(props.id, JSON.stringify(flow));
+    dataChanged.value = false;
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "错误",
+      detail: err,
+      life: 1000,
+    });
+  }
 }
 async function editBlock(data) {
   if (data.id === "SubFlow") {
     try {
       await save();
+      emit("edit:block", data);
     } catch (ex) {
       toast.add({ severity: "error", summary: "错误", detail: ex, life: 3000 });
     }
-    //打开子流程的Tab
   }
 }
-async function deleteNode(nodeId) {
-  state.dataChanged = true;
-  await DeleteSubFlow(props.id, nodeId);
+
+function deleteNode(nodeId) {
+  dataChanged.value = true;
+  if (data.id === "SubFlow") {
+    emit("delete:block", nodeId);
+  }
 }
+
 function isChanged() {
-  return state.dataChanged;
+  return dataChanged.value;
 }
 
 function getParams() {
-  return [];
+  return workflow.value.params ? workflow.value.params : [];
 }
 
-function setParams(params) {}
+function setParams(params) {
+  workflow.value.params = params;
+}
 defineExpose({
   save,
-  // delBlock,
-  // cutBlock,
-  // copyBlock,
-  // pasteBlock,
   isChanged,
   getParams,
   setParams,

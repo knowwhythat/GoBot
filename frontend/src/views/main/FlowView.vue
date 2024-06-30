@@ -180,6 +180,7 @@ import ParamSettingView from "@/views/main/ParamSettingView.vue";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "lodash-es";
 import {
+  GetMainFlow,
   AddOrUpdateProject,
   ListProject,
   DeleteProject,
@@ -292,7 +293,12 @@ const selectedProject = ref({});
 
 const openParamDialog = async (item) => {
   selectedProject.value = item;
-  const flow = await GetSubFlow(item.id, "main");
+  let flow = "";
+  if (item.isFlow) {
+    flow = await GetMainFlow(item.id);
+  } else {
+    flow = await GetSubFlow(item.id, "main");
+  }
   projectParamDefine.value = JSON.parse(flow).params;
   let inputParam = item.inputParam ?? {};
   projectParamDefine.value.forEach((element) => {

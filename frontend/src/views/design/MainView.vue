@@ -134,10 +134,14 @@
       </template>
     </Toolbar>
     <div class="flex-1">
-      <splitpanes class="default-theme" :dblClickSplitter="false">
+      <splitpanes
+        class="default-theme"
+        :dblClickSplitter="false"
+        :push-other-panes="false"
+      >
         <SplitterPanel
           :size="15"
-          v-if="tabs[activeIndex]?.nodeType === 'sequence'"
+          v-show="tabs[activeIndex]?.nodeType === 'sequence'"
         >
           <div class="m-1">
             <LeftPaneView />
@@ -145,7 +149,6 @@
         </SplitterPanel>
         <SplitterPanel
           :size="tabs[activeIndex]?.nodeType === 'sequence' ? 70 : 85"
-          :min-size="50"
         >
           <div class="m-1">
             <splitpanes
@@ -188,6 +191,8 @@
                       :id="id"
                       v-else-if="tab.nodeType === 'flow'"
                       ref="flowTabs"
+                      @edit:block="editBlock"
+                      @delete:block="deleteBlock"
                     />
                   </TabPanel>
                 </TabView>
@@ -221,10 +226,7 @@
                 />
               </SplitterPanel>
             </splitpanes>
-            <div
-              v-if="tabs[activeIndex]?.nodeType === 'sequence'"
-              class="flex flex-row h-8 bg-white"
-            >
+            <div class="flex flex-row h-8 bg-white">
               <div
                 v-for="nav in bottomNav"
                 @click="bottomNavClick(nav.component)"
@@ -240,7 +242,7 @@
             </div>
           </div>
         </SplitterPanel>
-        <SplitterPanel :size="15" max-size="30" id="right-pane">
+        <SplitterPanel :size="15" id="right-pane">
           <div class="m-1 h-full flex flex-col">
             <Panel class="h-1/2">
               <template #header>
@@ -485,6 +487,42 @@ function openTab(node) {
   activeIndex.value = tabs.value.findIndex((tab) => tab.subflowId === node.key);
 }
 
+function editBlock(data) {
+  const index = projectConfig.value.children.findIndex(
+    (v) => v.key === data.blockId
+  );
+  if (index === -1) {
+    projectConfig.value.children.push({
+      key: data.blockId,
+      label: data.data.label ? data.data.label : `子流程${tabs.value.length}`,
+      nodeType: "sequence",
+      opened: true,
+      children: [],
+    });
+  } else {
+    projectConfig.value.children[index].opened = true;
+    if (data.data.label) {
+      projectConfig.value.children[index].label = data.data.label;
+    }
+  }
+  activeIndex.value = tabs.value.findIndex(
+    (tab) => tab.subflowId === data.blockId
+  );
+}
+
+async function deleteBlock(blockId) {
+  let current = projectConfig.value.children.findIndex(
+    (child) => child.key === blockId
+  );
+  if (current > -1) {
+    projectConfig.value.children = projectConfig.value.children.filter(
+      (child) => child.key !== blockId
+    );
+    await SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
+    await DeleteSubFlow(props.id, selectedNode.value.key);
+  }
+}
+
 function closeTab(id) {
   let current = 0;
   projectConfig.value.children.forEach((config, index) => {
@@ -584,7 +622,7 @@ watch(
   { deep: true }
 );
 
-onMounted(async () => {
+onBeforeMount(async () => {
   WindowMaximise();
   projectConfig.value = await ReadProjectConfig(props.id);
   expandedKeys.value[props.id] = true;
@@ -657,19 +695,27 @@ const shortcuts = useShortcut([
 ]);
 
 function delBlock() {
-  flowTabs.value[activeIndex.value].delBlock();
+  if (tabs.value[activeIndex.value].nodeType === "sequence") {
+    flowTabs.value[activeIndex.value].delBlock();
+  }
 }
 
 function cutBlock() {
-  flowTabs.value[activeIndex.value].cutBlock();
+  if (tabs.value[activeIndex.value].nodeType === "sequence") {
+    flowTabs.value[activeIndex.value].cutBlock();
+  }
 }
 
 function copyBlock() {
-  flowTabs.value[activeIndex.value].copyBlock();
+  if (tabs.value[activeIndex.value].nodeType === "sequence") {
+    flowTabs.value[activeIndex.value].copyBlock();
+  }
 }
 
 function pasteBlock() {
-  flowTabs.value[activeIndex.value].pasteBlock();
+  if (tabs.value[activeIndex.value].nodeType === "sequence") {
+    flowTabs.value[activeIndex.value].pasteBlock();
+  }
 }
 
 function save() {

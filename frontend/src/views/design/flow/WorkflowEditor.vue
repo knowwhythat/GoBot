@@ -347,7 +347,6 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     id: nodeId,
   };
   editor.addNodes([newNode]);
-  console.log(newNode);
   emit("update:flow");
 }
 

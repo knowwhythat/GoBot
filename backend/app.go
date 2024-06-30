@@ -152,10 +152,9 @@ func (a *App) SaveProjectConfig(id, data string) error {
 	return err
 }
 
-func (a *App) GetMainFlow(id string) (map[string]string, error) {
-	name, data, err := services.ReadMainFlow(id)
-	result := map[string]string{"name": name, "data": data}
-	return result, err
+func (a *App) GetMainFlow(id string) (string, error) {
+	data, err := services.ReadMainFlow(id)
+	return data, err
 }
 
 func (a *App) SaveMainFlow(id, data string) error {
