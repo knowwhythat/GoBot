@@ -119,6 +119,9 @@ func generateParams(params []Param) string {
 		} else {
 			defaultValue = param.Value
 		}
+		if len(defaultValue) == 0 {
+			defaultValue = "\"\""
+		}
 		ifExpression += strings.Repeat(" ", 2*4) + param.Name + " = " + defaultValue + "\n"
 		elseExpression += strings.Repeat(" ", 2*4) + param.Name + " = args.get(\"" + param.Name + "\", " + defaultValue + ")" + "\n"
 	}

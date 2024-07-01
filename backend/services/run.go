@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"github.com/duke-git/lancet/v2/strutil"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
 	"gobot/backend/forms"
@@ -55,7 +56,7 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 	errStr := ""
 	if err != nil {
 		errStr = stderr.String()
-		_, errStr, _ = strings.Cut(errStr, projectPath)
+		errStr = strutil.After(errStr, projectPath)
 	}
 	runtime.EventsEmit(ctx, "execute_event")
 	if errStr != "" {

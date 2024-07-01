@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <TabView :activeIndex="activeIndex" @update:activeIndex="tabChange">
+  <div class="flex flex-col">
+    <TabView
+      class="flex-1"
+      :activeIndex="activeIndex"
+      @update:activeIndex="tabChange"
+    >
       <TabPanel header="安装新模块">
         <div class="flex mt-4">
           <span class="mr-2 w-28 my-auto text-right"> Python包名称 </span>
@@ -52,6 +56,8 @@
       </TabPanel>
       <TabPanel header="管理已安装模块">
         <DataTable
+          scrollable
+          scrollHeight="350px"
           :value="dependencies"
           size="small"
           showGridlines
@@ -63,7 +69,7 @@
         </DataTable>
       </TabPanel>
     </TabView>
-    <div class="mt-4 flex justify-end gap-2">
+    <div class="mt-4 flex flex-none justify-end gap-2">
       <Button
         v-if="activeIndex === 0"
         type="button"
@@ -240,7 +246,7 @@ async function saveDepnedency() {
     let datas = [];
     for (var i = 0; i < dependencies.value.length; i++) {
       datas.push(
-        dependencies.value[i].name + "==" + dependencies.value[i].version
+        dependencies.value[i].name + "==" + dependencies.value[i].version,
       );
     }
     await SaveProjectDependency(projectId, datas);

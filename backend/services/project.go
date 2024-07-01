@@ -48,7 +48,7 @@ func AddOrUpdateProject(project models.Project) (err error) {
 			_ = os.MkdirAll(projectDir, fs.ModeDir)
 		}
 		project.Path = projectDir
-		command := sys_exec.BuildCmd(path, "-m", "venv", project.Path+"\\venv")
+		command := sys_exec.BuildCmd(path, "-m", "venv", "--system-site-packages", project.Path+"\\venv")
 		_, err := command.Output()
 		if err != nil {
 			return err
