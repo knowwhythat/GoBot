@@ -73,3 +73,8 @@ type PipPackage struct {
 	InputMirror  bool   `form:"inputMirror" json:"inputMirror"`
 	MirrorUrl    string `form:"mirrorUrl" json:"mirrorUrl"`
 }
+
+type Package struct {
+	Name    string `form:"name" json:"name"`
+	Version string `form:"version" json:"version"`
+}

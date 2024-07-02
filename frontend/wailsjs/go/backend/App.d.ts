@@ -50,7 +50,7 @@ export function ParseAllPlugin():Promise<Array<plugin.Activity>>;
 
 export function PipInstallPackage(arg1:string,arg2:forms.PipPackage):Promise<void>;
 
-export function PipListInstallPackage(arg1:string):Promise<string>;
+export function PipListInstallPackage(arg1:string,arg2:boolean):Promise<Array<forms.Package>>;
 
 export function PipUnInstallPackage(arg1:string,arg2:string):Promise<void>;
 

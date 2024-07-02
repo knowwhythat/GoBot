@@ -56,7 +56,11 @@
       </TabPanel>
       <TabPanel header="管理已安装模块">
         <DataTable
+          class="mt-2"
+          :loading="loading"
           scrollable
+          :globalFilterFields="['name']"
+          v-model:filters="filters"
           scrollHeight="350px"
           :value="dependencies"
           size="small"
@@ -64,6 +68,14 @@
           selectionMode="single"
           v-model:selection="selectedRow"
         >
+          <template #header>
+            <IconField iconPosition="left">
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value" placeholder="搜索" />
+            </IconField>
+          </template>
           <Column field="name" header="依赖名称"></Column>
           <Column field="version" header="版本"></Column>
         </DataTable>
@@ -103,6 +115,8 @@
 </template>
 
 <script setup>
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -112,7 +126,7 @@ import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { ref, inject, markRaw } from "vue";
+import { inject, ref } from "vue";
 import {
   PipInstallPackage,
   PipListInstallPackage,
@@ -122,6 +136,7 @@ import {
 import { EventsOff, EventsOn } from "@back/runtime/runtime";
 
 import { useToast } from "primevue/usetoast";
+import { FilterMatchMode } from "primevue/api";
 
 const toast = useToast();
 
@@ -168,7 +183,13 @@ async function installDependency() {
   try {
     await PipInstallPackage(projectId, dependency.value);
     await refreshTable();
-    await saveDepnedency();
+    await saveDependency();
+    toast.add({
+      severity: "success",
+      detail: "安装成功",
+      group: "tc",
+      life: 1000,
+    });
   } catch (err) {
     toast.add({
       severity: "error",
@@ -193,7 +214,7 @@ async function upgradeDependency() {
   try {
     await PipInstallPackage(projectId, pack);
     await refreshTable();
-    await saveDepnedency();
+    await saveDependency();
   } catch (err) {
     toast.add({
       severity: "error",
@@ -208,7 +229,7 @@ async function removeDependency() {
   try {
     await PipUnInstallPackage(projectId, selectedRow.value.name);
     await refreshTable();
-    await saveDepnedency();
+    await saveDependency();
   } catch (err) {
     toast.add({
       severity: "error",
@@ -227,24 +248,23 @@ async function tabChange(index) {
     await refreshTable();
   }
 }
-
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 async function refreshTable() {
-  const output = await PipListInstallPackage(projectId);
-  var lines = output.split(/\r\n|\n/);
-  let datas = [];
-  for (var i = 2; i < lines.length; i++) {
-    var words = lines[i].split(/\s+/);
-    if (words.length > 1 && words[0] !== "pip" && words[0] !== "setuptools") {
-      datas.push({ name: words[0], version: words[1] });
-    }
+  loading.value = true;
+  dependencies.value = [];
+  try {
+    dependencies.value = await PipListInstallPackage(projectId, true);
+  } finally {
+    loading.value = false;
   }
-  dependencies.value = datas;
 }
 
-async function saveDepnedency() {
+async function saveDependency() {
   try {
     let datas = [];
-    for (var i = 0; i < dependencies.value.length; i++) {
+    for (let i = 0; i < dependencies.value.length; i++) {
       datas.push(
         dependencies.value[i].name + "==" + dependencies.value[i].version,
       );

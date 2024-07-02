@@ -94,8 +94,8 @@ export function PipInstallPackage(arg1, arg2) {
   return window['go']['backend']['App']['PipInstallPackage'](arg1, arg2);
 }
 
-export function PipListInstallPackage(arg1) {
-  return window['go']['backend']['App']['PipListInstallPackage'](arg1);
+export function PipListInstallPackage(arg1, arg2) {
+  return window['go']['backend']['App']['PipListInstallPackage'](arg1, arg2);
 }
 
 export function PipUnInstallPackage(arg1, arg2) {

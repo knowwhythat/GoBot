@@ -3,10 +3,15 @@ package services
 import (
 	"bufio"
 	"context"
+	"github.com/duke-git/lancet/v2/slice"
+	"github.com/spf13/viper"
+	"gobot/backend/constants"
 	"gobot/backend/forms"
 	"gobot/backend/services/sys_exec"
 	"gobot/backend/utils"
 	"io"
+	"regexp"
+	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -72,15 +77,37 @@ func InstallPackage(ctx context.Context, id string, pip forms.PipPackage) error 
 	return err
 }
 
-func ListInstallPackage(id string) (string, error) {
+func ListInstallPackage(id string, onlyProject bool) ([]forms.Package, error) {
 	project, err := QueryProjectById(id)
 	if err != nil {
-		return "", nil
+		return nil, nil
 	}
 	pythonPath := utils.GetVenvPython(project.Path)
 	proc := sys_exec.BuildCmd(pythonPath, "-m", "pip", "list")
 	output, err := proc.Output()
-	return string(output), err
+	if err != nil {
+		return nil, err
+	}
+	allPackages := extractPackages(string(output))
+	slice.SortBy(allPackages, func(a, b forms.Package) bool {
+		return a.Name < b.Name
+	})
+	if onlyProject {
+		proc = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-m", "pip", "list")
+		output, err = proc.Output()
+		if err != nil {
+			return nil, err
+		}
+		basePackages := extractPackages(string(output))
+		slice.SortBy(basePackages, func(a, b forms.Package) bool {
+			return a.Name < b.Name
+		})
+		allPackages = slice.DifferenceWith(allPackages, basePackages, func(item1, item2 forms.Package) bool {
+			return strings.ReplaceAll(item1.Name, "-", "_") == strings.ReplaceAll(item2.Name, "-", "_")
+		})
+	}
+
+	return allPackages, err
 }
 
 func UnInstallPackage(id, name string) error {
@@ -91,6 +118,19 @@ func UnInstallPackage(id, name string) error {
 	pythonPath := utils.GetVenvPython(project.Path)
 	proc := sys_exec.BuildCmd(pythonPath, "-m", "pip", "uninstall", "-y", name)
 	return proc.Run()
+}
+
+func extractPackages(lines string) []forms.Package {
+	var packages []forms.Package
+	reg := regexp.MustCompile(`\n|\r\n`)
+	result := reg.Split(string(lines), -1)
+	for i := 2; i < len(result); i++ {
+		words := strings.Fields(result[i])
+		if len(words) >= 2 {
+			packages = append(packages, forms.Package{Name: words[0], Version: words[1]})
+		}
+	}
+	return packages
 }
 
 func monitorOutput(ctx context.Context, outPipe io.ReadCloser) {

@@ -296,8 +296,8 @@ func (a *App) PipInstallPackage(id string, pip forms.PipPackage) (err error) {
 	return services.InstallPackage(a.ctx, id, pip)
 }
 
-func (a *App) PipListInstallPackage(id string) (output string, err error) {
-	return services.ListInstallPackage(id)
+func (a *App) PipListInstallPackage(id string, onlyProject bool) (output []forms.Package, err error) {
+	return services.ListInstallPackage(id, onlyProject)
 }
 
 func (a *App) PipUnInstallPackage(id, name string) (err error) {
