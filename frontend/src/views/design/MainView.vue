@@ -308,7 +308,7 @@
               >
                 <div class="flex items-center gap-3 mb-5">
                   <InputText
-                    v-model="tempLable"
+                    v-model="tempLabel"
                     id="email"
                     class="flex-auto"
                     autocomplete="off"
@@ -489,7 +489,7 @@ function openTab(node) {
 
 function editBlock(data) {
   const index = projectConfig.value.children.findIndex(
-    (v) => v.key === data.blockId
+    (v) => v.key === data.blockId,
   );
   if (index === -1) {
     projectConfig.value.children.push({
@@ -506,17 +506,17 @@ function editBlock(data) {
     }
   }
   activeIndex.value = tabs.value.findIndex(
-    (tab) => tab.subflowId === data.blockId
+    (tab) => tab.subflowId === data.blockId,
   );
 }
 
 async function deleteBlock(blockId) {
   let current = projectConfig.value.children.findIndex(
-    (child) => child.key === blockId
+    (child) => child.key === blockId,
   );
   if (current > -1) {
     projectConfig.value.children = projectConfig.value.children.filter(
-      (child) => child.key !== blockId
+      (child) => child.key !== blockId,
     );
     await SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
     await DeleteSubFlow(props.id, selectedNode.value.key);
@@ -535,7 +535,7 @@ function closeTab(id) {
 }
 const selectedNode = ref(null);
 const renameDialogVisible = ref(false);
-const tempLable = ref("");
+const tempLabel = ref("");
 const menu = ref();
 const items = ref([
   {
@@ -543,7 +543,7 @@ const items = ref([
     icon: "pi pi-file-edit",
     command: () => {
       renameDialogVisible.value = true;
-      tempLable.value = selectedNode.value.label;
+      tempLabel.value = selectedNode.value.label;
     },
   },
   {
@@ -568,10 +568,10 @@ const items = ref([
             return;
           }
           let current = projectConfig.value.children.findIndex(
-            (child) => child.key === selectedNode.value.key
+            (child) => child.key === selectedNode.value.key,
           );
           projectConfig.value.children = projectConfig.value.children.filter(
-            (child) => child.key !== selectedNode.value.key
+            (child) => child.key !== selectedNode.value.key,
           );
           SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
           DeleteSubFlow(props.id, selectedNode.value.key);
@@ -584,7 +584,7 @@ const items = ref([
 ]);
 
 function doRenameFlowName() {
-  selectedNode.value.label = tempLable.value;
+  selectedNode.value.label = tempLabel.value;
   renameDialogVisible.value = false;
 }
 function onContextMenuClick(options) {
@@ -611,7 +611,7 @@ watch(
     dataChanged.value = flowTabs.value[now]?.isChanged();
     params.value = flowTabs.value[now]?.getParams();
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(
@@ -619,7 +619,7 @@ watch(
   (now, old) => {
     flowTabs.value[activeIndex.value]?.setParams(now);
   },
-  { deep: true }
+  { deep: true },
 );
 
 onBeforeMount(async () => {
@@ -627,7 +627,9 @@ onBeforeMount(async () => {
   projectConfig.value = await ReadProjectConfig(props.id);
   expandedKeys.value[props.id] = true;
   EventsOn("log_event", (data) => {
-    logs.value.push(data);
+    if (props.id === data.id) {
+      logs.value.push(data.text);
+    }
   });
   await loadElements();
   EventsOn("windows_element_change", async () => {
@@ -651,7 +653,7 @@ async function loadElements() {
     for (let [key, value] of Object.entries(elements)) {
       const processName = value["processName"];
       const process = windowsElement.value.find(
-        (node) => node.label === processName
+        (node) => node.label === processName,
       );
       if (process) {
         process["children"].push({

@@ -94,9 +94,13 @@ export function StartCheck(arg1:string,arg2:string):Promise<string>;
 
 export function StartCheckWindowsElement(arg1:string):Promise<string>;
 
+export function StartMonitorLog(arg1:string):Promise<void>;
+
 export function StartPick():Promise<string>;
 
 export function StartPickWindowsElement():Promise<string>;
+
+export function StopMonitorLog(arg1:string):Promise<void>;
 
 export function TerminateMainFlow(arg1:string):Promise<void>;
 

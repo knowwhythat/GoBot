@@ -70,7 +70,7 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	breakpoints := getBreakpoints(projectPath, subId)
 	go dealDebug(ctx, subId, inPipe, outPipe, breakpoints)
 	background, cancel := context.WithCancel(context.Background())
-	go monitorLog(ctx, background, logPath)
+	go monitorLog(id, ctx, background, logPath)
 	debugChan = make(chan string)
 	err = debugProcess.Run()
 	debugProcess = nil

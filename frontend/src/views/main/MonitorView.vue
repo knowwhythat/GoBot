@@ -33,25 +33,68 @@
       </Column>
       <Column header="操作" style="width: 15%">
         <template #body="slotProps">
-          <Button
-            label="停止"
-            severity="success"
-            text
-            :pt="{
-              root: (options) => ({
-                style: {
-                  padding: '0rem',
-                },
-              }),
-            }"
-            @click="terminateFlow(slotProps.data.id)"
-          />
+          <div class="flex flex-row gap-2">
+            <Button
+              label="停止"
+              severity="danger"
+              text
+              :pt="{
+                root: (options) => ({
+                  style: {
+                    padding: '0rem',
+                  },
+                }),
+              }"
+              @click="terminateFlow(slotProps.data.id)"
+            />
+            <Button
+              label="查看日志"
+              severity="success"
+              text
+              :pt="{
+                root: (options) => ({
+                  style: {
+                    padding: '0rem',
+                  },
+                }),
+              }"
+              @click="showLogs(slotProps.data.id)"
+            />
+          </div>
         </template>
       </Column>
     </DataTable>
+    <Dialog
+      v-model:visible="dialogVisible"
+      modal
+      maximizable
+      @after-hide="hideLogView"
+    >
+      <template #header>
+        <div
+          class="inline-flex align-items-center justify-content-center gap-2"
+        >
+          <v-remixicon size="20" name="riFileTextLine" />
+          <span class="font-bold white-space-nowrap">运行日志</span>
+        </div>
+      </template>
+      <div class="flex gap-4 flex-col w-[56rem]">
+        <p v-for="log in logs">{{ log }}</p>
+      </div>
+      <template #footer>
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          outlined
+          severity="secondary"
+          @click="dialogVisible = false"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 <script setup>
+import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
@@ -60,11 +103,18 @@ import { FilterMatchMode } from "primevue/api";
 import Column from "primevue/column";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
-import { ref, onMounted, onUnmounted, watch } from "vue";
-import { GetRunningFlows, TerminateMainFlow } from "@back/go/backend/App";
-import { EventsOn, EventsOff } from "@back/runtime/runtime";
+import { onMounted, onUnmounted, ref } from "vue";
+import {
+  GetRunningFlows,
+  SelectExecutionLog,
+  TerminateMainFlow,
+  StartMonitorLog,
+  StopMonitorLog,
+} from "@back/go/backend/App";
+import { EventsOff, EventsOn } from "@back/runtime/runtime";
 import { useAppStore } from "@/stores/app";
 import { useConfirm } from "primevue/useconfirm";
+
 const confirm = useConfirm();
 const appStore = useAppStore();
 const toast = useToast();
@@ -82,6 +132,7 @@ onMounted(async () => {
 onUnmounted(() => {
   EventsOff("execute_event");
 });
+
 async function loadExecutions() {
   executions.value = await GetRunningFlows();
 }
@@ -114,5 +165,26 @@ function terminateFlow(id) {
     },
     reject: () => {},
   });
+}
+
+const dialogVisible = ref(false);
+const logs = ref([]);
+let monitorId = "";
+async function showLogs(id) {
+  logs.value = [];
+  monitorId = id;
+  await StartMonitorLog(id);
+  dialogVisible.value = true;
+  EventsOn("log_event", (data) => {
+    if (data.id === id) {
+      logs.value.push(data.text);
+    }
+  });
+}
+
+async function hideLogView() {
+  EventsOff("log_event");
+  await StopMonitorLog(monitorId);
+  monitorId = "";
 }
 </script>

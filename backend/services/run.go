@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/duke-git/lancet/v2/strutil"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
@@ -27,6 +28,7 @@ import (
 )
 
 var processQueue []forms.RunningInstance
+var monitorMap = make(map[string]context.CancelFunc)
 
 var runningProcess *exec.Cmd
 
@@ -46,7 +48,7 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 	background, cancel := context.WithCancel(context.Background())
 
 	go func() {
-		monitorLog(ctx, background, logPath)
+		monitorLog(id, ctx, background, logPath)
 	}()
 	_, err = runningProcess.Output()
 	runningProcess = nil
@@ -169,7 +171,30 @@ func GetRunningFlows() (resultList []forms.RunningInstance, err error) {
 	return processQueue, nil
 }
 
-func monitorLog(ctx, background context.Context, logPath string) {
+func StartMonitorLog(id string, ctx context.Context) {
+	result, ok := slice.FindBy(processQueue, func(index int, item forms.RunningInstance) bool {
+		return item.Id == id
+	})
+	if !ok {
+		return
+	}
+	project, err := QueryProjectById(result.ProjectId)
+	if err != nil {
+		return
+	}
+	logPath := project.Path + string(os.PathSeparator) + constants.LogDir + string(os.PathSeparator) + id + ".log"
+	background, cancel := context.WithCancel(context.Background())
+	monitorMap[id] = cancel
+	go monitorLog(id, ctx, background, logPath)
+}
+
+func StopMonitorLog(id string) {
+	if cancel, ok := monitorMap[id]; ok {
+		cancel()
+	}
+}
+
+func monitorLog(id string, ctx, background context.Context, logPath string) {
 	config := tail.Config{
 		ReOpen:    true,                                 //重新打开
 		Follow:    true,                                 //是否跟随
@@ -200,7 +225,7 @@ loop:
 				continue
 			}
 			if !strings.Contains(line.Text, "DEBUG") {
-				runtime.EventsEmit(ctx, "log_event", line.Text)
+				runtime.EventsEmit(ctx, "log_event", map[string]string{"id": id, "text": line.Text})
 			}
 		}
 	}

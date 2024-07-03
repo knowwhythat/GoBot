@@ -89,9 +89,6 @@ func ListInstallPackage(id string, onlyProject bool) ([]forms.Package, error) {
 		return nil, err
 	}
 	allPackages := extractPackages(string(output))
-	slice.SortBy(allPackages, func(a, b forms.Package) bool {
-		return a.Name < b.Name
-	})
 	if onlyProject {
 		proc = sys_exec.BuildCmd(viper.GetString(constants.ConfigPythonPath), "-m", "pip", "list")
 		output, err = proc.Output()
@@ -99,9 +96,6 @@ func ListInstallPackage(id string, onlyProject bool) ([]forms.Package, error) {
 			return nil, err
 		}
 		basePackages := extractPackages(string(output))
-		slice.SortBy(basePackages, func(a, b forms.Package) bool {
-			return a.Name < b.Name
-		})
 		allPackages = slice.DifferenceWith(allPackages, basePackages, func(item1, item2 forms.Package) bool {
 			return strings.ReplaceAll(item1.Name, "-", "_") == strings.ReplaceAll(item2.Name, "-", "_")
 		})
@@ -123,7 +117,7 @@ func UnInstallPackage(id, name string) error {
 func extractPackages(lines string) []forms.Package {
 	var packages []forms.Package
 	reg := regexp.MustCompile(`\n|\r\n`)
-	result := reg.Split(string(lines), -1)
+	result := reg.Split(lines, -1)
 	for i := 2; i < len(result); i++ {
 		words := strings.Fields(result[i])
 		if len(words) >= 2 {

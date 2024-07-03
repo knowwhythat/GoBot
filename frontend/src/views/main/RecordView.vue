@@ -48,13 +48,13 @@
       <Column header="执行结果" style="width: 10%">
         <template #body="slotProps">
           <Tag
-            v-if="slotProps.data.executeResult == 1"
+            v-if="slotProps.data.executeResult === 1"
             icon="pi pi-check"
             severity="success"
             value="成功"
           ></Tag>
           <Tag
-            v-else-if="slotProps.data.executeResult == 0"
+            v-else-if="slotProps.data.executeResult === 0"
             icon="pi pi-times"
             severity="danger"
             value="失败"
@@ -198,7 +198,6 @@ const dialogVisible = ref(false);
 const logs = ref([]);
 async function showLogs(id) {
   const result = await SelectExecutionLog(id);
-  console.log(result);
   logs.value = result.split(/\r\n|\n/);
   dialogVisible.value = true;
 }

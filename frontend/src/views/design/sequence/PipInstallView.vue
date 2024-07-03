@@ -57,7 +57,7 @@
       <TabPanel header="管理已安装模块">
         <DataTable
           class="mt-2"
-          :loading="loading"
+          :loading="searchLoading"
           scrollable
           :globalFilterFields="['name']"
           v-model:filters="filters"
@@ -69,12 +69,26 @@
           v-model:selection="selectedRow"
         >
           <template #header>
-            <IconField iconPosition="left">
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText v-model="filters['global'].value" placeholder="搜索" />
-            </IconField>
+            <div class="flex flex-row justify-between">
+              <IconField iconPosition="left">
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText
+                  v-model="filters['global'].value"
+                  placeholder="搜索"
+                />
+              </IconField>
+              <div class="flex flex-row">
+                <label class="mr-2 my-auto"> 是否显示所有依赖 </label>
+                <Checkbox
+                  class="my-auto"
+                  v-model="showAll"
+                  :binary="true"
+                  @change="refreshTable"
+                />
+              </div>
+            </div>
           </template>
           <Column field="name" header="依赖名称"></Column>
           <Column field="version" header="版本"></Column>
@@ -91,6 +105,7 @@
       ></Button>
       <Button
         v-if="activeIndex === 1"
+        :disabled="!selectedRow"
         type="button"
         label="升级模块"
         :loading="loading"
@@ -98,6 +113,7 @@
       ></Button>
       <Button
         v-if="activeIndex === 1"
+        :disabled="!selectedRow"
         type="button"
         label="删除模块"
         :loading="loading"
@@ -165,8 +181,10 @@ const mirrors = [
 const output = ref("");
 
 const dependencies = ref([]);
-const selectedRow = ref({});
+const selectedRow = ref(null);
 const loading = ref(false);
+const searchLoading = ref(false);
+
 async function installDependency() {
   if (!dependency.value.name) {
     toast.add({
@@ -200,6 +218,7 @@ async function installDependency() {
   EventsOff("pipOutput");
   loading.value = false;
 }
+
 async function upgradeDependency() {
   loading.value = true;
   let pack = {
@@ -224,6 +243,7 @@ async function upgradeDependency() {
   }
   loading.value = false;
 }
+
 async function removeDependency() {
   loading.value = true;
   try {
@@ -248,26 +268,30 @@ async function tabChange(index) {
     await refreshTable();
   }
 }
+
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+
+const showAll = ref(false);
+
 async function refreshTable() {
-  loading.value = true;
+  searchLoading.value = true;
   dependencies.value = [];
   try {
-    dependencies.value = await PipListInstallPackage(projectId, true);
+    dependencies.value = await PipListInstallPackage(projectId, !showAll.value);
   } finally {
-    loading.value = false;
+    searchLoading.value = false;
+    selectedRow.value = null;
   }
 }
 
 async function saveDependency() {
   try {
     let datas = [];
-    for (let i = 0; i < dependencies.value.length; i++) {
-      datas.push(
-        dependencies.value[i].name + "==" + dependencies.value[i].version,
-      );
+    const dependencies = await PipListInstallPackage(projectId, true);
+    for (let i = 0; i < dependencies.length; i++) {
+      datas.push(dependencies[i].name + "==" + dependencies[i].version);
     }
     await SaveProjectDependency(projectId, datas);
   } catch (err) {

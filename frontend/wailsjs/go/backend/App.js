@@ -182,12 +182,20 @@ export function StartCheckWindowsElement(arg1) {
   return window['go']['backend']['App']['StartCheckWindowsElement'](arg1);
 }
 
+export function StartMonitorLog(arg1) {
+  return window['go']['backend']['App']['StartMonitorLog'](arg1);
+}
+
 export function StartPick() {
   return window['go']['backend']['App']['StartPick']();
 }
 
 export function StartPickWindowsElement() {
   return window['go']['backend']['App']['StartPickWindowsElement']();
+}
+
+export function StopMonitorLog(arg1) {
+  return window['go']['backend']['App']['StopMonitorLog'](arg1);
 }
 
 export function TerminateMainFlow(arg1) {

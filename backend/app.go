@@ -182,6 +182,14 @@ func (a *App) GetRunningFlows() (resultList []forms.RunningInstance, err error) 
 	return services.GetRunningFlows()
 }
 
+func (a *App) StartMonitorLog(id string) {
+	services.StartMonitorLog(id, a.ctx)
+}
+
+func (a *App) StopMonitorLog(id string) {
+	services.StopMonitorLog(id)
+}
+
 func (a *App) DebugSubFlow(id, subId string) error {
 	return services.DebugSubFlow(a.ctx, id, subId)
 }

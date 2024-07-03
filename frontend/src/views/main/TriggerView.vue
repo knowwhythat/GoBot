@@ -316,7 +316,7 @@
         </div>
         <div class="flex justify-content-center">
           <label for="enableTrigger" class="w-32">是否启用</label>
-          <InputSwitch inputId="enableTrigger" v-model="newSchedule.enable" />
+          <InputSwitch inputId="enableTrigger" v-model="newSchedule.enabled" />
         </div>
       </div>
       <template #footer>
@@ -379,7 +379,7 @@ const dialogVisible = ref(false);
 const newSchedule = ref({
   projectId: "",
   name: "",
-  enable: false,
+  enabled: false,
   desc: "",
   cron: "",
   config: "",
@@ -422,7 +422,7 @@ watch(
           weekEnable = weekEnable.substring(0, weekEnable.length - 1);
           weekEnableNumber = weekEnableNumber.substring(
             0,
-            weekEnableNumber.length - 1
+            weekEnableNumber.length - 1,
           );
         }
         newSchedule.value.desc = `每${weekEnable}的${value.value.hour}时${value.value.minute}分执行`;
@@ -446,7 +446,7 @@ watch(
           weekEnable = weekEnable.substring(0, weekEnable.length - 1);
           weekEnableNumber = weekEnableNumber.substring(
             0,
-            weekEnableNumber.length - 1
+            weekEnableNumber.length - 1,
           );
         }
         newSchedule.value.desc = `${value.value.month}月每${weekEnable}的${value.value.hour}时${value.value.minute}分执行`;
@@ -466,7 +466,7 @@ watch(
       nextTriggerTime.value = "定时任务表达式不符合规范:" + err;
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 const weekname = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 function deleteSchedule() {
