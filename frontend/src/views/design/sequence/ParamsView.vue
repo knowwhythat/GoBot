@@ -79,7 +79,7 @@
       }"
     >
       <Column rowReorder headerStyle="width: 3rem" />
-      <Column field="name" header="参数名称"> </Column>
+      <Column field="name" header="参数名称"></Column>
       <Column field="direction" header="方向">
         <template #body="slotProps">
           {{ slotProps.data.direction === "In" ? "输入" : "输出" }}
@@ -88,7 +88,7 @@
       <Column field="type" header="类型">
         <template #body="slotProps">
           {{
-            paramTypes.filter((type) => slotProps.data.type == type.code)[0]
+            paramTypes.filter((type) => slotProps.data.type === type.code)[0]
               .name
           }}
         </template>
@@ -192,16 +192,22 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { paramTypes } from "@/utils/shared.js";
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { nanoid } from "nanoid";
 import { useToast } from "primevue/usetoast";
-const toast = useToast();
 import { useConfirm } from "primevue/useconfirm";
+
+const toast = useToast();
+
 const confirm = useConfirm();
 const emit = defineEmits(["hide"]);
 
-const flowParams = defineModel(Array);
+const flowParams = defineModel({
+  type: Array,
+  default: () => [],
+});
 
 const selectedRow = ref();
 
@@ -215,17 +221,6 @@ const directionTypes = [
   { name: "输入", code: "In" },
   { name: "输出", code: "Out" },
 ];
-const paramTypes = [
-  { name: "普通文本", code: "str" },
-  { name: "文件路径", code: "filePath" },
-  { name: "文件目录", code: "dirPath" },
-  { name: "密码", code: "password" },
-  { name: "数字", code: "number" },
-  { name: "布尔", code: "bool" },
-  { name: "单选", code: "single" },
-  { name: "多选", code: "multiple" },
-  { name: "任意", code: "any" },
-];
 
 function addParam() {
   newParam.value = {
@@ -237,10 +232,12 @@ function addParam() {
   };
   showParamDialog.value = true;
 }
+
 let editIndex = -1;
+
 function editParam() {
   editIndex = flowParams.value.findIndex(
-    (v) => v.name === selectedRow.value.name
+    (v) => v.name === selectedRow.value.name,
   );
   newParam.value = {
     name: selectedRow.value.name,
@@ -252,6 +249,7 @@ function editParam() {
 
   showParamDialog.value = true;
 }
+
 function addOption() {
   newParam.value.options.push({ id: nanoid(8), key: "", value: "" });
 }
@@ -270,7 +268,7 @@ function doAddParam() {
   if (editIndex > -1) {
     let index = flowParams.value.findIndex(
       (v, currentIndex) =>
-        v.name === newParam.value.name && currentIndex !== editIndex
+        v.name === newParam.value.name && currentIndex !== editIndex,
     );
     if (index === -1) {
       flowParams.value[editIndex] = newParam.value;
@@ -284,7 +282,7 @@ function doAddParam() {
     }
   } else {
     let index = flowParams.value.findIndex(
-      (v) => v.name === newParam.value.name
+      (v) => v.name === newParam.value.name,
     );
     if (index === -1) {
       flowParams.value.push(newParam.value);
@@ -300,6 +298,7 @@ function doAddParam() {
   selectedRow.value = null;
   showParamDialog.value = false;
 }
+
 function removeparam() {
   confirm.require({
     header: "提示",
@@ -311,7 +310,7 @@ function removeparam() {
     acceptLabel: "删除",
     accept: () => {
       flowParams.value = flowParams.value.filter(
-        (v) => v !== selectedRow.value
+        (v) => v !== selectedRow.value,
       );
       selectedRow.value = null;
     },
@@ -323,16 +322,20 @@ function removeparam() {
 :deep(.p-splitter-panel) {
   overflow: hidden;
 }
+
 :deep(.p-component) {
   height: 100%;
   overflow: hidden;
 }
+
 :deep(.p-toggleable-content) {
   height: calc(100% - 40px);
 }
+
 :deep(.p-panel-content) {
   height: 100%;
 }
+
 :deep(.p-datatable .p-datatable-thead > tr > th) {
   padding: 4px;
   font-weight: 500;

@@ -23,9 +23,8 @@
 import { reactive, ref } from "vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
-import { getBlocks } from "@/utils/getSharedData";
+import { BlockType } from "@/utils/shared.js";
 
-const blocks = getBlocks();
 const props = defineProps({
   editor: {
     type: Object,
@@ -76,8 +75,8 @@ function extractBlocks() {
       id,
       position: computedPosition,
       description: data.description || "",
-      name: data.label || blocks[label].name,
-    })
+      name: data.label,
+    }),
   );
 }
 function search(event) {

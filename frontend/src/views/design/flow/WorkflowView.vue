@@ -68,7 +68,9 @@ async function save() {
     return edge;
   });
 
-  const triggerBlock = flow.nodes.find((node) => node.label === "Start");
+  const triggerBlock = flow.nodes.find(
+    (node) => node.data.nodeType === "Start",
+  );
   if (!triggerBlock) {
     toast.add({
       severity: "warn",
@@ -91,21 +93,21 @@ async function save() {
     });
   }
 }
-async function editBlock(data) {
-  if (data.id === "SubFlow") {
+async function editBlock(node) {
+  if (node.data.nodeType === "SubFlow") {
     try {
       await save();
-      emit("edit:block", data);
+      emit("edit:block", node);
     } catch (ex) {
       toast.add({ severity: "error", summary: "错误", detail: ex, life: 3000 });
     }
   }
 }
 
-function deleteNode(nodeId) {
+function deleteNode(node) {
   dataChanged.value = true;
-  if (data.id === "SubFlow") {
-    emit("delete:block", nodeId);
+  if (node.data.nodeType === "SubFlow") {
+    emit("delete:block", node.id);
   }
 }
 

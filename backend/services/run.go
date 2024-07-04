@@ -191,6 +191,7 @@ func StartMonitorLog(id string, ctx context.Context) {
 func StopMonitorLog(id string) {
 	if cancel, ok := monitorMap[id]; ok {
 		cancel()
+		delete(monitorMap, id)
 	}
 }
 
@@ -230,7 +231,7 @@ loop:
 		}
 	}
 	_ = tails.Stop()
-	_ = os.Remove(logPath)
+	//_ = os.Remove(logPath)
 }
 
 func removeValue(slice []forms.RunningInstance, id string) []forms.RunningInstance {

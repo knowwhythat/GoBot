@@ -31,7 +31,7 @@
           />
           <InputNumber
             v-model="state.data.retryCount"
-            inputId="integeronly"
+            inputId="retryCount"
             :min="0"
             showButtons
           />
@@ -46,7 +46,7 @@
           />
           <InputNumber
             v-model="state.data.retryTimeout"
-            inputId="integeronly"
+            inputId="retryTimeout"
             :min="0"
             showButtons
           />
@@ -97,7 +97,7 @@ watch(
   (data, newData) => {
     emit("change", newData);
   },
-  { deep: true }
+  { deep: true },
 );
 onMounted(() => {
   Object.assign(state, props.data);

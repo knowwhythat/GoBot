@@ -26,22 +26,6 @@ export function sleep(timeout = 500) {
   });
 }
 
-export function findTriggerBlock(drawflow = {}) {
-  if (!drawflow) return null;
-
-  if (drawflow.drawflow) {
-    const blocks = Object.values(drawflow.drawflow?.Home?.data);
-    if (!blocks) return null;
-
-    return blocks.find(({ name }) => name === "trigger");
-  }
-  if (drawflow.nodes) {
-    return drawflow.nodes.find((node) => node.label === "trigger");
-  }
-
-  return null;
-}
-
 export function throttle(callback, limit) {
   let waiting = false;
 
@@ -114,18 +98,14 @@ export function convert2DArrayToArrayObj(values) {
 
 export function parseJSON(data, def) {
   try {
-    const result = JSON.parse(data);
-
-    return result;
+    return JSON.parse(data);
   } catch (error) {
     return def;
   }
 }
 
 export function parseFlow(flow) {
-  const obj = typeof flow === "string" ? parseJSON(flow, {}) : flow;
-
-  return obj;
+  return typeof flow === "string" ? parseJSON(flow, {}) : flow;
 }
 
 export function replaceMustache(str, replacer) {

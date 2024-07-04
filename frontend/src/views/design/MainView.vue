@@ -487,27 +487,25 @@ function openTab(node) {
   activeIndex.value = tabs.value.findIndex((tab) => tab.subflowId === node.key);
 }
 
-function editBlock(data) {
+function editBlock(node) {
   const index = projectConfig.value.children.findIndex(
-    (v) => v.key === data.blockId,
+    (v) => v.key === node.id,
   );
   if (index === -1) {
     projectConfig.value.children.push({
-      key: data.blockId,
-      label: data.data.label ? data.data.label : `子流程${tabs.value.length}`,
+      key: node.id,
+      label: node.data.label ? node.data.label : `子流程${tabs.value.length}`,
       nodeType: "sequence",
       opened: true,
       children: [],
     });
   } else {
     projectConfig.value.children[index].opened = true;
-    if (data.data.label) {
-      projectConfig.value.children[index].label = data.data.label;
+    if (node.data.label) {
+      projectConfig.value.children[index].label = node.data.label;
     }
   }
-  activeIndex.value = tabs.value.findIndex(
-    (tab) => tab.subflowId === data.blockId,
-  );
+  activeIndex.value = tabs.value.findIndex((tab) => tab.subflowId === node.id);
 }
 
 async function deleteBlock(blockId) {

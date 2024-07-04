@@ -24,8 +24,8 @@
       class="flex flex-col gap-2 p-2 justify-center absolute z-10 inset-y-28 left-4 w-40 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-auto"
     >
       <div
-        v-for="block in blocks"
-        :key="block.name"
+        v-for="(block, key) in BlockType"
+        :key="key"
         draggable="true"
         class="transform select-none cursor-move relative p-4 rounded-lg transition group bg-white"
         @dragstart="$event.dataTransfer.setData('block', JSON.stringify(block))"
@@ -85,14 +85,14 @@
       <component
         :is="node"
         v-bind="{ ...nodeProps, editor: editor }"
-        @delete="deleteBlock"
+        @delete="deleteBlock(nodeProps)"
         @settings="initEditBlockSettings"
-        @edit="editBlock(nodeProps, $event)"
+        @edit="editBlock(nodeProps)"
         @update="updateBlockData(nodeProps.id, $event)"
       />
     </template>
     <template #edge-custom="edgeProps">
-      <editor-custom-edge v-bind="edgeProps" />
+      <EditorCustomEdge v-bind="edgeProps" />
     </template>
     <Dialog
       v-model:visible="blockSettingsState.show"
@@ -111,26 +111,19 @@
   </vue-flow>
 </template>
 <script setup>
+import { computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
 import {
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  computed,
-  reactive,
-  markRaw,
-} from "vue";
-import {
-  VueFlow,
-  useVueFlow,
-  MarkerType,
   getConnectedEdges,
+  MarkerType,
+  useVueFlow,
+  VueFlow,
 } from "@vue-flow/core";
 import { Background, MiniMap } from "@vue-flow/additional-components";
 import cloneDeep from "lodash.clonedeep";
 import { customAlphabet } from "nanoid";
-import { debounce, parseJSON, throttle } from "@/utils/helper";
+import { parseJSON } from "@/utils/helper";
 import { useAppStore } from "@/stores/app";
-import { getBlocks } from "@/utils/getSharedData";
+import { BlockType } from "@/utils/shared.js";
 import EditorCustomEdge from "./editor/EditorCustomEdge.vue";
 import EditorSearchBlocks from "./editor/EditorSearchBlocks.vue";
 import EditorBlockSetting from "./editor/EditorBlockSetting.vue";
@@ -154,6 +147,7 @@ const props = defineProps({
       zoom: 0,
       nodes: [],
       edges: [],
+      params: [],
     }),
   },
   options: {
@@ -170,6 +164,7 @@ const props = defineProps({
   },
   disabled: Boolean,
 });
+
 const emit = defineEmits([
   "edit",
   "init",
@@ -203,12 +198,13 @@ const editor = useVueFlow({
   minZoom: setMinValue(+appStore.settings.editor.minZoom || 0.5, 0.1),
   maxZoom: setMinValue(
     +appStore.settings.editor.maxZoom || 1.2,
-    +appStore.settings.editor.minZoom + 0.1
+    +appStore.settings.editor.minZoom + 0.1,
   ),
   multiSelectionKeyCode: isMac ? "Meta" : "Control",
   defaultPosition: getPosition(props.data?.position),
   ...props.options,
 });
+
 editor.onConnect((params) => {
   if (params.source === params.target) {
     toast.add({
@@ -233,7 +229,8 @@ editor.onConnect((params) => {
   }
   const oldEdge = editor.getEdges.value.find(
     (edge) =>
-      edge.source === params.source && edge.sourceHandle === params.sourceHandle
+      edge.source === params.source &&
+      edge.sourceHandle === params.sourceHandle,
   );
   if (oldEdge) {
     toast.add({
@@ -253,6 +250,7 @@ editor.onConnect((params) => {
   editor.addEdges([params]);
   emit("update:flow");
 });
+
 editor.onEdgeUpdate(({ edge, connection }) => {
   if (connection.source === connection.target) {
     toast.add({
@@ -283,8 +281,6 @@ editor.onEdgeUpdate(({ edge, connection }) => {
   emit("update:flow");
 });
 
-const blocks = getBlocks();
-
 function getIconPath(path) {
   if (path && path.startsWith("path")) {
     const { 1: iconPath } = path.split(":");
@@ -293,6 +289,7 @@ function getIconPath(path) {
 
   return "";
 }
+
 function toggleHighlightElement({ target, elClass, classes }) {
   const targetEl = target.closest(elClass);
 
@@ -305,6 +302,7 @@ function toggleHighlightElement({ target, elClass, classes }) {
     });
   }
 }
+
 function onDragoverEditor({ target }) {
   toggleHighlightElement({
     target,
@@ -327,7 +325,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
 
   const isTriggerExists =
     block.blockId === "Start" &&
-    editor.getNodes.value.some((node) => node.label === "Start");
+    editor.getNodes.value.some((node) => node.data.nodeType === "Start");
   if (isTriggerExists) {
     toast.add({
       severity: "warn",
@@ -341,7 +339,6 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const nodeId = nanoid();
   const newNode = {
     position,
-    label: block.blockId,
     data: block.data,
     type: block.component,
     id: nodeId,
@@ -352,7 +349,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
 
 function clearHighlightedElements() {
   const elements = document.querySelectorAll(
-    ".dropable-area__node, .dropable-area__handle"
+    ".dropable-area__node, .dropable-area__handle",
   );
   elements.forEach((element) => {
     element.classList.remove("dropable-area__node");
@@ -375,27 +372,31 @@ function initEditBlockSettings({ blockId, data }) {
   };
   blockSettingsState.show = true;
 }
+
 function clearBlockSettings() {
   Object.assign(blockSettingsState, {
     data: null,
     show: false,
   });
 }
-function minimapNodeClassName({ label }) {
-  return blocks[label].color;
+
+function minimapNodeClassName({ data }) {
+  return BlockType[data.nodeType].color;
 }
+
 function updateBlockData(nodeId, data = {}) {
   if (isDisabled.value) return;
 
-  const node = editor.getNode.value(nodeId);
+  const node = editor.findNode(nodeId);
   node.data = { ...node.data, ...data };
 
   emit("update:node", node);
 }
+
 function updateBlockSettingsData(newSettings) {
   if (isDisabled.value) return;
   const nodeId = blockSettingsState.data.blockId;
-  const node = editor.getNode.value(nodeId);
+  const node = editor.findNode(nodeId);
   node.data = { ...node.data, ...newSettings };
 
   emit("update:settings", {
@@ -403,38 +404,35 @@ function updateBlockSettingsData(newSettings) {
     blockId: blockSettingsState.data.blockId,
   });
 }
-function editBlock({ id, label, data }, additionalData = {}) {
-  if (isDisabled.value) return;
 
-  emit("edit", {
-    id: label,
-    blockId: id,
-    data: cloneDeep(data),
-    ...additionalData,
-  });
-}
-function deleteBlock(nodeId) {
+function editBlock(node) {
   if (isDisabled.value) return;
-
-  editor.removeNodes([nodeId]);
-  emit("delete:node", nodeId);
+  emit("edit", node);
 }
+
+function deleteBlock(node) {
+  if (isDisabled.value) return;
+  editor.removeNodes([node.id]);
+  emit("delete:node", node);
+}
+
 function onMousedown(event) {
   if (isDisabled.value && event.shiftKey) {
     event.stopPropagation();
     event.preventDefault();
   }
 }
+
 function applyFlowData() {
   if (settings.snapToGrid) {
     editor.snapToGrid.value = true;
     editor.snapGrid.value = Object.values(settings.snapGrid);
   }
   editor.setNodes(
-    props.data?.nodes?.map((node) => ({ ...node, events: {} })) || []
+    props.data?.nodes?.map((node) => ({ ...node, events: {} })) || [],
   );
   editor.setEdges(props.data?.edges || []);
-  editor.setTransform({
+  editor.setViewport({
     x: props.data?.x || 0,
     y: props.data?.y || 0,
     zoom: props.data?.zoom || 1,
@@ -455,7 +453,7 @@ watch(
       editor[key].value = !value;
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 watch(editor.getSelectedNodes, (nodes, _, cleanup) => {
   const connectedEdges = getConnectedEdges(nodes, editor.getEdges.value);

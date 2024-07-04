@@ -1,4 +1,4 @@
-export const tasks = {
+export const BlockType = {
   Start: {
     blockId: "Start",
     name: "开始",
@@ -9,7 +9,9 @@ export const tasks = {
     disableDelete: true,
     disableSetting: true,
     color: "bg-green-200 dark:bg-green-300 fill-green-200 dark:fill-green-300",
-    data: {},
+    data: {
+      nodeType: "Start",
+    },
   },
   SubFlow: {
     blockId: "SubFlow",
@@ -21,6 +23,7 @@ export const tasks = {
     color:
       "bg-orange-200 dark:bg-orange-300 fill-orange-200 dark:fill-orange-300",
     data: {
+      nodeType: "SubFlow",
       label: "",
       errorEnable: false,
       retry: false,
@@ -42,6 +45,8 @@ export const tasks = {
     maxConnection: 1,
     disableEdit: true,
     data: {
+      nodeType: "Condition",
+      label: "",
       description: "",
       conditions: [],
       retryConditions: false,
@@ -61,9 +66,8 @@ export const tasks = {
     maxConnection: 1,
     disableEdit: true,
     data: {
-      disableBlock: false,
+      nodeType: "Comment",
       note: "",
-      drawing: false,
       width: 280,
       height: 168,
       color: "white",
@@ -219,3 +223,15 @@ export const typeBuilder = {
     property: [{ label: "trim", type: "method" }],
   },
 };
+
+export const paramTypes = [
+  { name: "普通文本", code: "str" },
+  { name: "文件路径", code: "filePath" },
+  { name: "文件目录", code: "dirPath" },
+  { name: "密码", code: "password" },
+  { name: "数字", code: "number" },
+  { name: "布尔", code: "bool" },
+  { name: "单选", code: "single" },
+  { name: "多选", code: "multiple" },
+  { name: "任意", code: "any" },
+];
