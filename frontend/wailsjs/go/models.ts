@@ -111,6 +111,7 @@ export namespace forms {
 	    // Go type: time
 	    startTs: any;
 	    triggerType: string;
+	    isVirtual: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new RunningInstance(source);
@@ -123,6 +124,7 @@ export namespace forms {
 	        this.projectName = source["projectName"];
 	        this.startTs = this.convertValues(source["startTs"], null);
 	        this.triggerType = source["triggerType"];
+	        this.isVirtual = source["isVirtual"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

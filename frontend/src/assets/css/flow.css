@@ -22,11 +22,11 @@
 	.vue-flow__handle {
 		@apply h-4 w-4 rounded-full border-0;
 		&.target {
-			@apply bg-accent -ml-4;
+			@apply bg-accent;
 		}
 		&.source {
 			border-width: 3px;
-			@apply border-accent -mr-4 bg-white dark:bg-black;
+			@apply border-accent bg-white dark:bg-black;
 		}
 	}
 }

@@ -61,6 +61,7 @@ type RunningInstance struct {
 	ProjectName string    `form:"projectName" json:"projectName"`
 	StartTs     time.Time `form:"startTs" json:"startTs"`
 	TriggerType string    `form:"triggerType" json:"triggerType"`
+	IsVirtual   bool      `form:"isVirtual" json:"isVirtual"`
 	Process     *exec.Cmd `form:"-" json:"-"`
 }
 

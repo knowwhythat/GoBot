@@ -55,7 +55,7 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
-	log.Logger.Info(base64Param)
+	log.Logger.Logger.Info().Msg(base64Param)
 	debugProcess = sys_exec.BuildCmd(utils.GetVenvPython(project.Path), "-u", "-m", "robot_core.robot_interpreter", base64Param)
 	var stderr bytes.Buffer
 	debugProcess.Stderr = &stderr
@@ -80,8 +80,8 @@ func DebugSubFlow(ctx context.Context, id string, subId string) error {
 	if err != nil {
 		errStr := stderr.String()
 		_, errStr, founded := strings.Cut(errStr, projectPath)
-		log.Logger.Error(fmt.Sprintf("%t", founded))
-		log.Logger.Error(errStr)
+		log.Logger.Logger.Error().Msg(fmt.Sprintf("%t", founded))
+		log.Logger.Logger.Error().Msg(errStr)
 		return errors.New(errStr)
 	}
 	return nil
@@ -148,7 +148,7 @@ func dealDebug(ctx context.Context, filename string, inPipe io.WriteCloser, outP
 		}
 		output += line
 		if strings.HasSuffix(line, "\n(Pdb)") {
-			log.Logger.Info(output)
+			log.Logger.Logger.Info().Msg(output)
 			match := re.FindAllString(output, -1)
 			if len(match) > 0 {
 				runtime.EventsEmit(ctx, "debug", strings.TrimPrefix(match[0], "code_map_id=\""))

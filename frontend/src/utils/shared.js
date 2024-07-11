@@ -11,6 +11,7 @@ export const BlockType = {
     color: "bg-green-200 dark:bg-green-300 fill-green-200 dark:fill-green-300",
     data: {
       nodeType: "Start",
+      label: "开始",
     },
   },
   SubFlow: {
@@ -24,12 +25,15 @@ export const BlockType = {
       "bg-orange-200 dark:bg-orange-300 fill-orange-200 dark:fill-orange-300",
     data: {
       nodeType: "SubFlow",
-      label: "",
-      errorEnable: false,
-      retry: false,
-      retryCount: 10,
-      retryTimeout: 1000,
-      toDo: "error",
+      label: "子流程",
+      errorHandler: {
+        errorEnable: false,
+        retry: false,
+        retryCount: 2,
+        retryTimeout: 1000,
+        toDo: "error",
+      },
+      params: {},
     },
   },
   Condition: {
@@ -49,9 +53,6 @@ export const BlockType = {
       label: "",
       description: "",
       conditions: [],
-      retryConditions: false,
-      retryCount: 10,
-      retryTimeout: 1000,
     },
   },
   Comment: {

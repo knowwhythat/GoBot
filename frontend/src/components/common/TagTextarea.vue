@@ -243,10 +243,10 @@ $textColor: #666;
 
   .resize {
     position: absolute;
-    right: 0px;
-    bottom: 0px;
-    width: 0px;
-    height: 0px;
+    right: 0;
+    bottom: 0;
+    width: 0;
+    height: 0;
     border-bottom: 8px dashed rgba(0, 0, 0, 0.5);
     border-left: 8px dashed transparent;
     cursor: nw-resize;

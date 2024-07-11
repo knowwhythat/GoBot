@@ -95,23 +95,37 @@
       <EditorCustomEdge v-bind="edgeProps" />
     </template>
     <Dialog
-      v-model:visible="blockSettingsState.show"
-      @hide="clearBlockSettings"
+      v-model:visible="settingDialogShow"
       maximizable
       modal
       header="模块设置"
       :style="{ width: '50rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
-      <editor-block-setting
-        :data="blockSettingsState?.data"
-        @change="updateBlockSettingsData"
+      <EditorBlockSetting
+        :block-id="blockId"
+        v-model:errorHandler="blockSetting.errorHandler"
+        v-model:block-label="blockSetting.label"
+        v-model:params="blockSetting.params"
       />
+      <template #footer>
+        <Button
+          label="取消"
+          icon="pi pi-times"
+          @click="settingDialogShow = false"
+          text
+        />
+        <Button
+          label="确认"
+          icon="pi pi-check"
+          @click="updateBlockSettingsData"
+        />
+      </template>
     </Dialog>
   </vue-flow>
 </template>
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import {
   getConnectedEdges,
   MarkerType,
@@ -119,7 +133,6 @@ import {
   VueFlow,
 } from "@vue-flow/core";
 import { Background, MiniMap } from "@vue-flow/additional-components";
-import cloneDeep from "lodash.clonedeep";
 import { customAlphabet } from "nanoid";
 import { parseJSON } from "@/utils/helper";
 import { useAppStore } from "@/stores/app";
@@ -132,7 +145,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 
 const toast = useToast();
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 7);
+const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz", 12);
 
 const props = defineProps({
   id: {
@@ -319,7 +332,7 @@ function onDragoverEditor({ target }) {
   }
 }
 
-function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
+function onDropInEditor({ dataTransfer, clientX, clientY }) {
   const block = parseJSON(dataTransfer.getData("block"), null);
   clearHighlightedElements();
 
@@ -360,24 +373,16 @@ function clearHighlightedElements() {
 const settings = appStore.settings.editor;
 const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 
-const blockSettingsState = reactive({
-  show: false,
-  data: {},
-});
+const settingDialogShow = ref(false);
 
-function initEditBlockSettings({ blockId, data }) {
-  blockSettingsState.data = {
-    blockId,
-    data: data,
-  };
-  blockSettingsState.show = true;
-}
+const blockSetting = ref(null);
 
-function clearBlockSettings() {
-  Object.assign(blockSettingsState, {
-    data: null,
-    show: false,
-  });
+const blockId = ref(null);
+
+function initEditBlockSettings({ id, data }) {
+  blockSetting.value = { ...data };
+  blockId.value = id;
+  settingDialogShow.value = true;
 }
 
 function minimapNodeClassName({ data }) {
@@ -393,16 +398,13 @@ function updateBlockData(nodeId, data = {}) {
   emit("update:node", node);
 }
 
-function updateBlockSettingsData(newSettings) {
+function updateBlockSettingsData() {
   if (isDisabled.value) return;
-  const nodeId = blockSettingsState.data.blockId;
-  const node = editor.findNode(nodeId);
-  node.data = { ...node.data, ...newSettings };
-
-  emit("update:settings", {
-    settings: newSettings,
-    blockId: blockSettingsState.data.blockId,
-  });
+  const node = editor.findNode(blockId.value);
+  node.data = blockSetting.value;
+  console.log(node.data);
+  emit("update:settings", node);
+  settingDialogShow.value = false;
 }
 
 function editBlock(node) {

@@ -357,16 +357,7 @@ import { Pane as SplitterPanel, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useRouter } from "vue-router";
 import Toolbar from "primevue/toolbar";
-import {
-  computed,
-  nextTick,
-  onBeforeMount,
-  onMounted,
-  onUnmounted,
-  provide,
-  ref,
-  watch,
-} from "vue";
+import { computed, onBeforeMount, onUnmounted, provide, ref, watch } from "vue";
 import SystemOperate from "@/components/SystemOperate.vue";
 import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
@@ -379,15 +370,15 @@ import PipInstallView from "@/views/design/sequence/PipInstallView.vue";
 import WorkflowView from "@/views/design/flow/WorkflowView.vue";
 import { customAlphabet, nanoid } from "nanoid";
 import {
-  ReadProjectConfig,
   DealDebugSignal,
   DebugSubFlow,
+  DeleteSubFlow,
   GetProjectWindowsElements,
+  ReadProjectConfig,
   RestartReplCommand,
   RunSubFlow,
-  TerminateSubFlow,
   SaveProjectConfig,
-  DeleteSubFlow,
+  TerminateSubFlow,
 } from "@back/go/backend/App";
 import {
   EventsOff,
@@ -517,7 +508,7 @@ async function deleteBlock(blockId) {
       (child) => child.key !== blockId,
     );
     await SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
-    await DeleteSubFlow(props.id, selectedNode.value.key);
+    await DeleteSubFlow(props.id, blockId);
   }
 }
 

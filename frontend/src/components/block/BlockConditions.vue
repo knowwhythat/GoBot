@@ -86,7 +86,6 @@ import { Handle } from "@vue-flow/core";
 import { useComponentId } from "@/composable/componentId";
 import { BlockType } from "@/utils/shared.js";
 import BlockBase from "./BlockBase.vue";
-import Button from "primevue/button";
 
 const props = defineProps({
   id: {

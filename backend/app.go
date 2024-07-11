@@ -3,7 +3,6 @@ package backend
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"gobot/backend/constants"
 	"gobot/backend/dao"
 	"gobot/backend/forms"
@@ -12,6 +11,7 @@ import (
 	"gobot/backend/plugin"
 	"gobot/backend/services"
 	"gobot/backend/services/sys_tray"
+	"gobot/backend/services/virsual_desk"
 	"gobot/backend/utils"
 
 	"github.com/spf13/viper"
@@ -94,7 +94,7 @@ func (a *App) SaveBasicConfigData(data map[string]string) error {
 
 func (a *App) Login(form forms.LoginForm) error {
 	sysInfo := services.GetSysInfo()
-	log.Logger.Infof("sysInfo: %#v", sysInfo)
+	log.Logger.Logger.Info().Msgf("sysInfo: %#v", sysInfo)
 	if form.RememberMe {
 		pwd, _ := utils.EncryptAES2Base64([]byte(aesKey), []byte(form.Pwd))
 		viper.Set(constants.ConfigLoginUsername, form.Username)
@@ -127,15 +127,7 @@ func (a *App) AddOrUpdateProject(project models.Project) error {
 }
 
 func (a *App) RunMainFlow(id string) error {
-	project, err := services.QueryProjectById(id)
-	if err != nil {
-		return err
-	}
-	if project.IsFlow {
-		return errors.New("暂不支持流程图类型的项目运行")
-	} else {
-		return services.RunSequence(a.ctx, id, "main", "手动触发")
-	}
+	return services.RunProject(a.ctx, id, "手动触发")
 }
 
 func (a *App) TerminateMainFlow(id string) error {
@@ -314,4 +306,7 @@ func (a *App) PipUnInstallPackage(id, name string) (err error) {
 
 func (a *App) SaveProjectDependency(id string, packages []string) (err error) {
 	return services.SaveProjectDependency(id, packages)
+}
+func (a *App) StartInVirtualDesk(id string) (err error) {
+	return virsual_desk.StartInVirtualDesk(id)
 }

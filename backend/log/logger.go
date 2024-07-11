@@ -11,9 +11,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-type LogType zerolog.Logger
+type WailsLog struct {
+	zerolog.Logger
+}
 
-var Logger LogType
+var Logger WailsLog
 
 func Init() {
 	logLevel := viper.GetString(constants.ConfigLogLevel)
@@ -49,38 +51,29 @@ func Init() {
 		return fmt.Sprintf("%s;", i)
 	}
 	multi := zerolog.MultiLevelWriter(consoleWriter, logFile)
-	Logger = LogType(zerolog.New(multi).With().Timestamp().Logger())
+	Logger = WailsLog{
+		zerolog.New(multi).With().Timestamp().Logger().With().Caller().Logger(),
+	}
 }
 
-func (LogType) Print(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Info().Msg(message)
+func (WailsLog) Print(message string) {
+	Logger.Logger.Info().Msg(message)
 }
-func (LogType) Trace(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Trace().Msg(message)
+func (WailsLog) Trace(message string) {
+	Logger.Logger.Trace().Msg(message)
 }
-func (LogType) Debug(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Debug().Msg(message)
+func (WailsLog) Debug(message string) {
+	Logger.Logger.Debug().Msg(message)
 }
-func (LogType) Info(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Info().Msg(message)
+func (WailsLog) Info(message string) {
+	Logger.Logger.Info().Msg(message)
 }
-func (LogType) Infof(message string, args ...interface{}) {
-	logger := zerolog.Logger(Logger)
-	logger.Info().Msgf(message, args)
+func (WailsLog) Warning(message string) {
+	Logger.Logger.Warn().Msg(message)
 }
-func (LogType) Warning(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Warn().Msg(message)
+func (WailsLog) Error(message string) {
+	Logger.Logger.Error().Msg(message)
 }
-func (LogType) Error(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Error().Msg(message)
-}
-func (LogType) Fatal(message string) {
-	logger := zerolog.Logger(Logger)
-	logger.Fatal().Msg(message)
+func (WailsLog) Fatal(message string) {
+	Logger.Logger.Fatal().Msg(message)
 }

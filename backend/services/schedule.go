@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 	"gobot/backend/dao"
 	"gobot/backend/log"
 	"gobot/backend/models"
@@ -26,11 +25,7 @@ func (s ScheduleJob) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if project.IsFlow {
-		return errors.New("暂不支持流程图类型的项目运行")
-	} else {
-		return RunSequence(ctx, project.Id, "main", "定时触发")
-	}
+	return RunProject(ctx, project.Id, "定时触发")
 }
 
 func (s ScheduleJob) Description() string {
@@ -51,15 +46,17 @@ func InitSchedule(ctx context.Context) {
 				cronTrigger, _ := quartz.NewCronTrigger(schedule.Cron)
 				if err = sched.ScheduleJob(quartz.NewJobDetail(ScheduleJob{schedule}, quartz.NewJobKey(schedule.Id)),
 					cronTrigger); err != nil {
-					log.Logger.Error("定时任务" + schedule.Id + "启动失败")
+					log.Logger.Logger.Error().Msg("定时任务" + schedule.Id + "启动失败")
+					log.Logger.Logger.Error().Err(err)
 				}
 			}
 		}
 		return nil
 	}); err != nil {
-		log.Logger.Error("定时任务启动失败")
+		log.Logger.Logger.Error().Msg("定时任务启动失败")
+		log.Logger.Logger.Error().Err(err)
 	} else {
-		log.Logger.Info("定时任务启动成功")
+		log.Logger.Logger.Info().Msg("定时任务启动成功")
 	}
 }
 
@@ -87,7 +84,8 @@ func ToggleScheduleById(id string, state bool) (err error) {
 			cronTrigger, _ := quartz.NewCronTrigger(result.Cron)
 			if err = sched.ScheduleJob(quartz.NewJobDetail(ScheduleJob{result}, quartz.NewJobKey(result.Id)),
 				cronTrigger); err != nil {
-				log.Logger.Error("定时任务" + result.Id + "启动失败")
+				log.Logger.Logger.Error().Msg("定时任务" + result.Id + "启动失败")
+				log.Logger.Logger.Error().Err(err)
 				return err
 			}
 		} else {
@@ -140,7 +138,8 @@ func AddOrUpdateSchedule(schedule models.Schedule) (err error) {
 		cronTrigger, _ := quartz.NewCronTrigger(schedule.Cron)
 		if err = sched.ScheduleJob(quartz.NewJobDetail(ScheduleJob{&schedule}, quartz.NewJobKey(schedule.Id)),
 			cronTrigger); err != nil {
-			log.Logger.Error("定时任务" + schedule.Id + "启动失败")
+			log.Logger.Logger.Error().Msg("定时任务" + schedule.Id + "启动失败")
+			log.Logger.Logger.Error().Err(err)
 		}
 	}
 	return nil

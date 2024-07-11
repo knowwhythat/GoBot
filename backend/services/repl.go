@@ -45,7 +45,7 @@ func startReplCommand(id string) error {
 		return err
 	}
 	base64Param := base64.StdEncoding.EncodeToString(marshalParam)
-	log.Logger.Info(base64Param)
+	log.Logger.Logger.Info().Msg(base64Param)
 	replProcess = sys_exec.BuildCmd(utils.GetVenvPython(project.Path), "-u", "-B", "-m", "robot_core.robot_debugger", base64Param)
 
 	var stderr bytes.Buffer
@@ -65,8 +65,8 @@ func startReplCommand(id string) error {
 	if err != nil {
 		errStr := stderr.String()
 		_, errStr, founded := strings.Cut(errStr, projectPath)
-		log.Logger.Error(fmt.Sprintf("%t", founded))
-		log.Logger.Error(errStr)
+		log.Logger.Logger.Error().Msg(fmt.Sprintf("%t", founded))
+		log.Logger.Logger.Error().Msg(errStr)
 		return errors.New(errStr)
 	}
 	return nil
@@ -75,14 +75,14 @@ func startReplCommand(id string) error {
 func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 	writer := bufio.NewWriter(inPipe)
 	out, err := waitToWrite(outPipe)
-	log.Logger.Info(out)
+	log.Logger.Logger.Info().Msg(out)
 	if err != nil {
 		return err
 	}
 	re, _ := regexp.Compile("code_map_id=\"([^\"]*)")
 	for {
 		code := <-replChan
-		log.Logger.Info(strings.Trim(code, "\n"))
+		log.Logger.Logger.Info().Msg(strings.Trim(code, "\n"))
 		_, err = writer.WriteString(base64.StdEncoding.EncodeToString([]byte(strings.Trim(code, "\n"))) + "\n")
 		_ = writer.Flush()
 		if err != nil {
@@ -95,7 +95,7 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 			runtime.EventsEmit(appCtx, "repl", strings.TrimPrefix(match[0], "code_map_id=\""), out)
 		}
 		if len(out) > 0 {
-			log.Logger.Info(strings.Trim(out, "\n"))
+			log.Logger.Logger.Info().Msg(strings.Trim(out, "\n"))
 		}
 		if err != nil {
 			return err

@@ -6,16 +6,16 @@
     >
       <div class="inline-flex items-center dark:text-gray-300 block-menu">
         <button
-          v-if="!blockData.disableDelete"
+          v-if="!block.disableDelete"
           title="删除"
           @click.stop="$emit('delete')"
         >
           <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
         <button
-          v-if="!blockData.disableSetting"
+          v-if="!block.disableSetting"
           title="设置"
-          @click.stop="$emit('settings', { data, blockId })"
+          @click.stop="$emit('settings', { data, id })"
         >
           <v-remixicon size="20" name="riSettings3Line" />
         </button>
@@ -23,7 +23,7 @@
           <v-remixicon size="20" name="riPlayLine" />
         </button>
         <button
-          v-if="!blockData.disableEdit"
+          v-if="!block.disableEdit"
           title="编辑"
           @click.stop="$emit('edit')"
         >
@@ -34,7 +34,6 @@
     </div>
     <slot name="prepend" />
     <div
-      :class="contentClass"
       class="z-10 relative bg-gray-200 hover:bg-gray-300 focus:ring p-2 rounded-xl"
     >
       <slot></slot>
@@ -43,25 +42,20 @@
   </div>
 </template>
 <script setup>
+import { BlockType } from "@/utils/shared.js";
+
 const props = defineProps({
-  contentClass: {
-    type: String,
-    default: "",
-  },
-  blockData: {
-    type: Object,
-    default: () => ({}),
-  },
   data: {
     type: Object,
     default: () => ({}),
   },
-  blockId: {
+  id: {
     type: String,
     default: "",
   },
 });
 defineEmits(["delete", "edit", "run", "settings"]);
+const block = BlockType[props.data.nodeType];
 </script>
 <style>
 .block-menu {

@@ -64,8 +64,7 @@ onMounted(async () => {
   try {
     const result = await GetSubFlow(props.id, props.subflowId);
     if (result) {
-      const data = JSON.parse(result);
-      mainActivity.value = data;
+      mainActivity.value = JSON.parse(result);
     } else {
       mainActivity.value.sequence.id = props.subflowId;
       mainActivity.value.sequence.label = props.label ? props.label : "子流程";
@@ -93,7 +92,7 @@ async function save() {
     await SaveSubFlow(
       props.id,
       props.subflowId,
-      JSON.stringify(mainActivity.value)
+      JSON.stringify(mainActivity.value),
     );
     dataChanged.value = false;
     toast.add({
@@ -157,7 +156,7 @@ function pasteBlock() {
       innerPaste(
         mainActivity.value.sequence.children,
         id,
-        editorStore.copiedBlocks
+        editorStore.copiedBlocks,
       );
     } else {
       editorStore.copiedBlocks.forEach((block) => {

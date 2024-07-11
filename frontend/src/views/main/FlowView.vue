@@ -186,6 +186,7 @@ import {
   DeleteProject,
   RunMainFlow,
   GetSubFlow,
+  StartInVirtualDesk,
 } from "@back/go/backend/App";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
@@ -207,7 +208,7 @@ watch(
   searchText,
   throttle((newVal, oldVal) => {
     showProjects.value = projects.value.filter((p) => p.name.includes(newVal));
-  }, 1000)
+  }, 1000),
 );
 
 function listProject() {
@@ -269,6 +270,13 @@ function getItems(id) {
           },
           reject: () => {},
         });
+      },
+    },
+    {
+      label: "虚拟桌面中运行",
+      icon: "pi pi-desktop",
+      command: async () => {
+        await StartInVirtualDesk(id);
       },
     },
     {

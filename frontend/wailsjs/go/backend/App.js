@@ -182,6 +182,10 @@ export function StartCheckWindowsElement(arg1) {
   return window['go']['backend']['App']['StartCheckWindowsElement'](arg1);
 }
 
+export function StartInVirtualDesk(arg1) {
+  return window['go']['backend']['App']['StartInVirtualDesk'](arg1);
+}
+
 export function StartMonitorLog(arg1) {
   return window['go']['backend']['App']['StartMonitorLog'](arg1);
 }

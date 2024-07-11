@@ -164,7 +164,7 @@
             />
             <span class="ml-2"> 重试操作 </span>
           </div>
-          <div v-if="parameterData.parameter['retry'] == 'True'" class="mr-2">
+          <div v-if="parameterData.parameter['retry'] === 'True'" class="mr-2">
             <div class="inline-flex items-center">
               <span> 次数 </span>
               <v-remixicon
@@ -250,13 +250,13 @@ watch(
   (value, oldValue) => {
     visible.value = value;
   },
-  { immediate: true }
+  { immediate: true },
 );
 const extraEditorComponents = import.meta.glob(
   "@/components/editor/extra/*.vue",
   {
     eager: true,
-  }
+  },
 );
 const extraEditorMap = {};
 for (let each in extraEditorComponents) {

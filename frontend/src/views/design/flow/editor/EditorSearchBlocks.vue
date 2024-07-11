@@ -2,7 +2,7 @@
   <div
     class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg"
   >
-    <Button class="hoverable p-3" icon @click="toggleActiveSearch">
+    <Button class="hoverable p-3" @click="toggleActiveSearch">
       <v-remixicon name="riSearch2Line" />
     </Button>
     <AutoComplete
@@ -20,10 +20,9 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import AutoComplete from "primevue/autocomplete";
 import Button from "primevue/button";
-import { BlockType } from "@/utils/shared.js";
 
 const props = defineProps({
   editor: {
@@ -71,7 +70,7 @@ function extractBlocks() {
   initialState.position = props.editor.getTransform();
 
   state.allItems = props.editor.getNodes.value.map(
-    ({ computedPosition, id, data, label }) => ({
+    ({ computedPosition, id, data }) => ({
       id,
       position: computedPosition,
       description: data.description || "",
@@ -79,6 +78,7 @@ function extractBlocks() {
     }),
   );
 }
+
 function search(event) {
   if (!event.query.trim().length) {
     state.autocompleteItems = [...state.allItems];
@@ -88,11 +88,13 @@ function search(event) {
     });
   }
 }
+
 function clearHighlightedNodes() {
   document.querySelectorAll(".search-select-node").forEach((el) => {
     el.classList.remove("search-select-node");
   });
 }
+
 function clearState() {
   if (!state.selected) {
     props.editor.setTransform(initialState.position);
@@ -119,6 +121,7 @@ function clearState() {
     editorContainer.classList.remove("add-transition");
   }, 500);
 }
+
 function onSelectItem(event) {
   const item = event.value;
   const { x, y } = item.position;
@@ -135,6 +138,7 @@ function onSelectItem(event) {
     y: -(y - rectY),
   });
 }
+
 function onItemSelected(event) {
   if (!event.value.id) {
     return;

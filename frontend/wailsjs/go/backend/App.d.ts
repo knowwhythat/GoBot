@@ -94,6 +94,8 @@ export function StartCheck(arg1:string,arg2:string):Promise<string>;
 
 export function StartCheckWindowsElement(arg1:string):Promise<string>;
 
+export function StartInVirtualDesk(arg1:string):Promise<void>;
+
 export function StartMonitorLog(arg1:string):Promise<void>;
 
 export function StartPick():Promise<string>;

@@ -84,7 +84,7 @@ func GenerateGlobalVariable(variables []*models.Variable, path string) error {
 }
 
 func (flow *Flow) GeneratePythonCode(filepath string) error {
-	log.Logger.Info("开始生成代码")
+	log.Logger.Logger.Info().Msg("开始生成代码")
 	activities := flow.Sequence.Children
 	namespace := make(map[string]string)
 	code := "def main(args):\n"
@@ -104,7 +104,7 @@ func (flow *Flow) GeneratePythonCode(filepath string) error {
 	for key := range namespace {
 		importStr += "import " + key + "\n"
 	}
-	log.Logger.Info(importStr + code)
+	log.Logger.Logger.Info().Msg(importStr + code)
 	err := os.WriteFile(filepath, []byte(importStr+code), 0666)
 	return err
 }

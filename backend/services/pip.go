@@ -130,7 +130,7 @@ func extractPackages(lines string) []forms.Package {
 func monitorOutput(ctx context.Context, outPipe io.ReadCloser) {
 	reader := bufio.NewReader(outPipe)
 	for {
-		line, err := reader.ReadString(')')
+		line, err := reader.ReadString('\n')
 		if err != nil || io.EOF == err {
 			break
 		}

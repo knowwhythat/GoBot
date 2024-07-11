@@ -55,7 +55,7 @@ func startWindowsInspectCommand() error {
 	err := windowsInspectCommand.Run()
 	if err != nil {
 		errStr := stderr.String()
-		log.Logger.Error(errStr)
+		log.Logger.Logger.Error().Msg(errStr)
 		return errors.New(errStr)
 	}
 	return nil
@@ -83,7 +83,7 @@ func StartPickWindowsElement(ctx context.Context) (string, error) {
 		data := make(map[string]interface{})
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
-		log.Logger.Info(string(request))
+		log.Logger.Logger.Info().Msg(string(request))
 		if err != nil {
 			return "", err
 		}
@@ -132,7 +132,7 @@ func StartCheckWindowsElement(ctx context.Context, paths string) (string, error)
 		data["paths"] = paths
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
-		log.Logger.Info(string(request))
+		log.Logger.Logger.Info().Msg(string(request))
 		if err != nil {
 			return "", err
 		}
@@ -185,7 +185,7 @@ func GetWindowsElementList(parentId string) (string, error) {
 		}
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
-		log.Logger.Info(string(request))
+		log.Logger.Logger.Info().Msg(string(request))
 		if err != nil {
 			return "", err
 		}
@@ -232,7 +232,7 @@ func HighlightCurrentElement(controlId string) error {
 		data["control_id"] = controlId
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
-		log.Logger.Info(string(request))
+		log.Logger.Logger.Info().Msg(string(request))
 		if err != nil {
 			return err
 		}
@@ -279,7 +279,7 @@ func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, e
 		data["control_id"] = controlId
 		sendMessage["data"] = data
 		request, err := json.Marshal(sendMessage)
-		log.Logger.Info(string(request))
+		log.Logger.Logger.Info().Msg(string(request))
 		if err != nil {
 			return "", err
 		}
