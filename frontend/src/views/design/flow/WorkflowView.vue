@@ -84,6 +84,12 @@ async function save() {
   try {
     await SaveMainFlow(props.id, JSON.stringify(flow));
     dataChanged.value = false;
+    toast.add({
+      severity: "success",
+      summary: "提示",
+      detail: "保存成功",
+      life: 3000,
+    });
   } catch (err) {
     toast.add({
       severity: "error",

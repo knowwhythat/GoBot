@@ -198,11 +198,11 @@ func (a *App) ParseAllPlugin() ([]plugin.Activity, error) {
 	return plugin.ParseAllPlugin()
 }
 
-func (a *App) StartPick() (string, error) {
+func (a *App) StartPick() error {
 	return services.StartPick(a.ctx)
 }
 
-func (a *App) StartCheck(frame, selector string) (string, error) {
+func (a *App) StartCheck(frame, selector string) error {
 	return services.StartCheck(a.ctx, frame, selector)
 }
 

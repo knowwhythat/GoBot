@@ -3,22 +3,23 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"gobot/backend/constants"
+	"gobot/backend/log"
+	"os"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 var wsConn *websocket.Conn
 
-func StartPick(ctx context.Context) (string, error) {
-	if wsConn == nil {
-		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:3000/ws", nil)
-		if err == nil {
-			wsConn = conn
-		} else {
-			return "", err
-		}
+func StartPick(ctx context.Context) error {
+	if checkConn(ctx) != nil {
+		return errors.New("连接浏览器插件失败，请确定是否正确配置浏览器插件")
 	}
 	messageId := uuid.New().String()
 	sendMessage := make(map[string]string)
@@ -26,34 +27,20 @@ func StartPick(ctx context.Context) (string, error) {
 	sendMessage["id"] = messageId
 	request, err := json.Marshal(sendMessage)
 	if err != nil {
-		return "", err
+		return err
 	}
-	if err := wsConn.WriteMessage(1, request); err != nil {
+	log.Logger.Logger.Info().Msgf("向浏览器插件发送: %s", request)
+	err = wsConn.WriteMessage(1, request)
+	if err != nil {
 		_ = wsConn.Close()
 		wsConn = nil
-		return "", err
 	}
-	runtime.WindowMinimise(ctx)
-	_, message, err := wsConn.ReadMessage()
-	if err != nil {
-		return "", nil
-	}
-	resp := make(map[string]interface{})
-	if err = json.Unmarshal(message, &resp); err != nil {
-		return "", nil
-	}
-	runtime.WindowMaximise(ctx)
-	return string(message), nil
+	return err
 }
 
-func StartCheck(ctx context.Context, frame, selector string) (string, error) {
-	if wsConn == nil {
-		conn, _, err := websocket.DefaultDialer.Dial("ws://127.0.0.1:3000/ws", nil)
-		if err == nil {
-			wsConn = conn
-		} else {
-			return "", err
-		}
+func StartCheck(ctx context.Context, frame, selector string) error {
+	if checkConn(ctx) != nil {
+		return errors.New("连接浏览器插件失败，请确定是否正确配置浏览器插件")
 	}
 	messageId := uuid.New().String()
 	sendMessage := make(map[string]string)
@@ -63,20 +50,48 @@ func StartCheck(ctx context.Context, frame, selector string) (string, error) {
 	sendMessage["id"] = messageId
 	request, err := json.Marshal(sendMessage)
 	if err != nil {
-		return "", err
+		return err
 	}
-	if err := wsConn.WriteMessage(1, request); err != nil {
-		return "", err
-	}
-	runtime.WindowMinimise(ctx)
-	_, message, err := wsConn.ReadMessage()
+	log.Logger.Logger.Info().Msgf("向浏览器插件发送: %s", request)
+	err = wsConn.WriteMessage(1, request)
 	if err != nil {
-		return "", nil
+		_ = wsConn.Close()
+		wsConn = nil
 	}
-	resp := make(map[string]interface{})
-	if err = json.Unmarshal(message, &resp); err != nil {
-		return "", nil
+	return err
+}
+
+func checkConn(ctx context.Context) error {
+	for i := 0; i < 3; i++ {
+		if wsConn == nil {
+			//TODO 修改为相对位置
+			data, err := os.ReadFile("D:\\Program Files\\GoBot\\chrome\\nativehost_port")
+			if err != nil {
+				continue
+			}
+			log.Logger.Logger.Info().Msgf("nativehost_port: %s", string(data))
+			conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s/ws", strings.TrimSpace(string(data))), nil)
+			if err == nil {
+				wsConn = conn
+				go listenResponse(ctx)
+				return nil
+			} else {
+				continue
+			}
+		} else {
+			return nil
+		}
 	}
-	runtime.WindowMaximise(ctx)
-	return string(message), nil
+	return errors.New("连接浏览器插件失败")
+}
+
+func listenResponse(ctx context.Context) {
+	for wsConn != nil {
+		_, message, err := wsConn.ReadMessage()
+		if err != nil {
+			return
+		}
+		log.Logger.Logger.Info().Msgf("浏览器插件响应: %s", string(message))
+		runtime.EventsEmit(ctx, constants.BrowserEvent, string(message))
+	}
 }

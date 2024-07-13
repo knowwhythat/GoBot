@@ -13,7 +13,7 @@
           <span class="mr-2 w-32 truncate my-auto" :title="input.name">
             {{ input.name }}
           </span>
-          <InputText class="w-full" type="text" v-model="params[input.name]" />
+          <VariableInput class="w-full" v-model="params[input.name]" />
         </div>
       </template>
       <Divider align="left" type="solid">
@@ -107,6 +107,7 @@ import InputText from "primevue/inputtext";
 import InputSwitch from "primevue/inputswitch";
 import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
+import VariableInput from "@/views/design/flow/editor/VariableInput.vue";
 import { computed, inject, onMounted, ref } from "vue";
 import { GetSubFlow } from "@back/go/backend/App";
 import Divider from "primevue/divider";

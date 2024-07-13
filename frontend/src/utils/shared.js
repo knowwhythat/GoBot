@@ -68,6 +68,7 @@ export const BlockType = {
     disableEdit: true,
     data: {
       nodeType: "Comment",
+      label: "注释",
       note: "",
       width: 280,
       height: 168,
@@ -235,4 +236,9 @@ export const paramTypes = [
   { name: "单选", code: "single" },
   { name: "多选", code: "multiple" },
   { name: "任意", code: "any" },
+];
+
+export const variableType = [
+  { name: "Python表达式", prefix: "1:" },
+  { name: "普通文本", code: "0:" },
 ];

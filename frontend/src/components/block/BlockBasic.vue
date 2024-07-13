@@ -28,7 +28,10 @@
       </div>
     </div>
     <div
-      v-if="data.errorEnable && data.toDo === 'fallback'"
+      v-if="
+        data?.errorHandler?.errorEnable &&
+        data?.errorHandler?.toDo === 'fallback'
+      "
       class="fallback flex items-center justify-end"
     >
       <v-remixicon title="异常处理策略" name="riInformationLine" size="18" />
@@ -40,7 +43,10 @@
       :position="appStore.outputPosition"
     />
     <Handle
-      v-if="data.errorEnable && data.toDo === 'fallback'"
+      v-if="
+        data?.errorHandler?.errorEnable &&
+        data?.errorHandler?.toDo === 'fallback'
+      "
       :id="`${id}-fallback`"
       type="source"
       :position="appStore.outputPosition"

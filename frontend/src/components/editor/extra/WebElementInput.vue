@@ -50,9 +50,16 @@
 import InputGroup from "primevue/inputgroup";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import { StartCheck, StartPick } from "@back/go/backend/App";
 import { useToast } from "primevue/usetoast";
+
+import {
+  EventsOnce,
+  WindowMaximise,
+  WindowMinimise,
+} from "@back/runtime/runtime.js";
+
 const toast = useToast();
 const props = defineProps({
   parameter: {
@@ -86,6 +93,7 @@ const frameSelector = computed({
     });
   },
 });
+
 function changeFrameValueType() {
   frameIsExpression.value = !frameIsExpression.value;
   emit("update", {
@@ -117,6 +125,7 @@ const elementSelector = computed({
     });
   },
 });
+
 function changeElementValueType() {
   elementIsExpression.value = !elementIsExpression.value;
   emit("update", {
@@ -136,24 +145,29 @@ async function checkElement() {
       });
       return;
     }
-    const resp = await StartCheck(frameSelector.value, elementSelector.value);
-    const result = JSON.parse(resp);
-    if (result["message"] === "ok") {
-      toast.add({
-        severity: "success",
-        summary: "校验成功",
-        detail: "找到元素",
-        life: 3000,
-      });
-    } else {
-      toast.add({
-        severity: "error",
-        summary: "校验失败",
-        detail: "元素未找到",
-        life: 3000,
-      });
-    }
+    await WindowMinimise();
+    await StartCheck(frameSelector.value, elementSelector.value);
+    EventsOnce("browserEvent", async (resp) => {
+      await WindowMaximise();
+      const result = JSON.parse(resp);
+      if (result["message"] === "ok") {
+        toast.add({
+          severity: "success",
+          summary: "校验成功",
+          detail: "找到元素",
+          life: 3000,
+        });
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "校验失败",
+          detail: "元素未找到",
+          life: 3000,
+        });
+      }
+    });
   } catch (err) {
+    await WindowMaximise();
     toast.add({
       severity: "error",
       summary: "校验失败",
@@ -162,19 +176,34 @@ async function checkElement() {
     });
   }
 }
+
 const frames = ref([]);
 const selectors = ref([]);
 
 async function pickElement() {
-  const result = await StartPick();
-  const resp = JSON.parse(result);
-  frames.value = resp["message"]["framePath"];
-  selectors.value = resp["message"]["elementPath"];
-  if (frames.value.length > 0) {
-    frameSelector.value = frames.value[0];
-  }
-  if (selectors.value.length > 0) {
-    elementSelector.value = selectors.value[0];
+  try {
+    await WindowMinimise();
+    await StartPick();
+    EventsOnce("browserEvent", async (result) => {
+      await WindowMaximise();
+      const resp = JSON.parse(result);
+      frames.value = resp["message"]["framePath"];
+      selectors.value = resp["message"]["elementPath"];
+      if (frames.value.length > 0) {
+        frameSelector.value = frames.value[0];
+      }
+      if (selectors.value.length > 0) {
+        elementSelector.value = selectors.value[0];
+      }
+    });
+  } catch (err) {
+    await WindowMaximise();
+    toast.add({
+      severity: "error",
+      summary: "拾取失败",
+      detail: err,
+      life: 3000,
+    });
   }
 }
 </script>

@@ -73,7 +73,6 @@ function extractBlocks() {
     ({ computedPosition, id, data }) => ({
       id,
       position: computedPosition,
-      description: data.description || "",
       name: data.label,
     }),
   );
