@@ -28,8 +28,8 @@
         ></Tree>
       </SplitterPanel>
       <SplitterPanel :size="40">
-        <DataTable :value="seletedNode.attrs" showGridlines>
-          <Column field="key" header="属性名称"> </Column>
+        <DataTable :value="selectedNode.attrs" showGridlines>
+          <Column field="key" header="属性名称"></Column>
           <Column field="value" header="属性值"></Column>
         </DataTable>
       </SplitterPanel>
@@ -54,7 +54,9 @@ import {
   GetWindowsElementList,
   HighlightCurrentElement,
 } from "@back/go/backend/App";
+import { EventsOnce } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
+
 const toast = useToast();
 
 const emit = defineEmits(["hide", "confirm"]);
@@ -71,55 +73,57 @@ watch(
   (value, oldValue) => {
     visible.value = value;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const loading = ref(false);
 const nodes = ref(null);
-const seletedNode = ref({
+const selectedNode = ref({
   id: "",
   attrs: [],
 });
 const onNodeSelect = (node) => {
   let attrs = [];
   for (let [key, value] of Object.entries(node.data)) {
-    if (key != "id") {
+    if (key !== "id") {
       attrs.push({ key: key, value: value });
     }
   }
-  seletedNode.id = node.key;
-  seletedNode.value.attrs = attrs;
+  selectedNode.id = node.key;
+  selectedNode.value.attrs = attrs;
   HighlightCurrentElement(node.key);
 };
 const onNodeExpand = async (node) => {
-  if (!node.leaf && node.children.length == 0) {
+  if (!node.leaf && node.children.length === 0) {
     loading.value = true;
     try {
-      const resp = await GetWindowsElementList(node.key);
-      const result = JSON.parse(resp);
-      if (result.result === "ok") {
-        const elements = JSON.parse(result.data);
-        if (elements && elements.length > 0) {
-          elements.forEach((element) => {
-            node.children.push({
-              key: element.id,
-              label: element.localizeControlType + "-" + element.name,
-              children: [],
-              data: element,
-              leaf: false,
+      await GetWindowsElementList(node.key);
+      EventsOnce("windowsEvent", async (resp) => {
+        const result = JSON.parse(resp);
+        if (result.result === "ok") {
+          const elements = JSON.parse(result.data);
+          if (elements && elements.length > 0) {
+            elements.forEach((element) => {
+              node.children.push({
+                key: element.id,
+                label: element.localizeControlType + "-" + element.name,
+                children: [],
+                data: element,
+                leaf: false,
+              });
             });
-          });
+          } else {
+            node.leaf = true;
+          }
         } else {
-          node.leaf = true;
+          toast.add({
+            severity: "error",
+            summary: "拾取失败",
+            detail: result.reason,
+            life: 3000,
+          });
         }
-      } else {
-        toast.add({
-          severity: "error",
-          summary: "拾取失败",
-          detail: result.reason,
-          life: 3000,
-        });
-      }
+      });
     } catch (err) {
       toast.add({
         severity: "error",
@@ -131,31 +135,34 @@ const onNodeExpand = async (node) => {
     loading.value = false;
   }
 };
+
 async function show() {
   nodes.value = [];
   loading.value = true;
   try {
-    const resp = await GetWindowsElementList("");
-    const result = JSON.parse(resp);
-    if (result.result === "ok") {
-      const elements = JSON.parse(result.data);
-      nodes.value = elements.map((element) => {
-        return {
-          key: element.id,
-          label: element.localizeControlType + "-" + element.name,
-          children: [],
-          data: element,
-          leaf: false,
-        };
-      });
-    } else {
-      toast.add({
-        severity: "error",
-        summary: "拾取失败",
-        detail: result.reason,
-        life: 3000,
-      });
-    }
+    await GetWindowsElementList("");
+    EventsOnce("windowsEvent", async (resp) => {
+      const result = JSON.parse(resp);
+      if (result.result === "ok") {
+        const elements = JSON.parse(result.data);
+        nodes.value = elements.map((element) => {
+          return {
+            key: element.id,
+            label: element.localizeControlType + "-" + element.name,
+            children: [],
+            data: element,
+            leaf: false,
+          };
+        });
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "拾取失败",
+          detail: result.reason,
+          life: 3000,
+        });
+      }
+    });
   } catch (err) {
     toast.add({
       severity: "error",
@@ -164,7 +171,7 @@ async function show() {
       life: 3000,
     });
   }
-  seletedNode.value = {
+  selectedNode.value = {
     id: "",
     attrs: [],
   };
@@ -172,8 +179,8 @@ async function show() {
 }
 
 function updateData() {
-  if (seletedNode.id) {
-    emit("confirm", seletedNode.id);
+  if (selectedNode.id) {
+    emit("confirm", selectedNode.id);
   } else {
     toast.add({
       severity: "warn",
@@ -189,6 +196,7 @@ function updateData() {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 :deep(.p-tree-container) {
   max-height: 650px;
 }

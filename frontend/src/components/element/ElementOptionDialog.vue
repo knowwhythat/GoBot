@@ -76,6 +76,11 @@
 
 <script setup>
 import { StartCheckWindowsElement } from "@back/go/backend/App";
+import {
+  EventsOnce,
+  WindowMaximise,
+  WindowMinimise,
+} from "@back/runtime/runtime.js";
 import Dialog from "primevue/dialog";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
@@ -105,7 +110,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       id: "",
-      processNmae: "",
+      processName: "",
       displayName: "",
       image: "",
       paths: [],
@@ -119,7 +124,7 @@ watch(
   (value, oldValue) => {
     visible.value = value;
   },
-  { immediate: true }
+  { immediate: true },
 );
 const matchType = ref([
   { name: "相等", value: "equal" },
@@ -144,9 +149,9 @@ function show() {
       for (let [key, value] of Object.entries(path)) {
         if (key !== "id" && key !== "localizeControlType") {
           let enable = false;
-          if (index == 0 && key === "processName") {
+          if (index === 0 && key === "processName") {
             enable = true;
-          } else if (key != "index" && key !== "processName" && value) {
+          } else if (key !== "index" && key !== "processName" && value) {
             enable = true;
           }
           if (key === "index" && path["name"] === "") {
@@ -172,23 +177,27 @@ function show() {
 
 async function checkData() {
   try {
-    const resp = await StartCheckWindowsElement(JSON.stringify(paths.value));
-    const result = JSON.parse(resp);
-    if (result["result"] === "ok") {
-      toast.add({
-        severity: "success",
-        summary: "校验成功",
-        detail: "找到元素",
-        life: 3000,
-      });
-    } else {
-      toast.add({
-        severity: "error",
-        summary: "校验失败",
-        detail: "元素未找到",
-        life: 3000,
-      });
-    }
+    await StartCheckWindowsElement(JSON.stringify(paths.value));
+    await WindowMinimise();
+    EventsOnce("windowsEvent", async (resp) => {
+      const result = JSON.parse(resp);
+      await WindowMaximise();
+      if (result["result"] === "ok") {
+        toast.add({
+          severity: "success",
+          summary: "校验成功",
+          detail: "找到元素",
+          life: 3000,
+        });
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "校验失败",
+          detail: "元素未找到",
+          life: 3000,
+        });
+      }
+    });
   } catch (err) {
     toast.add({
       severity: "error",

@@ -15,6 +15,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -38,6 +39,12 @@ func startReplCommand(id string) error {
 	params["log_level"] = "Error"
 	env := make(map[string]string)
 	env["project_path"] = projectPath
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exePath := filepath.Dir(ex)
+	env["execute_path"] = exePath
 	params["environment_variables"] = env
 	params["inputs"] = project.InputParam
 	marshalParam, err := json.Marshal(params)
@@ -64,9 +71,10 @@ func startReplCommand(id string) error {
 	err = replProcess.Run()
 	if err != nil {
 		errStr := stderr.String()
+		log.Logger.Logger.Error().Msg(errStr)
+		log.Logger.Logger.Error().Err(err)
 		_, errStr, founded := strings.Cut(errStr, projectPath)
 		log.Logger.Logger.Error().Msg(fmt.Sprintf("%t", founded))
-		log.Logger.Logger.Error().Msg(errStr)
 		return errors.New(errStr)
 	}
 	return nil
@@ -86,9 +94,11 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 		_, err = writer.WriteString(base64.StdEncoding.EncodeToString([]byte(strings.Trim(code, "\n"))) + "\n")
 		_ = writer.Flush()
 		if err != nil {
+			log.Logger.Logger.Error().Err(err)
 			return err
 		}
 		out, err = waitToWrite(outPipe)
+		log.Logger.Logger.Info().Msg(out)
 		match := re.FindAllString(code, -1)
 		out = strings.Trim(out, ">")
 		if len(match) > 0 {
@@ -98,6 +108,7 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 			log.Logger.Logger.Info().Msg(strings.Trim(out, "\n"))
 		}
 		if err != nil {
+			log.Logger.Logger.Error().Err(err)
 			return err
 		}
 	}

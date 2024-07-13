@@ -218,11 +218,11 @@ func (a *App) GetElementImage(id, elementId string) (string, error) {
 	return services.GetElementImage(id, elementId)
 }
 
-func (a *App) StartPickWindowsElement() (string, error) {
+func (a *App) StartPickWindowsElement() error {
 	return services.StartPickWindowsElement(a.ctx)
 }
 
-func (a *App) StartCheckWindowsElement(paths string) (string, error) {
+func (a *App) StartCheckWindowsElement(paths string) error {
 	return services.StartCheckWindowsElement(a.ctx, paths)
 }
 
@@ -234,15 +234,15 @@ func (a *App) GetWindowsElement(id, elementId string) (string, error) {
 	return services.GetWindowsElement(id, elementId)
 }
 
-func (a *App) GetWindowsElementList(parentId string) (string, error) {
-	return services.GetWindowsElementList(parentId)
+func (a *App) GetWindowsElementList(parentId string) error {
+	return services.GetWindowsElementList(a.ctx, parentId)
 }
 
 func (a *App) HighlightCurrentElement(controlId string) error {
-	return services.HighlightCurrentElement(controlId)
+	return services.HighlightCurrentElement(a.ctx, controlId)
 }
 
-func (a *App) GetSelectedWindowsElement(controlId string) (string, error) {
+func (a *App) GetSelectedWindowsElement(controlId string) error {
 	return services.GetSelectedWindowsElement(a.ctx, controlId)
 }
 

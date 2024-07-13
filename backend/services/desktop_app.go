@@ -14,6 +14,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -25,14 +26,16 @@ import (
 
 var windowsInspectCommand *exec.Cmd
 
-var windowsInspectPort = 7777
+var windowsInspectPort = 9999
+
+var windowsInspectConn *websocket.Conn
 
 func GetElementImage(projectId, elementId string) (string, error) {
 	project, err := QueryProjectById(projectId)
 	if err != nil {
 		return "", err
 	}
-	imagePath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + constants.SnapshotDir + string(os.PathSeparator) + elementId + ".png"
+	imagePath := filepath.Join(project.Path, constants.BaseDir, constants.DevDir, constants.SnapshotDir, elementId+".png")
 	if utils.PathExist(imagePath) {
 		data, err := os.ReadFile(imagePath)
 		if err != nil {
@@ -43,7 +46,7 @@ func GetElementImage(projectId, elementId string) (string, error) {
 	return "", errors.New("图片文件不存在")
 }
 
-func startWindowsInspectCommand() error {
+func startWindowsInspectCommand() {
 	for ; windowsInspectPort < 9999; windowsInspectPort++ {
 		if PortCheck(windowsInspectPort) {
 			break
@@ -54,257 +57,175 @@ func startWindowsInspectCommand() error {
 	windowsInspectCommand.Stderr = &stderr
 	err := windowsInspectCommand.Run()
 	if err != nil {
+		windowsInspectCommand = nil
 		errStr := stderr.String()
 		log.Logger.Logger.Error().Msg(errStr)
-		return errors.New(errStr)
+		log.Logger.Logger.Error().Err(err)
+	}
+}
+
+func checkWindowsInspectConn(ctx context.Context) error {
+	if windowsInspectCommand == nil {
+		//go startWindowsInspectCommand()
+	}
+	for i := 0; i < 5; i++ {
+		if windowsInspectConn == nil {
+			log.Logger.Logger.Info().Msgf("windowsInspectPort: %d", windowsInspectPort)
+			conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%d/ws", windowsInspectPort), nil)
+			if err == nil {
+				windowsInspectConn = conn
+				go listenInspectResponse(ctx)
+				return nil
+			} else {
+				time.Sleep(time.Second)
+				continue
+			}
+		} else {
+			return nil
+		}
+	}
+	return errors.New("连接拾取引擎失败")
+}
+
+func StartPickWindowsElement(ctx context.Context) error {
+	err := checkWindowsInspectConn(ctx)
+	if err != nil {
+		return err
+	}
+	messageId := uuid.New().String()
+	sendMessage := make(map[string]interface{})
+	sendMessage["method"] = "highlight_control"
+	sendMessage["message_id"] = messageId
+	data := make(map[string]interface{})
+	sendMessage["data"] = data
+	request, err := json.Marshal(sendMessage)
+	log.Logger.Logger.Info().Msg(string(request))
+	if err != nil {
+		return err
+	}
+	if err := windowsInspectConn.WriteMessage(1, request); err != nil {
+		_ = windowsInspectConn.Close()
+		windowsInspectConn = nil
+		return err
 	}
 	return nil
 }
 
-func StartPickWindowsElement(ctx context.Context) (string, error) {
-	if windowsInspectCommand == nil {
-		go func() {
-			_ = startWindowsInspectCommand()
-		}()
+func StartCheckWindowsElement(ctx context.Context, paths string) error {
+	err := checkWindowsInspectConn(ctx)
+	if err != nil {
+		return err
 	}
-	for retry := 1; retry < 10; retry++ {
-		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
-		if err != nil {
-			time.Sleep(time.Second)
-			continue
-		}
-		defer func(conn *websocket.Conn) {
-			_ = conn.Close()
-		}(conn)
-		messageId := uuid.New().String()
-		sendMessage := make(map[string]interface{})
-		sendMessage["method"] = "highlight_control"
-		sendMessage["message_id"] = messageId
-		data := make(map[string]interface{})
-		sendMessage["data"] = data
-		request, err := json.Marshal(sendMessage)
-		log.Logger.Logger.Info().Msg(string(request))
-		if err != nil {
-			return "", err
-		}
-		if err := conn.WriteMessage(1, request); err != nil {
-			return "", err
-		}
-		runtime.WindowMinimise(ctx)
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				return "", nil
-			}
-			resp := make(map[string]interface{})
-			if err = json.Unmarshal(message, &resp); err != nil {
-				return "", nil
-			}
-			if resp["message_id"] == messageId {
-				runtime.WindowMaximise(ctx)
-				return string(message), nil
-			}
-		}
+	messageId := uuid.New().String()
+	sendMessage := make(map[string]interface{})
+	sendMessage["method"] = "check_control"
+	sendMessage["message_id"] = messageId
+	data := make(map[string]interface{})
+	data["paths"] = paths
+	sendMessage["data"] = data
+	request, err := json.Marshal(sendMessage)
+	log.Logger.Logger.Info().Msg(string(request))
+	if err != nil {
+		return err
 	}
-	return "", errors.New("连接服务失败")
+	if err := windowsInspectConn.WriteMessage(1, request); err != nil {
+		_ = windowsInspectConn.Close()
+		windowsInspectConn = nil
+		return err
+	}
+	return nil
 }
 
-func StartCheckWindowsElement(ctx context.Context, paths string) (string, error) {
-	if windowsInspectCommand == nil {
-		go func() {
-			_ = startWindowsInspectCommand()
-		}()
+func GetWindowsElementList(ctx context.Context, parentId string) error {
+	err := checkWindowsInspectConn(ctx)
+	if err != nil {
+		return err
 	}
-	for retry := 1; retry < 10; retry++ {
-		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
-		if err != nil {
-			time.Sleep(time.Second)
-			continue
-		}
-		defer func(conn *websocket.Conn) {
-			_ = conn.Close()
-		}(conn)
-		messageId := uuid.New().String()
-		sendMessage := make(map[string]interface{})
-		sendMessage["method"] = "check_control"
-		sendMessage["message_id"] = messageId
-		data := make(map[string]interface{})
-		data["paths"] = paths
-		sendMessage["data"] = data
-		request, err := json.Marshal(sendMessage)
-		log.Logger.Logger.Info().Msg(string(request))
-		if err != nil {
-			return "", err
-		}
-		if err := conn.WriteMessage(1, request); err != nil {
-			return "", err
-		}
-		runtime.WindowMinimise(ctx)
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				return "", nil
-			}
-			resp := make(map[string]interface{})
-			if err = json.Unmarshal(message, &resp); err != nil {
-				return "", nil
-			}
-			if resp["message_id"] == messageId {
-				runtime.WindowMaximise(ctx)
-				return string(message), nil
-			}
-		}
+	messageId := uuid.New().String()
+	sendMessage := make(map[string]interface{})
+	sendMessage["message_id"] = messageId
+	data := make(map[string]interface{})
+	if parentId == "" {
+		sendMessage["method"] = "get_root"
+	} else {
+		sendMessage["method"] = "get_children"
+		data["control_id"] = parentId
 	}
-	return "", errors.New("连接服务失败")
+	sendMessage["data"] = data
+	request, err := json.Marshal(sendMessage)
+	log.Logger.Logger.Info().Msg(string(request))
+	if err != nil {
+		return err
+	}
+	if err := windowsInspectConn.WriteMessage(1, request); err != nil {
+		_ = windowsInspectConn.Close()
+		windowsInspectConn = nil
+		return err
+	}
+	return nil
 }
 
-func GetWindowsElementList(parentId string) (string, error) {
-	if windowsInspectCommand == nil {
-		go func() {
-			_ = startWindowsInspectCommand()
-		}()
+func HighlightCurrentElement(ctx context.Context, controlId string) error {
+	err := checkWindowsInspectConn(ctx)
+	if err != nil {
+		return err
 	}
-	for retry := 1; retry < 10; retry++ {
-		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
-		if err != nil {
-			time.Sleep(time.Second)
-			continue
-		}
-		defer func(conn *websocket.Conn) {
-			_ = conn.Close()
-		}(conn)
-		messageId := uuid.New().String()
-		sendMessage := make(map[string]interface{})
-		sendMessage["message_id"] = messageId
-		data := make(map[string]interface{})
-		if parentId == "" {
-			sendMessage["method"] = "get_root"
-		} else {
-			sendMessage["method"] = "get_children"
-			data["control_id"] = parentId
-		}
-		sendMessage["data"] = data
-		request, err := json.Marshal(sendMessage)
-		log.Logger.Logger.Info().Msg(string(request))
-		if err != nil {
-			return "", err
-		}
-		if err := conn.WriteMessage(1, request); err != nil {
-			return "", err
-		}
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				return "", nil
-			}
-			resp := make(map[string]interface{})
-			if err = json.Unmarshal(message, &resp); err != nil {
-				return "", nil
-			}
-			if resp["message_id"] == messageId {
-				return string(message), nil
-			}
-		}
+	messageId := uuid.New().String()
+	sendMessage := make(map[string]interface{})
+	sendMessage["message_id"] = messageId
+	data := make(map[string]interface{})
+	sendMessage["method"] = "highlight_current_control"
+	data["control_id"] = controlId
+	sendMessage["data"] = data
+	request, err := json.Marshal(sendMessage)
+	log.Logger.Logger.Info().Msg(string(request))
+	if err != nil {
+		return err
 	}
-	return "", errors.New("连接服务失败")
+	if err := windowsInspectConn.WriteMessage(1, request); err != nil {
+		_ = windowsInspectConn.Close()
+		windowsInspectConn = nil
+		return err
+	}
+	return nil
 }
 
-func HighlightCurrentElement(controlId string) error {
-	if windowsInspectCommand == nil {
-		go func() {
-			_ = startWindowsInspectCommand()
-		}()
+func GetSelectedWindowsElement(ctx context.Context, controlId string) error {
+	err := checkWindowsInspectConn(ctx)
+	if err != nil {
+		return err
 	}
-	for retry := 1; retry < 10; retry++ {
-		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
-		if err != nil {
-			time.Sleep(time.Second)
-			continue
-		}
-		defer func(conn *websocket.Conn) {
-			_ = conn.Close()
-		}(conn)
-		messageId := uuid.New().String()
-		sendMessage := make(map[string]interface{})
-		sendMessage["message_id"] = messageId
-		data := make(map[string]interface{})
-		sendMessage["method"] = "highlight_current_control"
-		data["control_id"] = controlId
-		sendMessage["data"] = data
-		request, err := json.Marshal(sendMessage)
-		log.Logger.Logger.Info().Msg(string(request))
-		if err != nil {
-			return err
-		}
-		if err := conn.WriteMessage(1, request); err != nil {
-			return err
-		}
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				return nil
-			}
-			resp := make(map[string]interface{})
-			if err = json.Unmarshal(message, &resp); err != nil {
-				return nil
-			}
-			if resp["message_id"] == messageId {
-				return nil
-			}
-		}
+	messageId := uuid.New().String()
+	sendMessage := make(map[string]interface{})
+	sendMessage["message_id"] = messageId
+	data := make(map[string]interface{})
+	sendMessage["method"] = "get_select_control"
+	data["control_id"] = controlId
+	sendMessage["data"] = data
+	request, err := json.Marshal(sendMessage)
+	log.Logger.Logger.Info().Msg(string(request))
+	if err != nil {
+		return err
 	}
-	return errors.New("连接服务失败")
+	if err := windowsInspectConn.WriteMessage(1, request); err != nil {
+		_ = windowsInspectConn.Close()
+		windowsInspectConn = nil
+		return err
+	}
+	return nil
 }
 
-func GetSelectedWindowsElement(ctx context.Context, controlId string) (string, error) {
-	if windowsInspectCommand == nil {
-		go func() {
-			_ = startWindowsInspectCommand()
-		}()
-	}
-	for retry := 1; retry < 10; retry++ {
-		conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%s", strconv.Itoa(windowsInspectPort)), nil)
+func listenInspectResponse(ctx context.Context) {
+	for windowsInspectConn != nil {
+		_, message, err := windowsInspectConn.ReadMessage()
 		if err != nil {
-			time.Sleep(time.Second)
-			continue
+			log.Logger.Logger.Error().Err(err)
+			return
 		}
-		defer func(conn *websocket.Conn) {
-			_ = conn.Close()
-		}(conn)
-		messageId := uuid.New().String()
-		sendMessage := make(map[string]interface{})
-		sendMessage["message_id"] = messageId
-		data := make(map[string]interface{})
-		sendMessage["method"] = "get_select_control"
-		data["control_id"] = controlId
-		sendMessage["data"] = data
-		request, err := json.Marshal(sendMessage)
-		log.Logger.Logger.Info().Msg(string(request))
-		if err != nil {
-			return "", err
-		}
-		runtime.WindowMinimise(ctx)
-		if err := conn.WriteMessage(1, request); err != nil {
-			return "", err
-		}
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				return "", nil
-			}
-			resp := make(map[string]interface{})
-			if err = json.Unmarshal(message, &resp); err != nil {
-				return "", nil
-			}
-			if resp["message_id"] == messageId {
-				runtime.WindowMaximise(ctx)
-				return string(message), nil
-			}
-		}
+		log.Logger.Logger.Info().Msgf("拾取引擎响应: %s", string(message))
+		runtime.EventsEmit(ctx, constants.WindowsEvent, string(message))
 	}
-	return "", errors.New("连接服务失败")
 }
-
 func SaveWindowsElement(ctx context.Context, id, elementId, image, selector string) error {
 	project, err := QueryProjectById(id)
 	if err != nil {

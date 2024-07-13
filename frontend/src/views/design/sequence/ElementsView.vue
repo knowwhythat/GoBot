@@ -100,14 +100,20 @@ import ElementOptionDialog from "@/components/element/ElementOptionDialog.vue";
 import ElementTreeDialog from "@/components/element/ElementTreeDialog.vue";
 import { ref, toRaw } from "vue";
 import {
-  StartPickWindowsElement,
-  SaveWindowsElement,
   GetElementImage,
   GetSelectedWindowsElement,
   RemoveWindowsElement,
+  SaveWindowsElement,
+  StartPickWindowsElement,
 } from "@back/go/backend/App";
+import {
+  EventsOnce,
+  WindowMaximise,
+  WindowMinimise,
+} from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
+
 const toast = useToast();
 const confirm = useConfirm();
 const emit = defineEmits(["hide"]);
@@ -131,21 +137,25 @@ const needInit = ref(false);
 
 async function pickElement() {
   try {
-    const resp = await StartPickWindowsElement();
-    const result = JSON.parse(resp);
-    if (result.result === "ok") {
-      needInit.value = true;
-      pathOption.value = JSON.parse(result.data);
-      dialogShow.value = true;
-      console.log(pathOption.value);
-    } else {
-      toast.add({
-        severity: "error",
-        summary: "拾取失败",
-        detail: result.reason,
-        life: 3000,
-      });
-    }
+    await StartPickWindowsElement();
+    await WindowMinimise();
+    EventsOnce("windowsEvent", async (resp) => {
+      await WindowMaximise();
+      const result = JSON.parse(resp);
+      console.log(result);
+      if (result.result === "ok") {
+        needInit.value = true;
+        pathOption.value = JSON.parse(result.data);
+        dialogShow.value = true;
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "拾取失败",
+          detail: result.reason,
+          life: 3000,
+        });
+      }
+    });
   } catch (err) {
     toast.add({
       severity: "error",
@@ -162,21 +172,25 @@ function deepPickElement() {
 
 async function selectElement(id) {
   try {
-    const resp = await GetSelectedWindowsElement(id);
-    const result = JSON.parse(resp);
-    if (result.result === "ok") {
-      needInit.value = true;
-      pathOption.value = JSON.parse(result.data);
-      treeDialogShow.value = false;
-      dialogShow.value = true;
-    } else {
-      toast.add({
-        severity: "error",
-        summary: "拾取失败",
-        detail: result.reason,
-        life: 3000,
-      });
-    }
+    await GetSelectedWindowsElement(id);
+    await WindowMinimise();
+    EventsOnce("windowsEvent", async (resp) => {
+      await WindowMaximise();
+      const result = JSON.parse(resp);
+      if (result.result === "ok") {
+        needInit.value = true;
+        pathOption.value = JSON.parse(result.data);
+        treeDialogShow.value = false;
+        dialogShow.value = true;
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "拾取失败",
+          detail: result.reason,
+          life: 3000,
+        });
+      }
+    });
   } catch (err) {
     toast.add({
       severity: "error",
@@ -195,11 +209,13 @@ async function saveElement(element) {
     props.id,
     element.id,
     image,
-    JSON.stringify(element)
+    JSON.stringify(element),
   );
   dialogShow.value = false;
 }
+
 const imagePath = ref(null);
+
 async function nodeSelect(node) {
   if (!node["children"]) {
     const image = await GetElementImage(props.id, node.key);
@@ -208,6 +224,7 @@ async function nodeSelect(node) {
     imagePath.value = null;
   }
 }
+
 const selectedNode = ref(null);
 const menu = ref();
 const items = ref([
@@ -227,7 +244,7 @@ const items = ref([
           RemoveWindowsElement(props.id, selectedNode.value.key).catch(
             (error) => {
               console.error(error);
-            }
+            },
           );
         },
         reject: () => {},
@@ -259,24 +276,30 @@ function onContextMenuClick(options) {
 :deep(.p-splitter-panel) {
   overflow: hidden;
 }
+
 :deep(.p-component) {
   height: 100%;
   overflow: hidden;
 }
+
 :deep(.p-toggleable-content) {
   height: calc(100% - 40px);
 }
+
 :deep(.p-panel-content) {
   height: 100%;
   overflow: auto;
 }
+
 :deep(.p-tree) {
   padding: 0;
   border: none;
 }
+
 :deep(.p-tree-wrapper) {
   height: 100%;
 }
+
 :deep(.p-panel-content) {
   padding: 0.75rem;
 }

@@ -103,7 +103,7 @@
               },
               {
                 "key": "timeout",
-                "label": "超时时间",
+                "label": "超时时间(毫秒)(毫秒)",
                 "type": "number",
                 "default_value": "1:3000",
                 "required": true,
@@ -549,7 +549,7 @@
               },
               {
                 "key": "timeout",
-                "label": "超时时间",
+                "label": "超时时间(毫秒)",
                 "type": "number",
                 "default_value": "1:3000",
                 "required": true,
@@ -615,7 +615,7 @@
               },
               {
                 "key": "timeout",
-                "label": "超时时间",
+                "label": "超时时间(毫秒)",
                 "type": "number",
                 "default_value": "1:3000",
                 "required": true,
@@ -701,7 +701,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -746,7 +746,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -781,7 +781,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -816,7 +816,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -851,7 +851,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -979,7 +979,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:3000",
                     "required": true,
@@ -1084,7 +1084,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -1185,7 +1185,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -1241,7 +1241,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -1460,7 +1460,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -1540,7 +1540,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -1598,7 +1598,6 @@
                     "editor_type": "SelectDefine",
                     "show_if": []
                   },
-
                   {
                     "key": "click_count",
                     "label": "点击次数",
@@ -1617,6 +1616,16 @@
                     "required": true,
                     "options": null,
                     "editor_type": "BoolValue",
+                    "show_if": []
+                  },
+                  {
+                    "key": "timeout",
+                    "label": "超时时间(毫秒)",
+                    "type": "number",
+                    "default_value": "1:30000",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
                     "show_if": []
                   }
                 ],
@@ -2572,7 +2581,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
@@ -2664,7 +2673,7 @@
                   },
                   {
                     "key": "timeout",
-                    "label": "超时时间",
+                    "label": "超时时间(毫秒)",
                     "type": "number",
                     "default_value": "1:30",
                     "required": true,
