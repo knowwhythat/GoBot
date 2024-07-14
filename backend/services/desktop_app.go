@@ -11,7 +11,6 @@ import (
 	"gobot/backend/log"
 	"gobot/backend/services/sys_exec"
 	"gobot/backend/utils"
-	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -48,7 +47,7 @@ func GetElementImage(projectId, elementId string) (string, error) {
 
 func startWindowsInspectCommand() {
 	for ; windowsInspectPort < 9999; windowsInspectPort++ {
-		if PortCheck(windowsInspectPort) {
+		if utils.PortCheck(windowsInspectPort) {
 			break
 		}
 	}
@@ -66,7 +65,7 @@ func startWindowsInspectCommand() {
 
 func checkWindowsInspectConn(ctx context.Context) error {
 	if windowsInspectCommand == nil {
-		//go startWindowsInspectCommand()
+		go startWindowsInspectCommand()
 	}
 	for i := 0; i < 5; i++ {
 		if windowsInspectConn == nil {
@@ -349,16 +348,4 @@ func StopWindowsInspectCommand() {
 		_ = sys_exec.KillProcess(windowsInspectCommand)
 		windowsInspectCommand = nil
 	}
-}
-
-func PortCheck(port int) bool {
-	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port)))
-
-	if err != nil {
-		return false
-	}
-	defer func(l net.Listener) {
-		_ = l.Close()
-	}(l)
-	return true
 }

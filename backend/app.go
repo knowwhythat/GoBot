@@ -11,7 +11,7 @@ import (
 	"gobot/backend/plugin"
 	"gobot/backend/services"
 	"gobot/backend/services/sys_tray"
-	"gobot/backend/services/virsual_desk"
+	"gobot/backend/services/virtual_desk"
 	"gobot/backend/utils"
 
 	"github.com/spf13/viper"
@@ -45,6 +45,7 @@ func (a *App) Shutdown(ctx context.Context) {
 	_ = dao.MainDB.Close()
 	_ = dao.LogDB.Close()
 	services.StopWindowsInspectCommand()
+	virtual_desk.StopVisualHost()
 }
 
 func (a *App) OpenDialog(option map[string]string) string {
@@ -131,7 +132,7 @@ func (a *App) RunMainFlow(id string) error {
 }
 
 func (a *App) TerminateMainFlow(id string) error {
-	return services.TerminateFlow(id)
+	return services.TerminateFlow(a.ctx, id)
 }
 
 func (a *App) ReadProjectConfig(id string) (models.ProjectConfig, error) {
@@ -308,5 +309,5 @@ func (a *App) SaveProjectDependency(id string, packages []string) (err error) {
 	return services.SaveProjectDependency(id, packages)
 }
 func (a *App) StartInVirtualDesk(id string) (err error) {
-	return virsual_desk.StartInVirtualDesk(id)
+	return virtual_desk.StartInVirtualDesk(a.ctx, id)
 }

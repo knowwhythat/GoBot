@@ -21,7 +21,7 @@ func main() {
 		println("Init config error:" + err.Error())
 		panic(err)
 	}
-	log.Init()
+	log.Init("gobot")
 	_ = dao.InitKvDB()
 	// Create an instance of the app structure
 	app := backend.NewApp()

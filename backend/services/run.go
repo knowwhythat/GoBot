@@ -15,7 +15,7 @@ import (
 	"gobot/backend/log"
 	"gobot/backend/models"
 	"gobot/backend/services/sys_exec"
-	"gobot/backend/services/virsual_desk"
+	"gobot/backend/services/virtual_desk"
 	"gobot/backend/utils"
 	"io/fs"
 	"os"
@@ -163,7 +163,7 @@ func RunProject(ctx context.Context, id, triggerType string) error {
 	return nil
 }
 
-func TerminateFlow(id string) error {
+func TerminateFlow(ctx context.Context, id string) error {
 	result, ok := slice.FindBy(global.ProcessQueue, func(index int, item forms.RunningInstance) bool {
 		return item.Id == id
 	})
@@ -173,15 +173,15 @@ func TerminateFlow(id string) error {
 			if err != nil {
 				return err
 			}
+			global.ProcessQueue = slice.Filter(global.ProcessQueue, func(index int, item forms.RunningInstance) bool {
+				return item.Id != id
+			})
 		} else {
-			err := virsual_desk.TerminateVirtualDeskFlow(id)
+			err := virtual_desk.TerminateVirtualDeskFlow(ctx, id)
 			if err != nil {
 				return err
 			}
 		}
-		global.ProcessQueue = slice.Filter(global.ProcessQueue, func(index int, item forms.RunningInstance) bool {
-			return item.Id != id
-		})
 	}
 	return nil
 }

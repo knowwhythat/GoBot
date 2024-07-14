@@ -2,13 +2,13 @@ package log
 
 import (
 	"fmt"
-	"gobot/backend/constants"
-	"os"
-	"strings"
-	"time"
-
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
+	"gobot/backend/constants"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 type WailsLog struct {
@@ -17,7 +17,7 @@ type WailsLog struct {
 
 var Logger WailsLog
 
-func Init() {
+func Init(name string) {
 	logLevel := viper.GetString(constants.ConfigLogLevel)
 	level, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
@@ -35,7 +35,7 @@ func Init() {
 		return
 	}
 
-	fileName := logDir + string(os.PathSeparator) + time.Now().Format("2006-01-02") + ".log"
+	fileName := filepath.Join(logDir, name+"-"+time.Now().Format("2006-01-02")+".log")
 	logFile, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: timeFormat}
 	consoleWriter.FormatLevel = func(i interface{}) string {
