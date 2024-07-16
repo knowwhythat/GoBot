@@ -77,7 +77,7 @@ func StartInVirtualDesk(ctx context.Context, id string) error {
 func TerminateVirtualDeskFlow(ctx context.Context, id string) error {
 	connectVirtualServer(ctx)
 	req := &forms.Transfer{
-		Action: constants.StartAction,
+		Action: constants.StopAction,
 	}
 
 	data := forms.StopFlow{
@@ -287,7 +287,7 @@ func listenResponse(ctx context.Context, conn *websocket.Conn) {
 				return item.Id == result.InstanceId
 			})
 			if !ok {
-				log.Logger.Logger.Error().Msg("找不到对应的进程")
+				log.Logger.Logger.Warn().Msg("找不到对应的进程")
 				continue
 			}
 			global.ProcessQueue = slice.Filter(global.ProcessQueue, func(index int, item forms.RunningInstance) bool {

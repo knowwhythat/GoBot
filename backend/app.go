@@ -311,3 +311,19 @@ func (a *App) SaveProjectDependency(id string, packages []string) (err error) {
 func (a *App) StartInVirtualDesk(id string) (err error) {
 	return virtual_desk.StartInVirtualDesk(a.ctx, id)
 }
+
+func (a *App) StartCapture() (string, error) {
+	return services.StartCapture()
+}
+
+func (a *App) HighlightImage(id, imageId string) error {
+	return services.HighlightImage(id, imageId)
+}
+
+func (a *App) GetImages(id string) (string, error) {
+	return services.GetImages(id)
+}
+
+func (a *App) SaveImage(id string, imageData forms.ImageData) error {
+	return services.SaveImage(a.ctx, id, imageData)
+}

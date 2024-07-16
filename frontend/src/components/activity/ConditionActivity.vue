@@ -4,12 +4,15 @@
     :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
+    :commentable="true"
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @update="updateData($event)"
   >
     <template #operate>
@@ -43,7 +46,7 @@ const props = defineProps({
     default: {},
   },
 });
-defineEmits(["delete"]);
+defineEmits(["delete", "comment", "uncomment"]);
 onMounted(() => {
   if (!props.element.children || props.element.children.length < 2) {
     props.element.children = reactive([]);
@@ -54,6 +57,7 @@ onMounted(() => {
       label: "IF",
       toggleable: true,
       deleteable: false,
+      showComment: false,
       icon_path: "riHome5Line",
       isPseudo: true,
       parameter_define: {
@@ -81,6 +85,7 @@ onMounted(() => {
       label: "Else",
       toggleable: true,
       deleteable: false,
+      showComment: false,
       icon_path: "riHome5Line",
       isPseudo: true,
       children: [],
@@ -104,6 +109,7 @@ function addCondition() {
     label: "Else If",
     toggleable: true,
     deleteable: true,
+    showComment: true,
     icon_path: "riHome5Line",
     isPseudo: true,
     parameter_define: {
@@ -135,7 +141,7 @@ function updateData(data) {
 
 function deleteNode({ id }) {
   const blockIndex = props.element.children.findIndex(
-    (activity) => activity.id === id
+    (activity) => activity.id === id,
   );
 
   if (blockIndex !== -1) {

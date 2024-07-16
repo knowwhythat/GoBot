@@ -52,7 +52,38 @@
     <template #icons>
       <div :class="['invisible', 'group-hover/item:visible']">
         <slot name="operate"></slot>
+        <template v-if="showComment">
+          <button
+            v-tooltip.left="{
+              value: '注释',
+              showDelay: 100,
+              hideDelay: 300,
+            }"
+            v-if="commentable"
+            class="p-panel-header-icon p-link mr-2"
+            @click.stop="$emit('comment')"
+          >
+            <v-remixicon size="20" name="riFileForbidFill" />
+          </button>
+          <button
+            v-else
+            v-tooltip.left="{
+              value: '取消注释',
+              showDelay: 100,
+              hideDelay: 300,
+            }"
+            class="p-panel-header-icon p-link mr-2"
+            @click.stop="$emit('uncomment')"
+          >
+            <v-remixicon size="20" name="riFileForbidLine" />
+          </button>
+        </template>
         <button
+          v-tooltip.left="{
+            value: '运行',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           v-if="props.runnable"
           class="p-panel-header-icon p-link mr-2"
           @click.stop="$emit('run')"
@@ -60,6 +91,11 @@
           <span class="pi pi-caret-right"></span>
         </button>
         <button
+          v-tooltip.left="{
+            value: '删除',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           v-if="props.deleteable"
           class="p-panel-header-icon p-link mr-2"
           @click.stop="$emit('delete')"
@@ -67,6 +103,11 @@
           <span class="pi pi-trash"></span>
         </button>
         <button
+          v-tooltip.left="{
+            value: '编辑',
+            showDelay: 100,
+            hideDelay: 300,
+          }"
           class="p-panel-header-icon p-link mr-2"
           @click.stop="dialogShow = true"
         >
@@ -123,6 +164,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  commentable: {
+    type: Boolean,
+    default: true,
+  },
+  showComment: {
+    type: Boolean,
+    default: true,
+  },
   deleteable: {
     type: Boolean,
     default: true,
@@ -145,7 +194,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["delete", "update", "run"]);
+const emit = defineEmits(["delete", "update", "run", "comment", "uncomment"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
 const { debugingId } = inject("debugingId");
 const { selectedActivity } = inject("selectedActivity");

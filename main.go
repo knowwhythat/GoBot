@@ -53,7 +53,8 @@ func main() {
 	})
 
 	if err != nil {
-		log.Logger.Error("启动失败")
+		log.Logger.Logger.Error().Msg("启动失败")
+		log.Logger.Logger.Error().Err(err)
 	}
 	log.Logger.Info("服务停止")
 }

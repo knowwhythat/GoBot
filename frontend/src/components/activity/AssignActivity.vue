@@ -6,12 +6,15 @@
     :breakpoint="props.element.breakpoint"
     :collapsed="true"
     :deleteable="props.element.deleteable"
+    :commentable="true"
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @update="updateData($event)"
     @run="runActivity"
   >
@@ -19,7 +22,7 @@
       <div class="flex">
         <InputText
           :model-value="variableName"
-          @update:model-value="chageName($event)"
+          @update:model-value="changeName($event)"
           class="py-0 px-2 h-8"
           placeholder="变量名称"
           @keydown="(e) => e.stopPropagation()"
@@ -28,7 +31,7 @@
         <InputGroup>
           <InputText
             :model-value="variableValue"
-            @update:model-value="chageValue($event)"
+            @update:model-value="changeValue($event)"
             class="py-0 px-2 h-8"
             placeholder="变量值"
             @keydown="(e) => e.stopPropagation()"
@@ -54,8 +57,9 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
 import { RunActivity } from "@back/go/backend/App";
-import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
+import { EventsOff, EventsOn } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
+
 const toast = useToast();
 const props = defineProps({
   element: {
@@ -63,7 +67,7 @@ const props = defineProps({
     default: {},
   },
 });
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete", "comment", "uncomment"]);
 const isExpression = ref(false);
 const variableName = ref("");
 const variableValue = ref("");
@@ -79,20 +83,22 @@ watch(
       variableValue.value = value["variable_value"].substring(2);
     } else {
       const defaultValue = props.element.parameter_define.inputs.filter(
-        (pd) => pd.key === "variable_value"
+        (pd) => pd.key === "variable_value",
       )[0].default_value;
       isExpression.value = defaultValue.split(":")[0] === "1";
       variableValue.value = defaultValue.substring(2);
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 const { dataChanged, updateDataChanged } = inject("dataChanged");
-function chageName(data) {
+
+function changeName(data) {
   props.element.parameter["variable_name"] = data;
   updateDataChanged();
 }
-function chageValue(data) {
+
+function changeValue(data) {
   if (isExpression.value) {
     props.element.parameter["variable_value"] = "1:" + data;
   } else {
@@ -100,6 +106,7 @@ function chageValue(data) {
   }
   updateDataChanged();
 }
+
 function changeValueType() {
   isExpression.value = !isExpression.value;
   if (isExpression.value) {
@@ -109,6 +116,7 @@ function changeValueType() {
   }
   updateDataChanged();
 }
+
 function updateData(data) {
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {

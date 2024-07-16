@@ -83,8 +83,9 @@ func AddOrUpdateProject(project models.Project) (err error) {
 		if result == nil {
 			return errors.New("未找到原始数据")
 		}
-
-		_ = ModifyProject(project)
+		result.Name = project.Name
+		result.Description = project.Description
+		_ = ModifyProject(*result)
 	}
 
 	return nil

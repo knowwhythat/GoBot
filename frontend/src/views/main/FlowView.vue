@@ -122,13 +122,13 @@
           class="w-full ml-6"
         />
       </div>
-      <div class="flex justify-content-center mt-2">
+      <div v-if="!newProject.id" class="flex justify-content-center mt-2">
         <label for="value" class="w-32">是否使用流程图</label>
         <InputSwitch v-model="newProject.isFlow" />
       </div>
       <div class="flex justify-content-center mt-2">
         <label for="value" class="w-32">描述</label>
-        <Editor v-model="newProject.desc" editorStyle="height: 240px" />
+        <Textarea v-model="newProject.description" rows="5" cols="80" />
       </div>
       <template #footer>
         <Button
@@ -142,7 +142,7 @@
       </template>
     </Dialog>
     <Dialog
-      v-model:visible="paramDiaglogVisible"
+      v-model:visible="paramDialogVisible"
       modal
       maximizable
       header="流程参数"
@@ -155,7 +155,7 @@
           icon="pi pi-times"
           outlined
           severity="secondary"
-          @click="paramDiaglogVisible = false"
+          @click="paramDialogVisible = false"
         />
         <Button label="确定" icon="pi pi-check" @click="saveParams" />
       </template>
@@ -175,7 +175,7 @@ import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import Editor from "primevue/editor";
+import Textarea from "primevue/textarea";
 import ParamSettingView from "@/views/main/ParamSettingView.vue";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "lodash-es";
@@ -240,7 +240,7 @@ function getItems(id) {
         const pro = projects.value.find((p) => p.id === id);
         newProject.id = pro.id;
         newProject.name = pro.name;
-        newProject.desc = pro.description;
+        newProject.description = pro.description;
         dialogVisible.value = true;
       },
     },
@@ -293,7 +293,7 @@ function getItems(id) {
   ];
 }
 
-const paramDiaglogVisible = ref(false);
+const paramDialogVisible = ref(false);
 
 const projectParamDefine = ref([]);
 const projectParam = ref({});
@@ -315,14 +315,14 @@ const openParamDialog = async (item) => {
     }
   });
   projectParam.value = inputParam;
-  paramDiaglogVisible.value = true;
+  paramDialogVisible.value = true;
 };
 
 const saveParams = () => {
   selectedProject.value.inputParam = projectParam.value;
   AddOrUpdateProject(selectedProject.value)
     .then((result) => {
-      paramDiaglogVisible.value = false;
+      paramDialogVisible.value = false;
       listProject();
     })
     .catch((error) => {
@@ -360,14 +360,14 @@ const newProject = reactive({
   id: "",
   name: "",
   isFlow: false,
-  desc: "",
+  description: "",
 });
 
 function createProject() {
   newProject.id = "";
   newProject.name = "";
   newProject.isFlow = false;
-  newProject.desc = "";
+  newProject.description = "";
   dialogVisible.value = true;
 }
 

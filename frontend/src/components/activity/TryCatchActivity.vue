@@ -5,11 +5,14 @@
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
     :label="props.element.label"
+    :commentable="true"
     :icon="props.element.icon_path"
     :color="props.element.color"
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @update="updateData($event)"
   >
     <div class="flex flex-col">
@@ -33,7 +36,7 @@ const props = defineProps({
     default: {},
   },
 });
-defineEmits(["delete"]);
+defineEmits(["delete", "comment", "uncomment"]);
 onMounted(() => {
   if (!props.element.children || props.element.children.length < 2) {
     props.element.children = reactive([]);
@@ -45,6 +48,7 @@ onMounted(() => {
       isPseudo: true,
       toggleable: true,
       deleteable: false,
+      showComment: false,
       icon_path: "riHome5Line",
       children: [],
     });
@@ -56,6 +60,7 @@ onMounted(() => {
       isPseudo: true,
       toggleable: true,
       deleteable: false,
+      showComment: false,
       icon_path: "riHome5Line",
       parameter_define: {
         inputs: [],
@@ -83,6 +88,7 @@ onMounted(() => {
       isPseudo: true,
       toggleable: true,
       deleteable: false,
+      showComment: false,
       icon_path: "riHome5Line",
       children: [],
     });

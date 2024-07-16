@@ -20,6 +20,8 @@ export function GetBasicConfigData():Promise<{[key: string]: string}>;
 
 export function GetElementImage(arg1:string,arg2:string):Promise<string>;
 
+export function GetImages(arg1:string):Promise<string>;
+
 export function GetLoginData():Promise<forms.LoginForm>;
 
 export function GetMainFlow(arg1:string):Promise<string>;
@@ -30,15 +32,17 @@ export function GetProjectWindowsElements(arg1:string):Promise<string>;
 
 export function GetRunningFlows():Promise<Array<forms.RunningInstance>>;
 
-export function GetSelectedWindowsElement(arg1:string):Promise<string>;
+export function GetSelectedWindowsElement(arg1:string):Promise<void>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
 
 export function GetWindowsElement(arg1:string,arg2:string):Promise<string>;
 
-export function GetWindowsElementList(arg1:string):Promise<string>;
+export function GetWindowsElementList(arg1:string):Promise<void>;
 
 export function HighlightCurrentElement(arg1:string):Promise<void>;
+
+export function HighlightImage(arg1:string,arg2:string):Promise<void>;
 
 export function ListProject():Promise<Array<models.Project>>;
 
@@ -76,6 +80,8 @@ export function RunSubFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveBasicConfigData(arg1:{[key: string]: string}):Promise<void>;
 
+export function SaveImage(arg1:string,arg2:forms.ImageData):Promise<void>;
+
 export function SaveMainFlow(arg1:string,arg2:string):Promise<void>;
 
 export function SaveProjectConfig(arg1:string,arg2:string):Promise<void>;
@@ -90,17 +96,19 @@ export function SelectExecutionLog(arg1:string):Promise<string>;
 
 export function SelectProject(arg1:string):Promise<models.Project>;
 
-export function StartCheck(arg1:string,arg2:string):Promise<string>;
+export function StartCapture():Promise<string>;
 
-export function StartCheckWindowsElement(arg1:string):Promise<string>;
+export function StartCheck(arg1:string,arg2:string):Promise<void>;
+
+export function StartCheckWindowsElement(arg1:string):Promise<void>;
 
 export function StartInVirtualDesk(arg1:string):Promise<void>;
 
 export function StartMonitorLog(arg1:string):Promise<void>;
 
-export function StartPick():Promise<string>;
+export function StartPick():Promise<void>;
 
-export function StartPickWindowsElement():Promise<string>;
+export function StartPickWindowsElement():Promise<void>;
 
 export function StopMonitorLog(arg1:string):Promise<void>;
 

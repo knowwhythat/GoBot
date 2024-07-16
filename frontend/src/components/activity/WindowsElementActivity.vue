@@ -6,12 +6,15 @@
     :breakpoint="props.element.breakpoint"
     :collapsed="true"
     :deleteable="props.element.deleteable"
+    :commentable="true"
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @update="updateData($event)"
     @run="runActivity"
   >
@@ -46,7 +49,7 @@ const props = defineProps({
     default: {},
   },
 });
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete", "comment", "uncomment"]);
 
 const { projectId } = inject("projectId");
 const imagePath = ref("");
@@ -54,7 +57,7 @@ onMounted(async () => {
   if ("windows_element" in props.element.parameter) {
     const image = await GetElementImage(
       projectId,
-      props.element.parameter["windows_element"].substring(2)
+      props.element.parameter["windows_element"].substring(2),
     );
     imagePath.value = "data:image/png;base64," + image;
   }
@@ -69,7 +72,7 @@ function updateData(data) {
         if (data[key]["windows_element"]) {
           GetElementImage(
             projectId,
-            data[key]["windows_element"].substring(2)
+            data[key]["windows_element"].substring(2),
           ).then((data) => {
             imagePath.value = "data:image/png;base64," + data;
           });

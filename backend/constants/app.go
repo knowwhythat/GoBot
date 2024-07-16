@@ -18,4 +18,5 @@ const (
 	DevDir              = ".dev"
 	SnapshotDir         = "snapshot"
 	Selector            = "selector.json"
+	Image               = "image.json"
 )

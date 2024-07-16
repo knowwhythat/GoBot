@@ -4,6 +4,8 @@
     :collapsed="props.element.collapsed"
     :toggleable="props.element.toggleable"
     :deleteable="props.element.deleteable"
+    :commentable="props.element.key !== 'tools.comment'"
+    :showComment="props.element.showComment"
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
@@ -11,6 +13,8 @@
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @drop="handleDrop"
   >
     <div
@@ -124,7 +128,7 @@ onMounted(() => {
   id.value = nanoid(16);
 });
 
-const emit = defineEmits(["update", "delete"]);
+const emit = defineEmits(["update", "delete", "comment", "uncomment"]);
 
 const activityComponents = import.meta.glob("@/components/activity/*.vue", {
   eager: true,

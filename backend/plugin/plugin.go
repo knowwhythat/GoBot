@@ -11,6 +11,7 @@ var f embed.FS
 
 var fileList []string = []string{
 	"base_control.json",
+	"tools.json",
 	"data_process.json",
 	"browser.json",
 	"desktop_application.json",

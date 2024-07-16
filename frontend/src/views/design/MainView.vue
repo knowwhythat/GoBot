@@ -214,6 +214,12 @@
                   v-else-if="activeNav === 'ElementsView'"
                   @hide="activeNav = ''"
                 />
+                <ImageView
+                  :id="props.id"
+                  :images="[]"
+                  v-else-if="activeNav === 'ImageView'"
+                  @hide="activeNav = ''"
+                />
                 <ParamsView
                   :id="props.id"
                   v-else-if="activeNav === 'ParamsView'"
@@ -363,6 +369,7 @@ import LeftPaneView from "@/views/design/sequence/LeftPaneView.vue";
 import LogsView from "@/views/design/sequence/LogsView.vue";
 import LocalVariablesView from "@/views/design/sequence/LocalVariablesView.vue";
 import ElementsView from "@/views/design/sequence/ElementsView.vue";
+import ImageView from "@/views/design/sequence/ImageView.vue";
 import ParamsView from "@/views/design/sequence/ParamsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
 import GlobalVariableView from "@/views/design/sequence/GlobalVariableView.vue";
@@ -718,6 +725,7 @@ function save() {
 const bottomNav = [
   { title: "日志", component: "LogsView" },
   { title: "元素库", component: "ElementsView" },
+  { title: "图片库", component: "ImageView" },
   { title: "参数库", component: "ParamsView" },
   { title: "变量库", component: "LocalVariablesView" },
 ];

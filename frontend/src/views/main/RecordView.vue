@@ -58,6 +58,9 @@
             icon="pi pi-times"
             severity="danger"
             value="失败"
+            v-tooltip.top="{
+              value: slotProps.data.errorMsg,
+            }"
           ></Tag>
           <Tag
             v-else

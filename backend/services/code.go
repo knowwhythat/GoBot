@@ -137,8 +137,10 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	if activity.IsPseudo {
 		if activity.Method == "if" || activity.Method == "elif" {
 			indent, code, needPass = generateIfExpression(indent, *activity)
-		} else if activity.Key == "base.control.group" {
-			indent, code, needPass = generateCommentExpression(indent, *activity)
+		} else if activity.Key == "tools.group" {
+			indent, code, needPass = generateGroupExpression(indent, *activity)
+		} else if activity.Key == "tools.comment" {
+			indent, code, needPass = generateCommentExpression(indent, activity)
 		} else if activity.Method == "else" {
 			indent, code, needPass = generateElseExpression(indent, *activity)
 		} else if activity.Method == "while" {
@@ -261,10 +263,18 @@ func generateIfExpression(indent int, activity Activity) (int, string, bool) {
 	return indent, code, true
 }
 
-func generateCommentExpression(indent int, activity Activity) (int, string, bool) {
+func generateGroupExpression(indent int, activity Activity) (int, string, bool) {
 	code := strings.Repeat(" ", indent*4)
 	indent = indent - 1
 	code += "#" + activity.Label + "\n"
+	return indent, code, false
+}
+
+func generateCommentExpression(indent int, activity *Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	indent = indent - 1
+	code += "#" + activity.Label + "\n"
+	activity.Children = []Activity{}
 	return indent, code, false
 }
 

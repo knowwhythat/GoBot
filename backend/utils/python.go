@@ -2,13 +2,14 @@ package utils
 
 import (
 	"github.com/duke-git/lancet/v2/system"
-	"os"
+	"gobot/backend/constants"
+	"path/filepath"
 )
 
 func GetVenvPython(path string) string {
 	if system.IsWindows() {
-		return path + string(os.PathSeparator) + "venv" + string(os.PathSeparator) + "Scripts" + string(os.PathSeparator) + "python.exe"
+		return filepath.Join(path, constants.VenvDir, "Scripts", "python.exe")
 	} else {
-		return path + string(os.PathSeparator) + "venv" + string(os.PathSeparator) + "bin" + string(os.PathSeparator) + "python"
+		return filepath.Join(path, constants.VenvDir, "bin", "python")
 	}
 }

@@ -48,6 +48,30 @@ export namespace forms {
 		    return a;
 		}
 	}
+	export class ImageData {
+	    id: string;
+	    name: string;
+	    image: string;
+	    left: number;
+	    top: number;
+	    right: number;
+	    bottom: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImageData(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.image = source["image"];
+	        this.left = source["left"];
+	        this.top = source["top"];
+	        this.right = source["right"];
+	        this.bottom = source["bottom"];
+	    }
+	}
 	export class LoginForm {
 	    username: string;
 	    pwd: string;

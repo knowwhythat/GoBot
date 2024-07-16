@@ -79,3 +79,13 @@ type Package struct {
 	Name    string `form:"name" json:"name"`
 	Version string `form:"version" json:"version"`
 }
+
+type ImageData struct {
+	Id     string  `json:"id"`
+	Name   string  `json:"name"`
+	Image  string  `json:"image"`
+	Left   float32 `json:"left"`
+	Top    float32 `json:"top"`
+	Right  float32 `json:"right"`
+	Bottom float32 `json:"bottom"`
+}

@@ -34,6 +34,10 @@ export function GetElementImage(arg1, arg2) {
   return window['go']['backend']['App']['GetElementImage'](arg1, arg2);
 }
 
+export function GetImages(arg1) {
+  return window['go']['backend']['App']['GetImages'](arg1);
+}
+
 export function GetLoginData() {
   return window['go']['backend']['App']['GetLoginData']();
 }
@@ -72,6 +76,10 @@ export function GetWindowsElementList(arg1) {
 
 export function HighlightCurrentElement(arg1) {
   return window['go']['backend']['App']['HighlightCurrentElement'](arg1);
+}
+
+export function HighlightImage(arg1, arg2) {
+  return window['go']['backend']['App']['HighlightImage'](arg1, arg2);
 }
 
 export function ListProject() {
@@ -146,6 +154,10 @@ export function SaveBasicConfigData(arg1) {
   return window['go']['backend']['App']['SaveBasicConfigData'](arg1);
 }
 
+export function SaveImage(arg1, arg2) {
+  return window['go']['backend']['App']['SaveImage'](arg1, arg2);
+}
+
 export function SaveMainFlow(arg1, arg2) {
   return window['go']['backend']['App']['SaveMainFlow'](arg1, arg2);
 }
@@ -172,6 +184,10 @@ export function SelectExecutionLog(arg1) {
 
 export function SelectProject(arg1) {
   return window['go']['backend']['App']['SelectProject'](arg1);
+}
+
+export function StartCapture() {
+  return window['go']['backend']['App']['StartCapture']();
 }
 
 export function StartCheck(arg1, arg2) {

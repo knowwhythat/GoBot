@@ -6,12 +6,15 @@
     :breakpoint="props.element.breakpoint"
     :collapsed="true"
     :deleteable="props.element.deleteable"
+    :commentable="true"
     :label="props.element.label"
     :icon="props.element.icon_path"
     :color="props.element.color"
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
+    @comment="$emit('comment', { ...props.element })"
+    @uncomment="$emit('uncomment', { ...props.element })"
     @update="updateData($event)"
     @run="runActivity"
   >
@@ -55,7 +58,7 @@ const props = defineProps({
     default: {},
   },
 });
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete", "comment", "uncomment"]);
 const { dataChanged, updateDataChanged } = inject("dataChanged");
 
 const isExpression = ref(false);
@@ -68,13 +71,13 @@ watch(
       expression.value = value["expression"].substring(2);
     } else {
       const defaultValue = props.element.parameter_define.inputs.filter(
-        (pd) => pd.key === "expression"
+        (pd) => pd.key === "expression",
       )[0].default_value;
       isExpression.value = defaultValue.split(":")[0] === "1";
       expression.value = defaultValue.substring(2);
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 function chageExpression(data) {

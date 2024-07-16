@@ -1,0 +1,85 @@
+{
+  "id": "tools",
+  "name": "工具",
+  "description": "工具",
+  "version": "1.0.0",
+  "activities": [
+    {
+      "key": "tools",
+      "label": "工具组件",
+      "icon_path": "riToolsLine",
+      "description": "工具组件组件，包括打印日志，方法组，注释等",
+      "children": [
+        {
+          "key": "tools.group",
+          "label": "方法组",
+          "icon_path": "riFridgeLine",
+          "description": "把多个组件放到一个方法组里面",
+          "namespace": null,
+          "method": null,
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [],
+            "outputs": []
+          },
+          "component": "SequenceActivity"
+        },
+        {
+          "key": "tools.comment",
+          "label": "注释",
+          "icon_path": "riFileForbidFill",
+          "description": "注释掉其中的组件",
+          "namespace": null,
+          "method": null,
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [],
+            "outputs": []
+          },
+          "component": "SequenceActivity"
+        },
+        {
+          "key": "tools.log",
+          "label": "打印日志",
+          "icon_path": "riGitRepositoryLine",
+          "description": "打印日志",
+          "namespace": "robot_basic",
+          "method": "print_log",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "log_level",
+                "label": "日志级别",
+                "required": true,
+                "type": "str",
+                "default_value": "0:info",
+                "options": [
+                  { "label": "调试", "value": "debug" },
+                  { "label": "信息", "value": "info" },
+                  { "label": "警告", "value": "warning" },
+                  { "label": "错误", "value": "error" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "category": null,
+                "key": "expression",
+                "label": "日志内容",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": []
+              }
+            ],
+            "outputs": []
+          },
+          "component": "BasicActivity"
+        }
+      ]
+    }
+  ]
+}
