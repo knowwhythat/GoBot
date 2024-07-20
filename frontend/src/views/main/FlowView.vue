@@ -178,7 +178,7 @@ import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
 import ParamSettingView from "@/views/main/ParamSettingView.vue";
 import { useToast } from "primevue/usetoast";
-import { throttle } from "lodash-es";
+import { throttle } from "@/utils/helper.js";
 import {
   GetMainFlow,
   AddOrUpdateProject,

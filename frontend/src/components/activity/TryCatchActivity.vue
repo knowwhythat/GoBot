@@ -11,8 +11,8 @@
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
-    @comment="$emit('comment', { ...props.element })"
-    @uncomment="$emit('uncomment', { ...props.element })"
+    @comment="$emit('comment', cloneDeep(props.element))"
+    @uncomment="$emit('uncomment', cloneDeep(props.element))"
     @update="updateData($event)"
   >
     <div class="flex flex-col">
@@ -29,6 +29,7 @@ import { onMounted, reactive } from "vue";
 import ActivityBase from "./ActivityBase.vue";
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { nanoid } from "nanoid";
+import { cloneDeep } from "lodash";
 
 const props = defineProps({
   element: {

@@ -13,8 +13,8 @@
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
-    @comment="$emit('comment', { ...props.element })"
-    @uncomment="$emit('uncomment', { ...props.element })"
+    @comment="$emit('comment', cloneDeep(props.element))"
+    @uncomment="$emit('uncomment', cloneDeep(props.element))"
     @update="updateData($event)"
     @run="runActivity"
   >
@@ -48,6 +48,7 @@ import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
+import { cloneDeep } from "lodash";
 import { RunActivity } from "@back/go/backend/App";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";

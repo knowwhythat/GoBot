@@ -13,8 +13,8 @@
     :parameter_define="props.element.parameter_define"
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
-    @comment="$emit('comment', { ...props.element })"
-    @uncomment="$emit('uncomment', { ...props.element })"
+    @comment="$emit('comment', cloneDeep(props.element))"
+    @uncomment="$emit('uncomment', cloneDeep(props.element))"
     @run="runActivity"
     @update="updateData($event)"
   >
@@ -82,6 +82,7 @@ import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
 import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
+import { cloneDeep } from "lodash";
 const toast = useToast();
 const props = defineProps({
   element: {

@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted, reactive, ref } from "vue";
 import Panel from "primevue/panel";
 import InputGroupAddon from "primevue/inputgroupaddon";
@@ -91,6 +91,7 @@ const loginForm = reactive({
   autoLogin: false,
 });
 const router = useRouter();
+const route = useRoute();
 onMounted(async () => {
   const data = await GetLoginData();
   loginForm.username = data.username;

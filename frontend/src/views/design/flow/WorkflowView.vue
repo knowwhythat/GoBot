@@ -17,7 +17,6 @@
 import { ref, shallowRef, onBeforeMount } from "vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
-import { trim } from "lodash-es";
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
@@ -36,7 +35,7 @@ const loaded = ref(false);
 onBeforeMount(async () => {
   try {
     const data = await GetMainFlow(props.id);
-    if (trim(data).length > 0) {
+    if (data) {
       workflow.value = JSON.parse(data);
     }
     loaded.value = true;

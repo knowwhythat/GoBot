@@ -6,8 +6,6 @@ export const useAppStore = defineStore("app", {
     settings: {
       locale: "zh",
       operateSystem: "win10",
-      deleteLogAfter: 30,
-      logsLimit: 1000,
       editor: {
         minZoom: 0.3,
         maxZoom: 3,

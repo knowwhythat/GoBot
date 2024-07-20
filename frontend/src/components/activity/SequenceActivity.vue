@@ -13,8 +13,8 @@
     :parameter="props.element.parameter"
     @delete="$emit('delete', { id: props.element.id })"
     @update="updateData($event)"
-    @comment="$emit('comment', { ...props.element })"
-    @uncomment="$emit('uncomment', { ...props.element })"
+    @comment="$emit('comment', cloneDeep(props.element))"
+    @uncomment="$emit('uncomment', cloneDeep(props.element))"
     @drop="handleDrop"
   >
     <div
@@ -53,6 +53,8 @@
         v-bind="{ element: element }"
         @update="update"
         @delete="deleteNode($event)"
+        @comment="onComment"
+        @uncomment="onUncomment"
         draggable="true"
         @dragstart="dragStart($event, element)"
         @dragend="dragEnd($event, element)"
@@ -63,6 +65,8 @@
         :is="findComponent(element.component)"
         v-bind="{ element: element }"
         @delete="deleteNode($event)"
+        @comment="onComment"
+        @uncomment="onUncomment"
         draggable="true"
         @dragstart="dragStart($event, element)"
         @dragend="dragEnd($event, element)"
@@ -112,6 +116,7 @@ import {
 import ActivityBase from "./ActivityBase.vue";
 import { nanoid } from "nanoid";
 import { typeBuilder } from "@/utils/shared";
+import { cloneDeep } from "lodash";
 
 const props = defineProps({
   element: {
@@ -168,6 +173,41 @@ function update({ id, children }) {
   }
 }
 
+function onComment(data) {
+  const blockIndex = props.element.children.findIndex(
+    (activity) => activity.id === data.id,
+  );
+  if (blockIndex !== -1) {
+    const commentBlock = {
+      key: "tools.comment",
+      label: "注释",
+      icon_path: "riFileForbidFill",
+      description: "注释掉其中的组件",
+      isPseudo: true,
+      parameter_define: {},
+      component: "SequenceActivity",
+      id: nanoid(16),
+      parameter: {},
+      children: [data],
+    };
+    const copyActivities = [...props.element.children];
+    copyActivities.splice(blockIndex, 1, commentBlock);
+    emit("update", { id: props.element.id, children: copyActivities });
+  }
+}
+
+function onUncomment(data) {
+  if (data.key === "tools.comment") {
+    const blockIndex = props.element.children.findIndex(
+      (activity) => activity.id === data.id,
+    );
+    if (blockIndex !== -1) {
+      const copyActivities = [...props.element.children];
+      copyActivities.splice(blockIndex, 1, ...data.children);
+      emit("update", { id: props.element.id, children: copyActivities });
+    }
+  }
+}
 const { dragBlockId } = inject("dragBlockId");
 const { dropBlockId } = inject("dropBlockId");
 

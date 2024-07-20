@@ -6,6 +6,7 @@ import (
 	"gobot/backend/constants"
 	"gobot/backend/dao"
 	"gobot/backend/forms"
+	"gobot/backend/http"
 	"gobot/backend/log"
 	"gobot/backend/models"
 	"gobot/backend/plugin"
@@ -23,7 +24,8 @@ const aesKey = "I98NTHNPezFnbe8iCaSc1xMPAv8ZtTil"
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx  context.Context
+	User *forms.LoginResponse
 }
 
 // NewApp creates a new App application struct
@@ -96,6 +98,11 @@ func (a *App) SaveBasicConfigData(data map[string]string) error {
 func (a *App) Login(form forms.LoginForm) error {
 	sysInfo := services.GetSysInfo()
 	log.Logger.Logger.Info().Msgf("sysInfo: %#v", sysInfo)
+	loginResp, err := http.Login(form.Username, form.Pwd)
+	if err != nil {
+		return err
+	}
+	a.User = loginResp
 	if form.RememberMe {
 		pwd, _ := utils.EncryptAES2Base64([]byte(aesKey), []byte(form.Pwd))
 		viper.Set(constants.ConfigLoginUsername, form.Username)
