@@ -32,29 +32,56 @@
         </button>
       </div>
     </template>
-    <div class="h-full flex flex-row flex-wrap">
-      <Image
+    <div class="flex flex-row flex-wrap gap-2 p-2">
+      <div
+        class="flex h-32 w-32 items-center place-content-center bg-slate-100 select-none"
         v-for="image in images"
         :key="image.id"
-        :src="image.path"
-        alt="Image"
-        preview
-        class="flex"
-        image-class="flex justify-center items-center object-scale-down"
-      />
+        @dblclick.stop="showImage(image)"
+        @contextmenu.stop="showContextMenu(image, $event)"
+      >
+        <img
+          :src="'data:image/png;base64,' + image.image"
+          alt="Image"
+          class="hover:scale-105"
+        />
+      </div>
     </div>
+    <ContextMenu ref="menu" :model="items" />
     <Dialog
       v-model:visible="visible"
       modal
       header="图片预览"
       :style="{ width: '60rem' }"
     >
-      <div class="flex mb-1">
-        <span class="mt-3 w-24">图片名称:</span>
-        <InputText class="w-full" v-model="imageData.name" type="text" />
+      <div class="flex w-full mb-2 gap-2 justify-center">
+        <div class="flex flex-col gap-1">
+          <span class="mt-3 w-24">图片名称:</span>
+          <InputText class="w-full" v-model="imageData.name" type="text" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="mt-3 w-24">匹配精确的:</span>
+          <InputNumber class="w-full" v-model="imageData.threshold" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="mt-3 w-24">匹配算法:</span>
+          <Dropdown
+            v-model="imageData.match_type"
+            :options="matchTypes"
+            optionLabel="name"
+            optionValue="value"
+            placeholder="选择匹配方式"
+            class="w-full md:w-14rem"
+          />
+        </div>
       </div>
       <div class="w-full flex justify-center">
-        <Image :src="'data:image/png;base64,' + imageData.image" alt="Image" />
+        <Image
+          :src="'data:image/png;base64,' + imageData.image"
+          alt="Image"
+          preview
+          image-class="max-h-96"
+        />
       </div>
       <template #footer>
         <Button label="取消" icon="pi pi-times" text @click="visible = false" />
@@ -68,16 +95,23 @@
 import Image from "primevue/image";
 import Panel from "primevue/panel";
 import Dialog from "primevue/dialog";
-
-import { HighlightImage, SaveImage, StartCapture } from "@back/go/backend/App";
+import {
+  HighlightImage,
+  RemoveImage,
+  SaveImage,
+  StartCapture,
+} from "@back/go/backend/App";
 import { WindowMaximise, WindowMinimise } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { sleep } from "@/utils/helper.js";
 import Button from "primevue/button";
-import { ref } from "vue";
+import { ref, toRaw } from "vue";
 import { nanoid } from "nanoid";
 import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
+import Dropdown from "primevue/dropdown";
+import { matchTypes } from "@/utils/shared.js";
+import ContextMenu from "primevue/contextmenu";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -98,16 +132,16 @@ const imageData = ref(null);
 async function doStartCapture() {
   try {
     await WindowMinimise();
-    await sleep(500);
     const resp = await StartCapture();
     if (resp) {
       const data = JSON.parse(resp);
       data.id = nanoid(16);
       data.name = "图片" + props.images.length;
+      data.threshold = 0.9;
+      data.match_type = "template";
       imageData.value = data;
       visible.value = true;
     }
-    await WindowMaximise();
   } catch (err) {
     toast.add({
       severity: "error",
@@ -116,6 +150,12 @@ async function doStartCapture() {
       life: 3000,
     });
   }
+  await WindowMaximise();
+}
+
+function showImage(image) {
+  imageData.value = image;
+  visible.value = true;
 }
 
 async function saveImage() {
@@ -134,7 +174,13 @@ async function saveImage() {
 
 async function highlightImage() {
   try {
-    await HighlightImage(props.id, imageData.value.id);
+    await WindowMinimise();
+    await HighlightImage(props.id, imageData.value);
+    toast.add({
+      severity: "success",
+      summary: "找到元素",
+      life: 3000,
+    });
   } catch (err) {
     toast.add({
       severity: "error",
@@ -143,15 +189,74 @@ async function highlightImage() {
       life: 3000,
     });
   }
+  await WindowMaximise();
 }
+
+const menu = ref();
+
+function showContextMenu(image, event) {
+  menu.value.show(event);
+  imageData.value = image;
+}
+
+const items = ref([
+  {
+    label: "删除",
+    icon: "pi pi-times-circle",
+    command: () => {
+      confirm.require({
+        header: "提示",
+        message: "确定要删除这条记录吗?",
+        icon: "pi pi-info-circle",
+        rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+        acceptClass: "p-button-danger p-button-sm",
+        rejectLabel: "取消",
+        acceptLabel: "删除",
+        accept: async () => {
+          await RemoveImage(props.id, imageData.value.id);
+        },
+        reject: () => {},
+      });
+    },
+  },
+  {
+    label: "重新截图",
+    icon: "pi pi-file-edit",
+    command: async () => {
+      try {
+        await WindowMinimise();
+        const resp = await StartCapture();
+        if (resp) {
+          const data = JSON.parse(resp);
+          data.id = imageData.value.id;
+          data.name = imageData.value.name;
+          data.threshold = imageData.value.threshold;
+          data.match_type = imageData.value.match_type;
+          imageData.value = data;
+          visible.value = true;
+        }
+        await WindowMaximise();
+      } catch (err) {
+        toast.add({
+          severity: "error",
+          summary: "截图失败",
+          detail: err,
+          life: 3000,
+        });
+      }
+    },
+  },
+  {
+    label: "查看",
+    icon: "pi pi-file-edit",
+    command: () => {
+      visible.value = true;
+    },
+  },
+]);
 </script>
 <style scoped>
 :deep(.p-splitter-panel) {
-  overflow: hidden;
-}
-
-:deep(.p-component) {
-  height: 100%;
   overflow: hidden;
 }
 
@@ -166,5 +271,9 @@ async function highlightImage() {
 
 :deep(.p-panel-content) {
   padding: 0.75rem;
+}
+
+:deep(.p-dialog .p-dialog-header) {
+  padding: 0.5rem;
 }
 </style>

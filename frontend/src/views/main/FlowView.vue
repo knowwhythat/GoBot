@@ -164,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import TieredMenu from "primevue/tieredmenu";
 import InputGroup from "primevue/inputgroup";
@@ -180,16 +180,17 @@ import ParamSettingView from "@/views/main/ParamSettingView.vue";
 import { useToast } from "primevue/usetoast";
 import { throttle } from "@/utils/helper.js";
 import {
-  GetMainFlow,
   AddOrUpdateProject,
-  ListProject,
   DeleteProject,
-  RunMainFlow,
+  GetMainFlow,
   GetSubFlow,
+  ListProject,
+  RunMainFlow,
   StartInVirtualDesk,
 } from "@back/go/backend/App";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
+
 const appStore = useAppStore();
 const toast = useToast();
 const router = useRouter();

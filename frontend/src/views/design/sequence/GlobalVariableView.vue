@@ -102,12 +102,12 @@ import Button from "primevue/button";
 import Textarea from "primevue/textarea";
 import ContextMenu from "primevue/contextmenu";
 import { useConfirm } from "primevue/useconfirm";
-const confirm = useConfirm();
 import { useToast } from "primevue/usetoast";
+import { ref, watch } from "vue";
+
+const confirm = useConfirm();
 
 const toast = useToast();
-
-import { ref, watch } from "vue";
 
 const variables = defineModel();
 
@@ -152,7 +152,7 @@ watch(
     if (type !== "str") {
       newVariable.value.kind = "expression";
     }
-  }
+  },
 );
 function addGlobalVariable() {
   showGlobalVariableDialog.value = true;
@@ -168,7 +168,7 @@ function doAddGlobalVariable() {
   if (editIndex > -1) {
     let index = variables.value.findIndex(
       (v, currentIndex) =>
-        v.name === newVariable.value.name && currentIndex !== editIndex
+        v.name === newVariable.value.name && currentIndex !== editIndex,
     );
     if (index === -1) {
       variables.value[editIndex] = newVariable.value;
@@ -182,7 +182,7 @@ function doAddGlobalVariable() {
     }
   } else {
     let index = variables.value.findIndex(
-      (v) => v.name === newVariable.value.name
+      (v) => v.name === newVariable.value.name,
     );
     if (index === -1) {
       variables.value.push(newVariable.value);
@@ -212,7 +212,7 @@ const items = ref([
     icon: "pi pi-file-edit",
     command: () => {
       editIndex = variables.value.findIndex(
-        (v) => v.name === selectedRow.value.name
+        (v) => v.name === selectedRow.value.name,
       );
       newVariable.value = {
         name: selectedRow.value.name,
@@ -237,7 +237,7 @@ const items = ref([
         acceptLabel: "删除",
         accept: () => {
           variables.value = variables.value.filter(
-            (v) => v.name !== selectedRow.value.name
+            (v) => v.name !== selectedRow.value.name,
           );
         },
         reject: () => {},

@@ -126,6 +126,10 @@ export function RemoveExecution(arg1) {
   return window['go']['backend']['App']['RemoveExecution'](arg1);
 }
 
+export function RemoveImage(arg1, arg2) {
+  return window['go']['backend']['App']['RemoveImage'](arg1, arg2);
+}
+
 export function RemoveSchedule(arg1) {
   return window['go']['backend']['App']['RemoveSchedule'](arg1);
 }

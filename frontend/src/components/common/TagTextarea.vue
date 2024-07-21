@@ -14,7 +14,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { nextTick, onUnmounted, ref } from "vue";
 import { nanoid } from "nanoid";
 
 const props = defineProps({

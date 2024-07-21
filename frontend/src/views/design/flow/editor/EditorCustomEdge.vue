@@ -16,7 +16,7 @@
 </template>
 <script setup>
 import { computed } from "vue";
-import { BaseEdge, getBezierPath, getSmoothStepPath } from "@vue-flow/core";
+import { BaseEdge, getSmoothStepPath } from "@vue-flow/core";
 
 const props = defineProps({
   id: {

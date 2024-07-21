@@ -76,13 +76,14 @@
 <script setup>
 import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
-import { StartCheck, StartPick, RunActivity } from "@back/go/backend/App";
-import { ref, inject } from "vue";
+import { RunActivity, StartCheck, StartPick } from "@back/go/backend/App";
+import { inject, ref } from "vue";
 import Button from "primevue/button";
 import ActivityBase from "./ActivityBase.vue";
-import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
+import { EventsOff, EventsOn } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 import { cloneDeep } from "lodash";
+
 const toast = useToast();
 const props = defineProps({
   element: {

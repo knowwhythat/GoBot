@@ -106,10 +106,9 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, onUnmounted, ref } from "vue";
 import {
   GetRunningFlows,
-  SelectExecutionLog,
-  TerminateMainFlow,
   StartMonitorLog,
   StopMonitorLog,
+  TerminateMainFlow,
 } from "@back/go/backend/App";
 import { EventsOff, EventsOn } from "@back/runtime/runtime";
 import { useAppStore } from "@/stores/app";

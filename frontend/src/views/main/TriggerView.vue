@@ -345,18 +345,19 @@ import RadioButton from "primevue/radiobutton";
 import Checkbox from "primevue/checkbox";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
-import { ref, onMounted, watch, nextTick } from "vue";
+import { onMounted, ref, watch } from "vue";
 import InputSwitch from "primevue/inputswitch";
 import {
-  QuerySchedulePage,
-  ListProject,
-  GetNextTriggerTime,
   AddOrUpdateSchedule,
-  ToggleScheduleById,
+  GetNextTriggerTime,
+  ListProject,
+  QuerySchedulePage,
   RemoveSchedule,
+  ToggleScheduleById,
 } from "@back/go/backend/App";
 import { useAppStore } from "@/stores/app";
 import { useConfirm } from "primevue/useconfirm";
+
 const confirm = useConfirm();
 const appStore = useAppStore();
 const toast = useToast();

@@ -15,7 +15,8 @@
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { ref, computed, inject } from "vue";
+import { computed, ref } from "vue";
+
 const props = defineProps({
   modelValue: {
     type: [String, Number],
@@ -30,7 +31,7 @@ function changeType() {
   isExpression.value = !isExpression.value;
   emit(
     "update:modelValue",
-    isExpression.value ? `{{ ${content.value} }}` : content.value
+    isExpression.value ? `{{ ${content.value} }}` : content.value,
   );
 }
 

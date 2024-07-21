@@ -323,8 +323,8 @@ func (a *App) StartCapture() (string, error) {
 	return services.StartCapture()
 }
 
-func (a *App) HighlightImage(id, imageId string) error {
-	return services.HighlightImage(id, imageId)
+func (a *App) HighlightImage(id string, imageData forms.ImageData) error {
+	return services.HighlightImage(id, imageData)
 }
 
 func (a *App) GetImages(id string) (string, error) {
@@ -333,4 +333,7 @@ func (a *App) GetImages(id string) (string, error) {
 
 func (a *App) SaveImage(id string, imageData forms.ImageData) error {
 	return services.SaveImage(a.ctx, id, imageData)
+}
+func (a *App) RemoveImage(id, imageId string) error {
+	return services.RemoveImage(a.ctx, id, imageId)
 }

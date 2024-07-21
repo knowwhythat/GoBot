@@ -239,6 +239,10 @@ export const paramTypes = [
 ];
 
 export const variableType = [
-  { name: "Python表达式", prefix: "1:" },
+  { name: "Python表达式", code: "1:" },
   { name: "普通文本", code: "0:" },
+];
+export const matchTypes = [
+  { name: "模板匹配", value: "template" },
+  { name: "特征点匹配", value: "sift" },
 ];

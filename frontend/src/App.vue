@@ -44,6 +44,7 @@ import Toast from "primevue/toast";
 import ProgressSpinner from "primevue/progressspinner";
 import ConfirmDialog from "primevue/confirmdialog";
 import { useAppStore } from "@/stores/app";
+
 const appStore = useAppStore();
 </script>
 <style scoped>

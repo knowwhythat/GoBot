@@ -214,7 +214,8 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
-import { reactive, watch, ref, Comment, computed } from "vue";
+import { ref, watch } from "vue";
+
 const props = defineProps({
   icon: {
     type: String,

@@ -218,7 +218,7 @@
                 />
                 <ImageView
                   :id="props.id"
-                  :images="[]"
+                  :images="imageElement"
                   v-else-if="activeNav === 'ImageView'"
                   @hide="activeNav = ''"
                 />
@@ -383,6 +383,7 @@ import {
   DebugSubFlow,
   DeleteSubFlow,
   GetProjectWindowsElements,
+  GetImages,
   ReadProjectConfig,
   RestartReplCommand,
   RunSubFlow,
@@ -633,15 +634,28 @@ onBeforeMount(async () => {
   EventsOn("windows_element_change", async () => {
     await loadElements();
   });
+  await getImages();
+  EventsOn("image_element_change", async () => {
+    await getImages();
+  });
 });
 
 onUnmounted(() => {
   EventsOff("log_event");
   EventsOff("windows_element_change");
+  EventsOff("image_element_change");
 });
 
 const windowsElement = ref([]);
 provide("windowsElement", { id: props.id, windowsElement: windowsElement });
+
+const imageElement = ref([]);
+provide("imageElement", { id: props.id, imageElement: imageElement });
+
+async function getImages() {
+  const images = await GetImages(props.id);
+  imageElement.value = JSON.parse(images);
+}
 
 async function loadElements() {
   const result = await GetProjectWindowsElements(props.id);

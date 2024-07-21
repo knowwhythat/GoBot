@@ -25,6 +25,7 @@ import {
   WindowToggleMaximise,
 } from "@back/runtime/runtime";
 import { nextTick, onMounted, onUnmounted, ref } from "vue";
+
 const emit = defineEmits(["toggleMax", "min", "quit"]);
 
 onMounted(async () => {

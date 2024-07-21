@@ -133,15 +133,16 @@ import Column from "primevue/column";
 import Dialog from "primevue/dialog";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import {
   QueryAllExecution,
   RemoveExecution,
   SelectExecutionLog,
 } from "@back/go/backend/App";
-import { EventsOn, EventsOff } from "@back/runtime/runtime";
+import { EventsOff, EventsOn } from "@back/runtime/runtime";
 import { useAppStore } from "@/stores/app";
 import { useConfirm } from "primevue/useconfirm";
+
 const confirm = useConfirm();
 const appStore = useAppStore();
 const toast = useToast();

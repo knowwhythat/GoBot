@@ -51,6 +51,8 @@ export namespace forms {
 	export class ImageData {
 	    id: string;
 	    name: string;
+	    threshold: number;
+	    match_type: string;
 	    image: string;
 	    left: number;
 	    top: number;
@@ -65,6 +67,8 @@ export namespace forms {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
 	        this.name = source["name"];
+	        this.threshold = source["threshold"];
+	        this.match_type = source["match_type"];
 	        this.image = source["image"];
 	        this.left = source["left"];
 	        this.top = source["top"];

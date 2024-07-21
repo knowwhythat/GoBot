@@ -72,7 +72,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive } from "vue";
 import Panel from "primevue/panel";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
@@ -81,7 +81,8 @@ import { useToast } from "primevue/usetoast";
 import { useAppStore } from "@/stores/app";
 import { Quit } from "@back/runtime/runtime.js";
 import LoginSvg from "@/assets/images/login.svg";
-import { Login, GetLoginData } from "@back/go/backend/App";
+import { GetLoginData, Login } from "@back/go/backend/App";
+
 const appStore = useAppStore();
 const toast = useToast();
 const loginForm = reactive({

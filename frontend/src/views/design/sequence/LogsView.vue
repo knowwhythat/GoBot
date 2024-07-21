@@ -40,7 +40,8 @@
 <script setup>
 import Panel from "primevue/panel";
 import Listbox from "primevue/listbox";
-import { ref, watch, nextTick } from "vue";
+import { nextTick, ref, watch } from "vue";
+
 const props = defineProps({
   logs: {
     type: Array,
@@ -59,7 +60,7 @@ watch(
       }
     });
   },
-  { deep: true }
+  { deep: true },
 );
 const filter = ref(false);
 </script>

@@ -14,10 +14,11 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, onBeforeMount, watch } from "vue";
+import { onBeforeMount, ref, shallowRef, watch } from "vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
-import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
+import { GetMainFlow, SaveMainFlow } from "@back/go/backend/App";
 import { useToast } from "primevue/usetoast";
+
 const toast = useToast();
 
 const props = defineProps({

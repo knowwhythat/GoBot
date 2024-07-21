@@ -136,7 +136,7 @@ import { getIconPath } from "@/utils/helper";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import ParamEditorDialog from "@/components/editor/ParamEditorDialog.vue";
-import { reactive, onMounted, inject, ref, computed, watch } from "vue";
+import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 
 const props = defineProps({
   id: {

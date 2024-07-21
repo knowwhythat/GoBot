@@ -30,7 +30,8 @@ import Tree from "primevue/tree";
 import OverlayPanel from "primevue/overlaypanel";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
-import { ref, inject } from "vue";
+import { inject, ref } from "vue";
+
 const props = defineProps({
   value: {
     type: String,

@@ -37,12 +37,13 @@
 </template>
 <script setup>
 import Image from "primevue/image";
-import { RunActivity, GetElementImage } from "@back/go/backend/App";
+import { GetElementImage, RunActivity } from "@back/go/backend/App";
 import { inject, onMounted, ref } from "vue";
 import ActivityBase from "./ActivityBase.vue";
-import { EventsOn, EventsOff } from "@back/runtime/runtime.js";
+import { EventsOff, EventsOn } from "@back/runtime/runtime.js";
 import { useToast } from "primevue/usetoast";
 import { cloneDeep } from "lodash";
+
 const toast = useToast();
 const props = defineProps({
   element: {

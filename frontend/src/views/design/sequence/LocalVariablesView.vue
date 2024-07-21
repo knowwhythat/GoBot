@@ -37,13 +37,11 @@
 </template>
 <script setup>
 import Panel from "primevue/panel";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
+
 const emit = defineEmits(["hide"]);
 const localVariables = ref([]);
 const selectedLocal = ref([]);
