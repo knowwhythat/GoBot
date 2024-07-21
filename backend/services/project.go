@@ -85,6 +85,9 @@ func AddOrUpdateProject(project models.Project) (err error) {
 		}
 		result.Name = project.Name
 		result.Description = project.Description
+		if project.InputParam != nil {
+			result.InputParam = project.InputParam
+		}
 		_ = ModifyProject(*result)
 	}
 

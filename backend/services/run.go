@@ -38,7 +38,6 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 	if err != nil {
 		return nil
 	}
-	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
 	instanceId := uuid.NewString()
 	logPath := filepath.Join(project.Path, constants.LogDir, instanceId+".log")
 	runningProcess, err = generateRunCmd(project, instanceId, subId)
@@ -61,7 +60,11 @@ func RunSubFlow(ctx context.Context, id, subId string) error {
 	if err != nil {
 		log.Logger.Logger.Error().Err(err).Msg("流程块运行失败")
 		errStr = stderr.String()
-		errStr = strutil.After(errStr, projectPath)
+		log.Logger.Logger.Error().Msg(errStr)
+		splitEx := strutil.SplitEx(errStr, "\n", true)
+		errStr = splitEx[len(splitEx)-1]
+		errStr = strings.Replace(errStr, "Exception: ", "", 1)
+		errStr = strutil.Trim(errStr, "(", ")")
 	}
 	_ = os.Remove(logPath)
 	runtime.EventsEmit(ctx, "execute_event")
@@ -244,9 +247,7 @@ loop:
 				time.Sleep(time.Second)
 				continue
 			}
-			if !strings.Contains(line.Text, "DEBUG") {
-				runtime.EventsEmit(ctx, "log_event", map[string]string{"id": id, "text": line.Text})
-			}
+			runtime.EventsEmit(ctx, "log_event", map[string]string{"id": id, "text": line.Text})
 		}
 	}
 	_ = tails.Stop()
@@ -265,7 +266,7 @@ func generateRunCmd(project *models.Project, instanceId, subId string) (*exec.Cm
 	}
 	params["sys_path_list"] = []string{projectPath, filepath.Dir(projectPath)}
 	params["log_path"] = logPath
-	params["log_level"] = "INFO"
+	params["log_level"] = "DEBUG"
 
 	env := make(map[string]string)
 	env["project_path"] = projectPath

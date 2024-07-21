@@ -224,22 +224,24 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				}
 			}
 		}
+		code += "local_data=locals(),"
+		code += "code_block_extra_data={"
 		if activity.ParameterDefine.Error {
 			if retry, ok := activity.Parameter["retry"]; ok {
-				code += "retry=" + retry + ","
+				code += "\"retry\":" + retry + ","
 			}
 			if exception, ok := activity.Parameter["exception"]; ok {
-				code += "exception=\"" + exception + "\","
+				code += "\"exception\":\"" + exception + "\","
 			}
 			if tryCount, ok := activity.Parameter["retry_count"]; ok {
-				code += "retry_count=" + tryCount + ","
+				code += "\"retry_count\":" + tryCount + ","
 			}
 			if tryInterval, ok := activity.Parameter["retry_interval"]; ok {
-				code += "retry_interval=" + tryInterval + ","
+				code += "\"retry_interval\":" + tryInterval + ","
 			}
 		}
-		code += "local_data=locals(),"
-		code += "code_map_id=\"" + activity.ID + "\"" + ")\n"
+		code += "\"code_map_id\":\"" + activity.ID + "\","
+		code += "\"code_block_name\":" + strconv.Quote(activity.Label) + "})\n"
 	}
 	if len(activity.Children) > 0 {
 		for _, child := range activity.Children {

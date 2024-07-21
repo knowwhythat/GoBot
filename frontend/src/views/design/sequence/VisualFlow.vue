@@ -7,7 +7,7 @@
 <script setup>
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { GetSubFlow, SaveSubFlow } from "@back/go/backend/App";
-import { onMounted, provide, ref } from "vue";
+import { onMounted, provide, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import {
   copySelected,
@@ -35,7 +35,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["mounted"]);
+const emit = defineEmits(["mounted", "dataChanged"]);
 const selectedActivity = ref([]);
 provide("contextVariable", { contextVariable: [] });
 provide("selectedActivity", { selectedActivity });
@@ -46,6 +46,14 @@ provide("dataChanged", { dataChanged, updateDataChanged });
 function updateDataChanged() {
   dataChanged.value = true;
 }
+
+watch(
+  () => dataChanged.value,
+  (now, old) => {
+    emit("dataChanged", dataChanged.value);
+  },
+  { deep: true },
+);
 
 const mainActivity = ref({
   params: [],

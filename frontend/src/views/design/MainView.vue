@@ -186,6 +186,7 @@
                       :id="tab.id"
                       :subflowId="tab.subflowId"
                       :label="tab.title"
+                      @dataChanged="dataChanged = $event"
                     />
                     <WorkflowView
                       :id="id"
@@ -193,6 +194,7 @@
                       ref="flowTabs"
                       @edit:block="editBlock"
                       @delete:block="deleteBlock"
+                      @dataChanged="dataChanged = $event"
                     />
                   </TabPanel>
                 </TabView>
@@ -750,7 +752,7 @@ function splitPaneResize(e) {
 
 const running = ref(false);
 
-const reg = /code_map_id="([^"]*)/;
+const reg = /code_map_id=([^']*)/;
 
 async function run() {
   save();

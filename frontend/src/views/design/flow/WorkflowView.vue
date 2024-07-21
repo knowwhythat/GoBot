@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, onBeforeMount } from "vue";
+import { ref, shallowRef, onBeforeMount, watch } from "vue";
 import WorkflowEditor from "@/views/design/flow/WorkflowEditor.vue";
 import { GetMainFlow, SaveMainFlow, DeleteSubFlow } from "@back/go/backend/App";
 import { useToast } from "primevue/usetoast";
@@ -27,7 +27,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit:block", "delete:block"]);
+const emit = defineEmits(["edit:block", "delete:block", "dataChanged"]);
 
 const workflow = ref({});
 const loaded = ref(false);
@@ -51,6 +51,14 @@ onBeforeMount(async () => {
 });
 
 const dataChanged = ref(false);
+
+watch(
+  () => dataChanged.value,
+  (now, old) => {
+    emit("dataChanged", dataChanged.value);
+  },
+  { deep: true },
+);
 
 const editor = shallowRef(null);
 

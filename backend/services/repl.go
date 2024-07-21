@@ -87,7 +87,7 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 	if err != nil {
 		return err
 	}
-	re, _ := regexp.Compile("code_map_id=\"([^\"]*)")
+	re, _ := regexp.Compile("\"code_map_id\":\"([^\"]*)")
 	for {
 		code := <-replChan
 		log.Logger.Logger.Info().Msg(strings.Trim(code, "\n"))
@@ -102,7 +102,7 @@ func dealRepl(inPipe io.WriteCloser, outPipe io.ReadCloser) error {
 		match := re.FindAllString(code, -1)
 		out = strings.Trim(out, ">")
 		if len(match) > 0 {
-			runtime.EventsEmit(appCtx, "repl", strings.TrimPrefix(match[0], "code_map_id=\""), out)
+			runtime.EventsEmit(appCtx, "repl", strings.Trim(strings.TrimPrefix(match[0], "\"code_map_id\":"), "\""), out)
 		}
 		if len(out) > 0 {
 			log.Logger.Logger.Info().Msg(strings.Trim(out, "\n"))

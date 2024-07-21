@@ -114,7 +114,7 @@
               {
                 "key": "is_headless",
                 "label": "是否无头模式",
-                "type": "number",
+                "type": "bool",
                 "default_value": "1:False",
                 "required": true,
                 "options": null,
@@ -124,6 +124,16 @@
               {
                 "key": "is_stealth",
                 "label": "是否隐藏浏览器特征",
+                "type": "bool",
+                "default_value": "1:False",
+                "required": true,
+                "options": null,
+                "editor_type": "BoolValue",
+                "show_if": []
+              },
+              {
+                "key": "privacy_mode",
+                "label": "是否隐私模式",
                 "type": "number",
                 "default_value": "1:False",
                 "required": true,
@@ -3020,6 +3030,52 @@
                     "label": "Y偏移",
                     "type": "number",
                     "default_value": "1:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  }
+                ],
+                "outputs": [],
+                "error": true
+              },
+              "component": "BasicActivity"
+            },
+            {
+              "key": "browser.mouse.keyboard_input",
+              "label": "键盘输入",
+              "icon_path": "path:M384 256 512 256 512 192 192 192 192 256 320 256 320 768 192 768 192 832 512 832 512 768 384 768 384 256ZM127.619858 0 1024 0 1024 1024 127.619858 1024C57.137357 1024 0 966.751117 0 896.380141L0 127.619858C0 57.137357 57.24888 0 127.619858 0ZM64 896.380141C64 931.452058 94.568632 960 132.164133 960L1024 960 1024 64 132.164133 64C94.587084 64 64 92.530723 64 127.619858L64 896.380141Z",
+              "description": "键盘输入",
+              "namespace": "robot_browser",
+              "method": "keyboard_input",
+              "isPseudo": false,
+              "parameter_define": {
+                "inputs": [
+                  {
+                    "key": "browser",
+                    "label": "浏览器对象",
+                    "type": "browser",
+                    "default_value": "1:browser_instance",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "content",
+                    "label": "输入内容",
+                    "type": "str",
+                    "default_value": "0:",
+                    "required": true,
+                    "options": null,
+                    "editor_type": "ExpressionTextInput",
+                    "show_if": []
+                  },
+                  {
+                    "key": "delay",
+                    "label": "按键间隔",
+                    "type": "number",
+                    "default_value": "1:0",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
