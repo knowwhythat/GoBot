@@ -62,7 +62,13 @@ func (a *App) OpenDialog(option map[string]string) string {
 
 	return ""
 }
+func (a *App) GetQrCode() (string, error) {
+	return services.GetQrCode()
+}
 
+func (a *App) Register(username, password string) error {
+	return services.Register(username, password)
+}
 func (a *App) GetLoginData() forms.LoginForm {
 	username := viper.GetString(constants.ConfigLoginUsername)
 	pwd := viper.GetString(constants.ConfigLoginPwd)
@@ -336,4 +342,9 @@ func (a *App) SaveImage(id string, imageData forms.ImageData) error {
 }
 func (a *App) RemoveImage(id, imageId string) error {
 	return services.RemoveImage(a.ctx, id, imageId)
+}
+
+func (a *App) Logout() {
+	services.StopSchedule()
+	viper.Set(constants.ConfigLoginAuto, false)
 }

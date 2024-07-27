@@ -9,12 +9,13 @@ import (
 //go:embed config
 var f embed.FS
 
-var fileList []string = []string{
+var fileList = []string{
 	"base_control.json",
 	"tools.json",
 	"data_process.json",
 	"browser.json",
 	"desktop_application.json",
+	"ai.json",
 }
 
 type PluginConfig struct {

@@ -306,6 +306,32 @@
             "outputs": []
           },
           "component": "BasicActivity"
+        },
+        {
+          "key": "base.control.invoke_flow",
+          "label": "调用流程",
+          "icon_path": "path:M512.512 981.9136a471.04 471.04 0 1 1 261.0176-862.208l-45.4656 68.096A389.12 389.12 0 1 0 901.12 511.2832h81.92a471.04 471.04 0 0 1-470.528 470.6304z M714.8544 574.6688H461.312V282.4192h81.92v210.3296h171.6224v81.92z M809.8816 203.1616m-42.2912 0a42.2912 42.2912 0 1 0 84.5824 0 42.2912 42.2912 0 1 0-84.5824 0Z M885.9648 303.0016m-42.2912 0a42.2912 42.2912 0 1 0 84.5824 0 42.2912 42.2912 0 1 0-84.5824 0Z M932.864 426.9056m-42.2912 0a42.2912 42.2912 0 1 0 84.5824 0 42.2912 42.2912 0 1 0-84.5824 0Z",
+          "description": "调用本项目下的其他流程",
+          "namespace": "robot_basic",
+          "method": "invoke_flow",
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [
+              {
+                "category": null,
+                "key": "flow_name",
+                "label": "流程名称",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "FlowNameSelect",
+                "show_if": []
+              }
+            ],
+            "outputs": []
+          },
+          "component": "BasicActivity"
         }
       ]
     }

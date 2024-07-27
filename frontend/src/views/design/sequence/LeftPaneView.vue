@@ -7,7 +7,7 @@
         selectionMode="single"
         filterMode="lenient"
         filterPlaceholder="输入组件名称进行搜索"
-        class="w-full h-full"
+        class="mt-1 w-full h-full"
         :pt="{
           label: (options) => ({
             class: ['w-full'],

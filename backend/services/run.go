@@ -266,7 +266,7 @@ func generateRunCmd(project *models.Project, instanceId, subId string) (*exec.Cm
 	}
 	params["sys_path_list"] = []string{projectPath, filepath.Dir(projectPath)}
 	params["log_path"] = logPath
-	params["log_level"] = "DEBUG"
+	params["log_level"] = "INFO"
 
 	env := make(map[string]string)
 	env["project_path"] = projectPath

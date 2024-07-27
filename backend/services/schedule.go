@@ -184,3 +184,7 @@ func GetNextTriggerTime(cron string) (string, error) {
 
 	return result, nil
 }
+
+func StopSchedule() {
+	sched.Stop()
+}

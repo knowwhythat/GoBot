@@ -1,5 +1,8 @@
 <template>
-  <div style="height: 100vh; overflow: hidden" class="overflow-hidden">
+  <div
+    style="height: 100vh; overflow: hidden"
+    class="flex flex-col overflow-hidden"
+  >
     <Toolbar class="flex-none p-0" style="--wails-draggable: drag">
       <template #start>
         <Button
@@ -654,7 +657,9 @@ provide("imageElement", { id: props.id, imageElement: imageElement });
 
 async function getImages() {
   const images = await GetImages(props.id);
-  imageElement.value = JSON.parse(images);
+  if (images) {
+    imageElement.value = JSON.parse(images);
+  }
 }
 
 async function loadElements() {

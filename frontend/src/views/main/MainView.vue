@@ -27,13 +27,14 @@
               @mouseenter="showUserInfo"
               @mouseleave="hideUserInfo"
             >
-              <Avatar
-                icon="pi pi-user"
-                class="mr-2"
-                style="background-color: #ece9fc; color: #2a1261"
-                shape="circle"
+              <p class="items-center content-center">Admin</p>
+              <Button
+                @click="logout"
+                icon="pi pi-sign-out"
+                severity="danger"
+                rounded
+                aria-label="Cancel"
               />
-              <p>Admin</p>
             </div>
           </OverlayPanel>
         </SystemOperate>
@@ -77,6 +78,7 @@ import SettingSvg from "@/assets/images/setting.svg";
 import SystemOperate from "@/components/SystemOperate.vue";
 import { useConfirm } from "primevue/useconfirm";
 import { useAppStore } from "@/stores/app";
+import { Logout } from "@back/go/backend/App";
 
 const appStore = useAppStore();
 const confirm = useConfirm();
@@ -167,6 +169,21 @@ const confirmQuit = () => {
     acceptLabel: "确认",
     accept: () => {
       Quit();
+    },
+    reject: () => {},
+  });
+};
+const logout = async () => {
+  confirm.require({
+    message: "退出后所有的任务将停止,是否退出登录?",
+    header: "退出登录",
+    icon: "pi pi-exclamation-triangle",
+    rejectClass: "p-button-secondary p-button-outlined",
+    rejectLabel: "取消",
+    acceptLabel: "确认",
+    accept: async () => {
+      await Logout();
+      await router.replace("/");
     },
     reject: () => {},
   });

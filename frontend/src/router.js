@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import Register from "@/views/Register.vue";
 import Login from "@/views/Login.vue";
 import Main from "@/views/main/MainView.vue";
 import Flow from "@/views/main/FlowView.vue";
@@ -14,6 +15,10 @@ export const router = createRouter({
     {
       path: "/",
       component: Login,
+    },
+    {
+      path: "/register",
+      component: Register,
     },
     {
       path: "/main",

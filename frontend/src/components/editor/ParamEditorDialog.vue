@@ -51,7 +51,7 @@
             :key="input.key"
           >
             <div class="flex mb-4" v-if="show(input)">
-              <span class="mr-2 w-32 truncate my-auto" :title="input.label">
+              <span class="mr-2 w-32 truncate mt-4" :title="input.label">
                 {{ input.label }}
               </span>
               <component
@@ -82,7 +82,11 @@
             </div>
           </template>
 
-          <Divider align="left" type="solid">
+          <Divider
+            v-if="props.parameter_define?.outputs?.length > 0"
+            align="left"
+            type="solid"
+          >
             <b>输出参数</b>
           </Divider>
           <div
@@ -273,17 +277,19 @@ for (let each in editorComponents) {
   const name = editorComponents[each].default.__name;
   editorMap[`${name}`] = editorComponents[each].default;
 }
+
 function findComponent(name) {
   if (editorMap[name]) {
     return editorMap[name];
   }
   return editorMap["ExpressionTextInput"];
 }
+
 function show(input) {
-  if (!input.show_if || input.show_if.length == 0) {
+  if (!input.show_if || input.show_if.length === 0) {
     return true;
   }
-  const result = input.show_if.every((si) => {
+  return input.show_if.every((si) => {
     const [key, value] = si.split("=");
     if (key in parameterData.value.parameter) {
       const v = parameterData.value.parameter[key];
@@ -296,8 +302,8 @@ function show(input) {
       );
     }
   });
-  return result;
 }
+
 const toDoTypes = [
   { value: "error", name: "抛出错误" },
   { value: "continue", name: "继续执行" },
@@ -313,11 +319,6 @@ function setData() {
   if (!parameterData.value.parameter.exception) {
     parameterData.value.parameter.exception = "error";
   }
-  // props.parameter_define.inputs.forEach((param) => {
-  //   if (!parameterData.value.parameter.hasOwnProperty(param.key)) {
-  //     parameterData.value.parameter[param.key] = param.default_value;
-  //   }
-  // });
 }
 
 function updateInnerValue(key, value) {

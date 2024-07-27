@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-around">
+  <div class="visual-flow-tab flex justify-around">
     <SequenceActivity :element="mainActivity.sequence" @update="update" />
   </div>
 </template>
@@ -198,5 +198,3 @@ defineExpose({
   setParams,
 });
 </script>
-
-<style scoped></style>

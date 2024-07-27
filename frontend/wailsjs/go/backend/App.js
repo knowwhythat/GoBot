@@ -54,6 +54,10 @@ export function GetProjectWindowsElements(arg1) {
   return window['go']['backend']['App']['GetProjectWindowsElements'](arg1);
 }
 
+export function GetQrCode() {
+  return window['go']['backend']['App']['GetQrCode']();
+}
+
 export function GetRunningFlows() {
   return window['go']['backend']['App']['GetRunningFlows']();
 }
@@ -90,6 +94,10 @@ export function Login(arg1) {
   return window['go']['backend']['App']['Login'](arg1);
 }
 
+export function Logout() {
+  return window['go']['backend']['App']['Logout']();
+}
+
 export function OpenDialog(arg1) {
   return window['go']['backend']['App']['OpenDialog'](arg1);
 }
@@ -120,6 +128,10 @@ export function QuerySchedulePage() {
 
 export function ReadProjectConfig(arg1) {
   return window['go']['backend']['App']['ReadProjectConfig'](arg1);
+}
+
+export function Register(arg1, arg2) {
+  return window['go']['backend']['App']['Register'](arg1, arg2);
 }
 
 export function RemoveExecution(arg1) {

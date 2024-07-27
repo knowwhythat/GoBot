@@ -30,6 +30,8 @@ export function GetNextTriggerTime(arg1:string):Promise<string>;
 
 export function GetProjectWindowsElements(arg1:string):Promise<string>;
 
+export function GetQrCode():Promise<string>;
+
 export function GetRunningFlows():Promise<Array<forms.RunningInstance>>;
 
 export function GetSelectedWindowsElement(arg1:string):Promise<void>;
@@ -48,6 +50,8 @@ export function ListProject():Promise<Array<models.Project>>;
 
 export function Login(arg1:forms.LoginForm):Promise<void>;
 
+export function Logout():Promise<void>;
+
 export function OpenDialog(arg1:{[key: string]: string}):Promise<string>;
 
 export function ParseAllPlugin():Promise<Array<plugin.Activity>>;
@@ -63,6 +67,8 @@ export function QueryAllExecution():Promise<Array<forms.ExecutionForm>>;
 export function QuerySchedulePage():Promise<Array<models.Schedule>>;
 
 export function ReadProjectConfig(arg1:string):Promise<models.ProjectConfig>;
+
+export function Register(arg1:string,arg2:string):Promise<void>;
 
 export function RemoveExecution(arg1:Array<forms.ExecutionForm>):Promise<void>;
 

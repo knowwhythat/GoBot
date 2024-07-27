@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"gobot/backend/log"
 	"gobot/backend/models"
 	"os"
@@ -151,6 +152,8 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			indent, code, needPass = generateForEachMapExpression(indent, *activity)
 		} else if activity.Key == "base.control.loop.for_i_loop" {
 			indent, code, needPass = generateForLoopIndexExpression(indent, *activity)
+		} else if activity.Key == "base.control.invoke_flow" {
+			indent, code, needPass = generateInvokeFlowExpression(indent, activity)
 		} else if activity.Method == "continue" || activity.Method == "break" {
 			code += strings.Repeat(" ", indent*4)
 			code += activity.Method + "\n"
@@ -224,24 +227,8 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 				}
 			}
 		}
-		code += "local_data=locals(),"
-		code += "code_block_extra_data={"
-		if activity.ParameterDefine.Error {
-			if retry, ok := activity.Parameter["retry"]; ok {
-				code += "\"retry\":" + retry + ","
-			}
-			if exception, ok := activity.Parameter["exception"]; ok {
-				code += "\"exception\":\"" + exception + "\","
-			}
-			if tryCount, ok := activity.Parameter["retry_count"]; ok {
-				code += "\"retry_count\":" + tryCount + ","
-			}
-			if tryInterval, ok := activity.Parameter["retry_interval"]; ok {
-				code += "\"retry_interval\":" + tryInterval + ","
-			}
-		}
-		code += "\"code_map_id\":\"" + activity.ID + "\","
-		code += "\"code_block_name\":" + strconv.Quote(activity.Label) + "})\n"
+		code += generateCommonParameter(activity)
+		code += ")\n"
 	}
 	if len(activity.Children) > 0 {
 		for _, child := range activity.Children {
@@ -368,6 +355,103 @@ func generateForLoopIndexExpression(indent int, activity Activity) (int, string,
 	}
 	code += "):\n"
 	return indent, code, true
+}
+
+func generateInvokeFlowExpression(indent int, activity *Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	outputValue := ""
+	if outputs, ok := activity.Parameter["outputs"]; ok {
+		outputParams := make(map[string]string)
+		if err := json.Unmarshal([]byte(outputs), &outputParams); err != nil {
+			log.Logger.Error(err.Error())
+		}
+
+		for _, value := range outputParams {
+			if len(value) > 0 {
+				outputValue += value + ","
+			}
+		}
+	}
+	if len(outputValue) > 0 && outputValue[len(outputValue)-1] == ',' {
+		outputValue = strings.TrimRight(outputValue, ",")
+	}
+
+	if len(outputValue) > 0 {
+		code = code + outputValue + " = "
+	}
+	code = code + activity.Namespace + "." + activity.Method + "("
+	if len(activity.ParameterDefine.Inputs) > 0 {
+		for _, input := range activity.ParameterDefine.Inputs {
+			if ok, param := generateParameter(activity.Parameter, input); ok {
+				code += param
+			}
+		}
+	}
+	code += "return_value=["
+	if outputs, ok := activity.Parameter["outputs"]; ok {
+		outputParams := make(map[string]string)
+		if err := json.Unmarshal([]byte(outputs), &outputParams); err != nil {
+			log.Logger.Error(err.Error())
+		}
+
+		for key, _ := range outputParams {
+			if len(key) > 0 {
+				code += strconv.Quote(key) + ","
+			}
+		}
+	}
+	code = strings.TrimRight(code, ",")
+	code += "],"
+
+	if inputs, ok := activity.Parameter["inputs"]; ok {
+		inputParams := make(map[string]string)
+		if err := json.Unmarshal([]byte(inputs), &inputParams); err != nil {
+			log.Logger.Error(err.Error())
+		}
+
+		for key, value := range inputParams {
+			if value[0] == '0' {
+				code += key + "=" + strconv.Quote(value[2:]) + ","
+			} else {
+				if len(value[2:]) > 0 {
+					code += key + "=" + value[2:] + ","
+				}
+			}
+		}
+	}
+
+	if len(activity.ParameterDefine.Extra) > 0 {
+		for _, i := range activity.ParameterDefine.Extra {
+			if ok, param := generateParameter(activity.Parameter, i); ok {
+				code += param
+			}
+		}
+	}
+	code += generateCommonParameter(activity)
+	code += ")\n"
+	return indent, code, false
+}
+
+func generateCommonParameter(activity *Activity) string {
+	code := "local_data=locals(),"
+	code += "code_block_extra_data={"
+	if activity.ParameterDefine.Error {
+		if retry, ok := activity.Parameter["retry"]; ok {
+			code += "\"retry\":" + retry + ","
+		}
+		if exception, ok := activity.Parameter["exception"]; ok {
+			code += "\"exception\":\"" + exception + "\","
+		}
+		if tryCount, ok := activity.Parameter["retry_count"]; ok {
+			code += "\"retry_count\":" + tryCount + ","
+		}
+		if tryInterval, ok := activity.Parameter["retry_interval"]; ok {
+			code += "\"retry_interval\":" + tryInterval + ","
+		}
+	}
+	code += "\"code_map_id\":\"" + activity.ID + "\","
+	code += "\"code_block_name\":" + strconv.Quote(activity.Label) + "}"
+	return code
 }
 
 // generateParameter

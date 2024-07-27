@@ -16,7 +16,7 @@
         />
       </template>
       <div class="body flex justify-center items-center">
-        <Image :src="LoginSvg" alt="Image" width="450" />
+        <Image :src="qrCodeUrl" alt="Image" width="450" />
         <div
           class="flex flex-col ml-40 shadow-lg p-20 gap-4 bg-slate-50 rounded-3xl hover:bg-slate-100"
         >
@@ -30,7 +30,7 @@
             <InputText
               placeholder="用户名"
               class="w-96"
-              v-model="loginForm.username"
+              v-model="registerForm.username"
             />
           </InputGroup>
           <InputGroup class="py-2">
@@ -38,34 +38,19 @@
               <i class="pi pi-lock pr-2"></i>
             </InputGroupAddon>
             <Password
-              v-model="loginForm.pwd"
-              :feedback="false"
+              v-model="registerForm.pwd"
               toggleMask
               placeholder="密码"
             />
           </InputGroup>
-          <div class="flex">
-            <div class="flex align-items-center py-2">
-              <Checkbox
-                v-model="loginForm.rememberMe"
-                inputId="rememberMe"
-                :binary="true"
-              />
-              <label for="rememberMe" class="ml-2"> 记住密码 </label>
-            </div>
-            <div class="flex align-items-center py-2 ml-6">
-              <Checkbox
-                v-model="loginForm.autoLogin"
-                inputId="autoLogin"
-                :binary="true"
-                @change="autoLoginChange"
-              />
-              <label for="autoLogin" class="ml-2"> 自动登录 </label>
-            </div>
-          </div>
-          <Button class="mt-6" label="登录" @click="login"></Button>
+          <Button
+            class="mt-6"
+            label="注册"
+            @click="register"
+            v-tooltip="'用微信扫描左侧二维码后再进行注册'"
+          ></Button>
           <div class="flex flex-row-reverse align-items-center py-2">
-            <Button label="注册" link @click="router.replace('/register')" />
+            <Button label="登录" link @click="router.replace('/')" />
           </div>
         </div>
       </div>
@@ -75,7 +60,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import Panel from "primevue/panel";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
@@ -83,36 +68,23 @@ import SystemOperate from "@/components/SystemOperate.vue";
 import { useToast } from "primevue/usetoast";
 import { useAppStore } from "@/stores/app";
 import { Quit } from "@back/runtime/runtime.js";
-import LoginSvg from "@/assets/images/login.svg";
-import { GetLoginData, Login } from "@back/go/backend/App";
+import { GetQrCode, Register } from "@back/go/backend/App";
 
 const appStore = useAppStore();
 const toast = useToast();
-const loginForm = reactive({
+const registerForm = reactive({
   username: "",
   pwd: "",
-  rememberMe: false,
-  autoLogin: false,
 });
 const router = useRouter();
 const route = useRoute();
+const qrCodeUrl = ref();
 onMounted(async () => {
-  const data = await GetLoginData();
-  loginForm.username = data.username;
-  loginForm.pwd = data.pwd;
-  loginForm.rememberMe = data.rememberMe;
-  loginForm.autoLogin = data.autoLogin;
-  if (data.autoLogin) {
-    await login();
-  }
+  qrCodeUrl.value = await GetQrCode();
 });
-function autoLoginChange(event) {
-  if (loginForm.autoLogin) {
-    loginForm.rememberMe = true;
-  }
-}
-async function login() {
-  if (!loginForm.username) {
+
+async function register() {
+  if (!registerForm.username) {
     toast.add({
       severity: "warn",
       detail: "用户名不能为空",
@@ -120,7 +92,7 @@ async function login() {
     });
     return;
   }
-  if (!loginForm.pwd) {
+  if (!registerForm.pwd) {
     toast.add({
       severity: "warn",
       detail: "密码不能为空",
@@ -130,14 +102,19 @@ async function login() {
   }
   try {
     appStore.changeLoadingState(true);
-    await Login(loginForm);
-    await router.push("/main");
+    await Register(registerForm.username, registerForm.pwd);
+    toast.add({
+      severity: "success",
+      detail: "注册成功",
+      life: 3000,
+    });
+    await router.push("/");
     appStore.changeLoadingState(false);
   } catch (err) {
     appStore.changeLoadingState(false);
     toast.add({
       severity: "error",
-      summary: "登录异常",
+      summary: "注册异常",
       detail: err,
       life: 3000,
     });
@@ -158,6 +135,7 @@ async function login() {
 .body {
   height: calc(100vh - 98px);
 }
+
 :deep(.p-password-input) {
   @apply w-96;
 }

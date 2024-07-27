@@ -22,6 +22,13 @@ type LoginResponse struct {
 	ExpiresAt int64   `json:"expiresAt"`
 }
 
+type Register struct {
+	Username    string `json:"userName" example:"用户名"`
+	Password    string `json:"passWord" example:"密码"`
+	NickName    string `json:"nickName" example:"昵称"`
+	AuthorityId uint   `json:"authorityId"`
+}
+
 type SysUser struct {
 	ID          uint           `gorm:"primarykey" json:"ID"` // 主键ID
 	CreatedAt   time.Time      // 创建时间
