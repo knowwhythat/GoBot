@@ -3,7 +3,7 @@
     style="height: 100vh; overflow: hidden"
     class="flex flex-col overflow-hidden"
   >
-    <Toolbar class="flex-none p-0" style="--wails-draggable: drag">
+    <Toolbar class="p-0" style="--wails-draggable: drag">
       <template #start>
         <Button
           text
@@ -136,7 +136,7 @@
         <SystemOperate @quit="confirmQuit" />
       </template>
     </Toolbar>
-    <div class="flex-1">
+    <div class="grow overflow-hidden">
       <splitpanes
         class="default-theme"
         :dblClickSplitter="false"
@@ -153,91 +153,8 @@
         <SplitterPanel
           :size="tabs[activeIndex]?.nodeType === 'sequence' ? 70 : 85"
         >
-          <div class="m-1">
-            <splitpanes
-              class="default-theme"
-              :dblClickSplitter="false"
-              id="sequence-designer"
-              horizontal
-              @resized="splitPaneResize"
-            >
-              <SplitterPanel :size="70" :min-size="30">
-                <TabView v-model:activeIndex="activeIndex" :scrollable="true">
-                  <TabPanel v-for="(tab, index) in tabs" :key="tab.subflowId">
-                    <template #header>
-                      <div class="flex align-items-center gap-2">
-                        <span class="font-bold text-nowrap">
-                          {{ tab.title }}
-                        </span>
-                        <div
-                          v-if="index !== 0"
-                          class="hover:bg-slate-200 -mt-px"
-                          @click.stop="closeTab(tab.subflowId)"
-                        >
-                          <v-remixicon
-                            size="20"
-                            viewBox="0 0 1024 1024"
-                            name="closeIcon"
-                          />
-                        </div>
-                      </div>
-                    </template>
-                    <VisualFlow
-                      @mounted="visualFlowMounted"
-                      v-if="tab.nodeType === 'sequence'"
-                      ref="flowTabs"
-                      :id="tab.id"
-                      :subflowId="tab.subflowId"
-                      :label="tab.title"
-                      @dataChanged="dataChanged = $event"
-                    />
-                    <WorkflowView
-                      :id="id"
-                      v-else-if="tab.nodeType === 'flow'"
-                      ref="flowTabs"
-                      @edit:block="editBlock"
-                      @delete:block="deleteBlock"
-                      @dataChanged="dataChanged = $event"
-                    />
-                  </TabPanel>
-                </TabView>
-              </SplitterPanel>
-              <SplitterPanel
-                v-if="activeNav !== ''"
-                :size="bottomHeight"
-                :min-size="10"
-              >
-                <LogsView
-                  v-if="activeNav === 'LogsView'"
-                  :logs="logs"
-                  @hide="activeNav = ''"
-                  @clear="logs = []"
-                />
-                <ElementsView
-                  :id="props.id"
-                  :windowsElement="windowsElement"
-                  v-else-if="activeNav === 'ElementsView'"
-                  @hide="activeNav = ''"
-                />
-                <ImageView
-                  :id="props.id"
-                  :images="imageElement"
-                  v-else-if="activeNav === 'ImageView'"
-                  @hide="activeNav = ''"
-                />
-                <ParamsView
-                  :id="props.id"
-                  v-else-if="activeNav === 'ParamsView'"
-                  @hide="activeNav = ''"
-                  v-model="params"
-                />
-                <LocalVariablesView
-                  v-else-if="activeNav === 'LocalVariablesView'"
-                  @hide="activeNav = ''"
-                />
-              </SplitterPanel>
-            </splitpanes>
-            <div class="flex flex-row h-8 bg-white">
+          <div class="flex flex-col-reverse h-full">
+            <div class="flex-none flex flex-row h-8 bg-gray-200">
               <div
                 v-for="nav in bottomNav"
                 @click="bottomNavClick(nav.component)"
@@ -250,6 +167,99 @@
               >
                 {{ nav.title }}
               </div>
+            </div>
+            <div class="flex grow overflow-hidden">
+              <splitpanes
+                class="default-theme"
+                :dblClickSplitter="false"
+                id="sequence-designer"
+                horizontal
+                @resized="splitPaneResize"
+              >
+                <SplitterPanel :size="70" :min-size="30">
+                  <TabView
+                    v-model:activeIndex="activeIndex"
+                    :scrollable="true"
+                    class="h-full overflow-hidden flex flex-col"
+                  >
+                    <TabPanel
+                      v-for="(tab, index) in tabs"
+                      :key="tab.subflowId"
+                      class="overflow-auto"
+                    >
+                      <template #header>
+                        <div class="flex align-items-center gap-2">
+                          <span class="font-bold text-nowrap">
+                            {{ tab.title }}
+                          </span>
+                          <div
+                            v-if="index !== 0"
+                            class="hover:bg-slate-200 -mt-px"
+                            @click.stop="closeTab(tab.subflowId)"
+                          >
+                            <v-remixicon
+                              size="20"
+                              viewBox="0 0 1024 1024"
+                              name="closeIcon"
+                            />
+                          </div>
+                        </div>
+                      </template>
+                      <VisualFlow
+                        @mounted="visualFlowMounted"
+                        v-if="tab.nodeType === 'sequence'"
+                        ref="flowTabs"
+                        :id="tab.id"
+                        :subflowId="tab.subflowId"
+                        :label="tab.title"
+                        @dataChanged="dataChanged = $event"
+                      />
+                      <WorkflowView
+                        :id="id"
+                        v-else-if="tab.nodeType === 'flow'"
+                        ref="flowTabs"
+                        @edit:block="editBlock"
+                        @delete:block="deleteBlock"
+                        @dataChanged="dataChanged = $event"
+                      />
+                    </TabPanel>
+                  </TabView>
+                </SplitterPanel>
+                <SplitterPanel
+                  v-if="activeNav !== ''"
+                  :size="bottomHeight"
+                  :min-size="10"
+                >
+                  <LogsView
+                    v-if="activeNav === 'LogsView'"
+                    :logs="logs"
+                    @hide="activeNav = ''"
+                    @clear="logs = []"
+                  />
+                  <ElementsView
+                    :id="props.id"
+                    :windowsElement="windowsElement"
+                    v-else-if="activeNav === 'ElementsView'"
+                    @hide="activeNav = ''"
+                  />
+                  <ImageView
+                    :id="props.id"
+                    :images="imageElement"
+                    v-else-if="activeNav === 'ImageView'"
+                    @hide="activeNav = ''"
+                  />
+                  <ParamsView
+                    :id="props.id"
+                    v-else-if="activeNav === 'ParamsView'"
+                    @hide="activeNav = ''"
+                    v-model="params"
+                  />
+                  <LocalVariablesView
+                    v-else-if="activeNav === 'LocalVariablesView'"
+                    @hide="activeNav = ''"
+                  />
+                </SplitterPanel>
+              </splitpanes>
             </div>
           </div>
         </SplitterPanel>
@@ -893,18 +903,12 @@ async function restartRepl() {
 }
 </script>
 <style scoped lang="scss">
-#sequence-designer {
-  height: calc(100vh - 96px);
-
-  .splitpanes__pane {
-    overflow-y: auto;
-  }
-}
 #right-pane {
   height: calc(100vh - 54px);
 }
 :deep(.p-tabview-panels) {
   padding: 0;
+  overflow: auto;
 }
 
 :deep(.p-tabview-nav-link) {
