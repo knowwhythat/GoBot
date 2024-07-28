@@ -15,6 +15,7 @@ var fileList = []string{
 	"data_process.json",
 	"browser.json",
 	"desktop_application.json",
+	"image.json",
 	"ai.json",
 }
 

@@ -1,0 +1,261 @@
+{
+  "id": "image",
+  "name": "图片操作",
+  "description": "图片操作",
+  "version": "1.0.0",
+  "activities": [
+    {
+      "key": "image",
+      "label": "图片操作",
+      "icon_path": "riScreenshotLine",
+      "description": "查找图片，点击图片等操作",
+      "children": [
+        {
+          "key": "image.screen_size",
+          "label": "获取屏幕大小",
+          "icon_path": "riShapeLine",
+          "description": "获取屏幕的大小尺寸",
+          "namespace": "robot_image",
+          "method": "screen_size",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [],
+            "outputs": [
+              {
+                "key": "screen_size",
+                "label": "屏幕大小",
+                "type": "tuple",
+                "default_value": "screen_size",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ]
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "image.get_dpi",
+          "label": "获取屏幕DPI",
+          "icon_path": "riGridLine",
+          "description": "获取屏幕DPI",
+          "namespace": "robot_image",
+          "method": "get_dpi",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [],
+            "outputs": [
+              {
+                "key": "screen_dpi",
+                "label": "屏幕DPI",
+                "type": "number",
+                "default_value": "screen_dpi",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ]
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "image.find_target_position",
+          "label": "获取目标图片位置",
+          "icon_path": "riMapPinLine",
+          "description": "获取目标图片位置",
+          "namespace": "robot_image",
+          "method": "find_target_position",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "target_id",
+                "label": "图片标识",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ImageElementInput",
+                "show_if": []
+              }
+            ],
+            "outputs": [
+              {
+                "key": "image_location",
+                "label": "目标图片位置",
+                "type": "tuple",
+                "default_value": "screen_dpi",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ]
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "image.click_target",
+          "label": "点击目标图片",
+          "icon_path": "riCursorLine",
+          "description": "点击目标图片",
+          "namespace": "robot_image",
+          "method": "click_target",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "target_id",
+                "label": "图片标识",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ImageElementInput",
+                "show_if": []
+              },
+              {
+                "key": "button",
+                "label": "按键",
+                "required": true,
+                "type": "str",
+                "default_value": "0:left",
+                "options": [
+                  { "label": "左键", "value": "left" },
+                  { "label": "中键", "value": "middle" },
+                  { "label": "右键", "value": "right" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "click_type",
+                "label": "按键",
+                "required": true,
+                "type": "str",
+                "default_value": "0:single",
+                "options": [
+                  { "label": "单击", "value": "single" },
+                  { "label": "双击", "value": "double" },
+                  { "label": "按下", "value": "down" },
+                  { "label": "抬起", "value": "up" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "position",
+                "label": "点击位置",
+                "type": "str",
+                "default_value": "0:center",
+                "required": true,
+                "options": [
+                  { "label": "正中心", "value": "center" },
+                  { "label": "随机位置", "value": "random" },
+                  { "label": "指定位置", "value": "normal" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "x",
+                "label": "X方向偏移量",
+                "type": "number",
+                "default_value": "1:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": ["position=normal"]
+              },
+              {
+                "key": "y",
+                "label": "Y方向偏移量",
+                "type": "number",
+                "default_value": "1:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": ["position=normal"]
+              },
+              {
+                "key": "show_mouse_position",
+                "label": "是否模拟鼠标移动",
+                "type": "bool",
+                "default_value": "1:False",
+                "required": true,
+                "options": null,
+                "editor_type": "BoolValue",
+                "show_if": []
+              }
+            ],
+            "outputs": [
+              {
+                "key": "image_location",
+                "label": "目标图片位置",
+                "type": "tuple",
+                "default_value": "screen_dpi",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ]
+          },
+          "component": "BasicActivity"
+        },
+        {
+          "key": "image.wait_target",
+          "label": "等待元素",
+          "icon_path": "riTimerLine",
+          "description": "等待元素",
+          "namespace": "robot_image",
+          "method": "wait_target",
+          "isPseudo": false,
+          "parameter_define": {
+            "inputs": [
+              {
+                "key": "target_id",
+                "label": "图片标识",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ImageElementInput",
+                "show_if": []
+              },
+              {
+                "key": "wait_result",
+                "label": "等待方式",
+                "type": "str",
+                "default_value": "0:display",
+                "required": true,
+                "options": [
+                  { "label": "等待元素出现", "value": "display" },
+                  { "label": "等待元素消失", "value": "hidden" }
+                ],
+                "editor_type": "SelectDefine",
+                "show_if": []
+              },
+              {
+                "key": "timeout",
+                "label": "等待时间(秒)",
+                "type": "number",
+                "default_value": "1:30",
+                "required": true,
+                "options": [],
+                "editor_type": "ExpressionTextInput",
+                "show_if": []
+              }
+            ],
+            "outputs": [
+              {
+                "key": "image_exist",
+                "label": "图片是否存在",
+                "type": "booL",
+                "default_value": "image_exist",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ],
+            "error": true
+          },
+          "component": "BasicActivity"
+        }
+      ]
+    }
+  ]
+}

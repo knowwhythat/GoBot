@@ -988,7 +988,7 @@
                   {
                     "key": "element_exist",
                     "label": "元素是否存在",
-                    "type": "str",
+                    "type": "booL",
                     "default_value": "",
                     "required": true,
                     "editor_type": "SelectOrInput"
