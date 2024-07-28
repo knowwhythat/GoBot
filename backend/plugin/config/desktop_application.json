@@ -1313,7 +1313,7 @@
                 "inputs": [
                   {
                     "key": "desktop_application",
-                    "label": "浏览器对象",
+                    "label": "元素对象",
                     "type": "desktop_application",
                     "default_value": "1:desktop_application_instance",
                     "required": true,
