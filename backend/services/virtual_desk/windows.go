@@ -18,6 +18,7 @@ import (
 	"gobot/backend/global"
 	"gobot/backend/log"
 	"gobot/backend/models"
+	"gobot/backend/services/env"
 	"gobot/backend/services/sys_exec"
 	"gobot/backend/utils"
 	"golang.org/x/sys/windows/registry"
@@ -39,13 +40,7 @@ func StartInVirtualDesk(ctx context.Context, id string) error {
 		if err != nil {
 			return err
 		}
-		//executable, err := os.Executable()
-		//if err != nil {
-		//	return err
-		//}
-		//virtualExe := filepath.Join(filepath.Dir(executable), "VirtualDesk", "VirtualDesk.exe")
-		//TODO 改为相对位置
-		virtualExe := "D:\\Program Files\\GoBot\\VirtualDesk\\VirtualDesk.exe"
+		virtualExe := filepath.Join(env.GetExecutablePath(), "VirtualDesk", "VirtualDesk.exe")
 		visualProcess = exec.Command(virtualExe, "1024*768")
 
 		stdout, err := visualProcess.StdoutPipe()
@@ -201,8 +196,7 @@ func enableAutoRun() error {
 			log.Logger.Logger.Error().AnErr("关闭注册表键失败", err)
 		}
 	}(key)
-	//TODO
-	err = key.SetStringValue("VirtualHost", `D:\Program Files\GoBot\VirtualHost.exe`)
+	err = key.SetStringValue("VirtualHost", filepath.Join(env.GetExecutablePath(), "VirtualHost.exe"))
 	if err != nil {
 		log.Logger.Logger.Error().AnErr("设置注册表值失败", err)
 		return err
@@ -237,8 +231,7 @@ func disableAutoRun() error {
 
 func connectVirtualServer(ctx context.Context) {
 	for visualProcess != nil && conn == nil {
-		//TODO 修改为相对位置
-		data, err := os.ReadFile(`D:\Program Files\GoBot\virtual_host_port`)
+		data, err := os.ReadFile(filepath.Join(env.GetExecutablePath(), "virtual_host_port"))
 		if err != nil {
 			continue
 		}

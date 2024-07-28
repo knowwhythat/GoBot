@@ -187,4 +187,5 @@ func GetNextTriggerTime(cron string) (string, error) {
 
 func StopSchedule() {
 	sched.Stop()
+	log.Logger.Logger.Info().Msg("定时任务停止执行")
 }

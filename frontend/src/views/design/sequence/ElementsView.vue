@@ -43,7 +43,7 @@
         </button>
       </div>
     </template>
-    <div class="flex relative h-full">
+    <div class="flex h-full">
       <Tree
         :value="windowsElement"
         :filter="false"
@@ -66,15 +66,19 @@
         </template>
       </Tree>
       <ContextMenu ref="menu" :model="items" />
-      <div class="w-64 h-full">
-        <Image
-          v-if="imagePath"
-          :src="imagePath"
-          alt="Image"
-          preview
-          class="flex"
-          image-class="flex justify-center items-center object-scale-down"
-        />
+      <div class="flex items-center">
+        <div
+          class="w-64 h-64 m-1 border border-solid border-gray-300 justify-center items-center"
+        >
+          <Image
+            v-if="imagePath"
+            :src="imagePath"
+            alt="Image"
+            preview
+            class="flex justify-center items-center"
+            image-class="flex justify-center items-center object-scale-down"
+          />
+        </div>
       </div>
     </div>
     <ElementOptionDialog
@@ -142,7 +146,6 @@ async function pickElement() {
     EventsOnce("windowsEvent", async (resp) => {
       await WindowMaximise();
       const result = JSON.parse(resp);
-      console.log(result);
       if (result.result === "ok") {
         needInit.value = true;
         pathOption.value = JSON.parse(result.data);
@@ -283,7 +286,7 @@ function onContextMenuClick(options) {
 }
 
 :deep(.p-toggleable-content) {
-  height: calc(100% - 40px);
+  height: calc(100% - 45px);
 }
 
 :deep(.p-panel-content) {

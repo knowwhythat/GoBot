@@ -8,7 +8,9 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gobot/backend/constants"
 	"gobot/backend/log"
+	"gobot/backend/services/env"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
@@ -34,6 +36,10 @@ func StartPick(ctx context.Context) error {
 	if err != nil {
 		_ = wsConn.Close()
 		wsConn = nil
+		if checkConn(ctx) != nil {
+			return errors.New("连接浏览器插件失败，请确定是否正确配置浏览器插件")
+		}
+		err = wsConn.WriteMessage(1, request)
 	}
 	return err
 }
@@ -57,6 +63,10 @@ func StartCheck(ctx context.Context, frame, selector string) error {
 	if err != nil {
 		_ = wsConn.Close()
 		wsConn = nil
+		if checkConn(ctx) != nil {
+			return errors.New("连接浏览器插件失败，请确定是否正确配置浏览器插件")
+		}
+		err = wsConn.WriteMessage(1, request)
 	}
 	return err
 }
@@ -64,8 +74,7 @@ func StartCheck(ctx context.Context, frame, selector string) error {
 func checkConn(ctx context.Context) error {
 	for i := 0; i < 3; i++ {
 		if wsConn == nil {
-			//TODO 修改为相对位置
-			data, err := os.ReadFile("D:\\Program Files\\GoBot\\chrome\\nativehost_port")
+			data, err := os.ReadFile(filepath.Join(env.GetExecutablePath(), "chrome", "nativehost_port"))
 			if err != nil {
 				continue
 			}

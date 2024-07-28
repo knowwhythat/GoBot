@@ -154,7 +154,7 @@
           :size="tabs[activeIndex]?.nodeType === 'sequence' ? 70 : 85"
         >
           <div class="flex flex-col-reverse h-full">
-            <div class="flex-none flex flex-row h-8 bg-gray-200">
+            <div class="flex-none flex flex-row h-8 bg-gray-200 mb-1 rounded">
               <div
                 v-for="nav in bottomNav"
                 @click="bottomNavClick(nav.component)"
@@ -176,7 +176,7 @@
                 horizontal
                 @resized="splitPaneResize"
               >
-                <SplitterPanel :size="70" :min-size="30">
+                <SplitterPanel :size="65" :min-size="30">
                   <TabView
                     v-model:activeIndex="activeIndex"
                     :scrollable="true"
@@ -771,7 +771,7 @@ function bottomNavClick(nav) {
   }
 }
 
-const bottomHeight = ref(30);
+const bottomHeight = ref(35);
 
 function splitPaneResize(e) {
   if (e.length === 2) {
