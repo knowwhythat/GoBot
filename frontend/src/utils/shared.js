@@ -218,11 +218,20 @@ export const conditionBuilder = {
 export const typeBuilder = {
   str: {
     icon: "pi pi-dollar",
-    property: [{ label: "trim", type: "method" }],
+    property: [
+      { label: "去除首位空格", name: "strip", type: "method" },
+      { label: "转整数", name: "int", type: "param" },
+      { label: "转浮点数", name: "float", type: "param" },
+      { label: "长度", name: "len", type: "param" },
+    ],
   },
   number: {
-    icon: "pi pi-plus-circle",
-    property: [{ label: "trim", type: "method" }],
+    icon: "pi pi-pound",
+    property: [{ label: "转字符串", name: "str", type: "param" }],
+  },
+  default: {
+    icon: "pi pi-objects-column",
+    property: [],
   },
 };
 
@@ -242,6 +251,7 @@ export const variableType = [
   { name: "Python表达式", code: "1:" },
   { name: "普通文本", code: "0:" },
 ];
+
 export const matchTypes = [
   { name: "模板匹配", value: "template" },
   { name: "特征点匹配", value: "sift" },

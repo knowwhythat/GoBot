@@ -413,6 +413,7 @@ import { getShortcut, useShortcut } from "@/composable/shortcut";
 
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import { getVariableDefine } from "@/utils/helper.js";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -446,6 +447,15 @@ const flowTabs = ref();
 const generateSubflowId = customAlphabet("abcdefghijklmnopqrstuvwxyz", 12);
 
 const projectConfig = ref({});
+
+const contextVariable = computed(() => {
+  const variables = [];
+  projectConfig.value.variables.forEach((variable) => {
+    variables.push(getVariableDefine(variable.name, variable.type, "global"));
+  });
+  return variables;
+});
+provide("contextVariable", { contextVariable: contextVariable });
 
 const tabs = computed(() => {
   let openFlows = [];

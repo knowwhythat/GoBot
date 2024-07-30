@@ -1,3 +1,6 @@
+import { typeBuilder } from "@/utils/shared.js";
+import { nanoid } from "nanoid";
+
 export function isXPath(str) {
   const regex = /^([(/@]|id\()/;
 
@@ -110,7 +113,7 @@ export function parseFlow(flow) {
 
 export function replaceMustache(str, replacer) {
   /* eslint-disable-next-line */
-  return str.replace(/\{\{(.*?)\}\}/g, replacer);
+  return str.replace(/\{\{(.*?)}}/g, replacer);
 }
 
 export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
@@ -235,4 +238,34 @@ export function getIconPath(path) {
   }
 
   return { name: path };
+}
+
+export function getVariableDefine(name, type, scope = "local") {
+  const typeProperty =
+    type in typeBuilder ? typeBuilder[type] : typeBuilder["default"];
+  const children = [];
+  let label = name;
+  if (scope === "global") {
+    label = `${name}(全局变量)`;
+    name = `glv['${name}']`;
+  }
+  if (typeProperty["property"]) {
+    typeProperty["property"].forEach((property) => {
+      children.push({
+        key: nanoid(8),
+        label: property.label,
+        name: property.name,
+        type: property.type,
+        parent: name,
+      });
+    });
+  }
+  return {
+    key: nanoid(8),
+    label: label,
+    name: name,
+    type: type,
+    icon: typeProperty["icon"],
+    children: children,
+  };
 }

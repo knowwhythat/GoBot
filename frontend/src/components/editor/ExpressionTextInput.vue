@@ -85,6 +85,19 @@ const toggle = (event) => {
 function selectedNode(node) {
   op.value.toggle(false);
   isExpression.value = true;
-  emit("update", "1:" + node.label);
+  let selectValue = node.name;
+  if ("parent" in node) {
+    const variableName = node["parent"];
+    const type = node["type"];
+    const name = node["name"];
+    if (type === "param") {
+      selectValue = `${name}(${variableName})`;
+    } else if (type === "method") {
+      selectValue = `${variableName}.${name}()`;
+    } else if (type === "property") {
+      selectValue = `${variableName}.${name}`;
+    }
+  }
+  emit("update", "1:" + selectValue);
 }
 </script>

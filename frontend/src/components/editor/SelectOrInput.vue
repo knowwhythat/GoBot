@@ -8,13 +8,14 @@
       aria-controls="overlay_panel"
     />
     <OverlayPanel ref="op" appendTo="body" :unstyled="true">
-      <Tree
-        :value="contextVariable"
+      <Listbox
+        :options="contextVariable"
         selectionMode="single"
+        optionLabel="label"
         :filter="true"
         filterPlaceholder="搜索变量"
-        @node-select="selectedNode($event)"
-      ></Tree>
+        @update:modelValue="selectedNode($event)"
+      ></Listbox>
     </OverlayPanel>
     <InputText
       :editable="true"
@@ -26,7 +27,7 @@
 </template>
 <script setup>
 import Button from "primevue/button";
-import Tree from "primevue/tree";
+import Listbox from "primevue/listbox";
 import OverlayPanel from "primevue/overlaypanel";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";

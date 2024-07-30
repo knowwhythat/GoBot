@@ -7,7 +7,7 @@
 <script setup>
 import SequenceActivity from "@/components/activity/SequenceActivity.vue";
 import { GetSubFlow, SaveSubFlow } from "@back/go/backend/App";
-import { onMounted, provide, ref, watch } from "vue";
+import { computed, inject, onMounted, provide, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import {
   copySelected,
@@ -17,6 +17,7 @@ import {
 } from "@/utils/activityUtils.js";
 import { useEditorStore } from "@/stores/editor";
 import { nanoid } from "nanoid";
+import { getVariableDefine } from "@/utils/helper.js";
 
 const toast = useToast();
 
@@ -37,7 +38,7 @@ const props = defineProps({
 
 const emit = defineEmits(["mounted", "dataChanged"]);
 const selectedActivity = ref([]);
-provide("contextVariable", { contextVariable: [] });
+
 provide("selectedActivity", { selectedActivity });
 
 const dataChanged = ref(false);
@@ -46,6 +47,27 @@ provide("dataChanged", { dataChanged, updateDataChanged });
 function updateDataChanged() {
   dataChanged.value = true;
 }
+
+const { contextVariable } = inject("contextVariable");
+const currentContextVariable = computed(() => {
+  let variables = [];
+  mainActivity.value.params.forEach((param) => {
+    variables.push(getVariableDefine(param.name, param.type, "param"));
+  });
+  if (contextVariable.value) {
+    contextVariable.value.forEach((variable) => {
+      if (
+        !variables.some((v) => {
+          return v.label === variable.label;
+        })
+      ) {
+        variables.push(variable);
+      }
+    });
+  }
+  return variables;
+});
+provide("contextVariable", { contextVariable: currentContextVariable });
 
 watch(
   () => dataChanged.value,

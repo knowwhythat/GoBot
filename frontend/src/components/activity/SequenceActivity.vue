@@ -20,7 +20,6 @@
     <div
       v-for="(element, index) in props.element.children"
       :key="element.id"
-      :index="index"
       class="flex flex-col items-center px-2 overflow-auto text-sm m-0.5"
       @dragover.prevent
       @dragenter.prevent="dragEnter($event, element)"
@@ -48,7 +47,6 @@
         ></div>
       </div>
       <SequenceActivity
-        :index="index"
         v-if="element.component === 'SequenceActivity'"
         v-bind="{ element: element }"
         @update="update"
@@ -61,7 +59,6 @@
       />
       <component
         v-else
-        :index="index"
         :is="findComponent(element.component)"
         v-bind="{ element: element }"
         @delete="deleteNode($event)"
@@ -117,6 +114,7 @@ import ActivityBase from "./ActivityBase.vue";
 import { nanoid } from "nanoid";
 import { typeBuilder } from "@/utils/shared";
 import { cloneDeep } from "lodash";
+import { getVariableDefine } from "@/utils/helper.js";
 
 const props = defineProps({
   element: {
@@ -125,7 +123,7 @@ const props = defineProps({
   },
 });
 
-const id = ref(null);
+const id = ref("");
 onMounted(() => {
   if (!props.element.children) {
     props.element.children = [];
@@ -208,6 +206,7 @@ function onUncomment(data) {
     }
   }
 }
+
 const { dragBlockId } = inject("dragBlockId");
 const { dropBlockId } = inject("dropBlockId");
 
@@ -306,36 +305,35 @@ function updateData(data) {
 }
 
 const { contextVariable } = inject("contextVariable");
-const currentContextVariable = computed({
-  get() {
-    let child = props.element.children;
-    let variables = [];
-    child.forEach((element) => {
-      element.parameter_define.outputs?.forEach((pd) => {
-        variables.push({
-          label:
-            pd.key in element.parameter
-              ? element.parameter[pd.key]
-              : pd.default_value,
-          type: pd.type,
-          icon: typeBuilder[pd.type] ? typeBuilder[pd.type] : "pi pi-building",
-          key: nanoid(8),
-        });
-      });
+const currentContextVariable = computed(() => {
+  let child = props.element.children;
+  let variables = [];
+  child.forEach((element) => {
+    element.parameter_define.outputs?.forEach((pd) => {
+      const variableLabel =
+        pd.key in element.parameter
+          ? element.parameter[pd.key]
+          : pd.default_value;
+      if (
+        variableLabel &&
+        variables.findIndex((v) => v.label === variableLabel) === -1
+      ) {
+        variables.push(getVariableDefine(variableLabel, pd.type));
+      }
     });
-    if (contextVariable.value) {
-      contextVariable.value.forEach((variable) => {
-        if (
-          !variables.some((v) => {
-            return v.label === variable.label;
-          })
-        ) {
-          variables.push(variable);
-        }
-      });
-    }
-    return variables;
-  },
+  });
+  if (contextVariable.value) {
+    contextVariable.value.forEach((variable) => {
+      if (
+        !variables.some((v) => {
+          return v.label === variable.label;
+        })
+      ) {
+        variables.push(variable);
+      }
+    });
+  }
+  return variables;
 });
 provide("contextVariable", { contextVariable: currentContextVariable });
 </script>

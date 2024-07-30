@@ -7,8 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/duke-git/lancet/v2/slice"
 )
 
 type Flow struct {
@@ -89,9 +87,8 @@ func (flow *Flow) GeneratePythonCode(filepath string) error {
 	activities := flow.Sequence.Children
 	namespace := make(map[string]string)
 	code := "def main(args):\n"
-	inParams := slice.Filter(flow.Params, func(index int, item Param) bool { return item.Direction == "In" })
-	if len(inParams) > 0 {
-		code += generateParams(inParams)
+	if len(flow.Params) > 0 {
+		code += generateParams(flow.Params)
 	}
 	if len(activities) > 0 {
 		for _, activity := range activities {
