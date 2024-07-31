@@ -54,6 +54,6 @@ const toggle = (event) => {
 
 function selectedNode(node) {
   op.value.toggle(false);
-  emit("update", node.label);
+  emit("update", node.name);
 }
 </script>

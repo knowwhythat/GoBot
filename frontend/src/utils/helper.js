@@ -248,6 +248,9 @@ export function getVariableDefine(name, type, scope = "local") {
   if (scope === "global") {
     label = `${name}(全局变量)`;
     name = `glv['${name}']`;
+  } else if (scope === "OutParam") {
+    label = `${name}(输出参数)`;
+    name = `args['${name}']`;
   }
   if (typeProperty["property"]) {
     typeProperty["property"].forEach((property) => {

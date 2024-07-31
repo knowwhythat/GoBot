@@ -305,9 +305,12 @@ function updateData(data) {
 }
 
 const { contextVariable } = inject("contextVariable");
+const globalRegex = /^glv\['.*?']$/;
+const outParamRegex = /^args\['.*?']$/;
 const currentContextVariable = computed(() => {
   let child = props.element.children;
   let variables = [];
+
   child.forEach((element) => {
     element.parameter_define.outputs?.forEach((pd) => {
       const variableLabel =
@@ -316,7 +319,9 @@ const currentContextVariable = computed(() => {
           : pd.default_value;
       if (
         variableLabel &&
-        variables.findIndex((v) => v.label === variableLabel) === -1
+        !globalRegex.test(variableLabel) &&
+        !outParamRegex.test(variableLabel) &&
+        variables.findIndex((v) => v.name === variableLabel) === -1
       ) {
         variables.push(getVariableDefine(variableLabel, pd.type));
       }
@@ -326,7 +331,7 @@ const currentContextVariable = computed(() => {
     contextVariable.value.forEach((variable) => {
       if (
         !variables.some((v) => {
-          return v.label === variable.label;
+          return v.name === variable.name;
         })
       ) {
         variables.push(variable);

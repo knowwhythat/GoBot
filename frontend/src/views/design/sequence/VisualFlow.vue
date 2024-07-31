@@ -52,7 +52,9 @@ const { contextVariable } = inject("contextVariable");
 const currentContextVariable = computed(() => {
   let variables = [];
   mainActivity.value.params.forEach((param) => {
-    variables.push(getVariableDefine(param.name, param.type, "param"));
+    variables.push(
+      getVariableDefine(param.name, param.type, param.direction + "Param"),
+    );
   });
   if (contextVariable.value) {
     contextVariable.value.forEach((variable) => {
