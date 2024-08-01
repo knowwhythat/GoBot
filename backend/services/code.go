@@ -278,7 +278,7 @@ func generateWhileExpression(indent int, activity Activity) (int, string, bool) 
 	code := strings.Repeat(" ", indent*4)
 	expression := activity.Parameter["expression"]
 	if len(expression) >= 2 {
-		code += activity.Method + " " + expression[2:] + " :\n"
+		code += "while " + expression[2:] + " :\n"
 	} else {
 		code += activity.Method + " " + activity.ParameterDefine.Inputs[0].DefaultValue[2:] + ":\n"
 	}
@@ -287,11 +287,11 @@ func generateWhileExpression(indent int, activity Activity) (int, string, bool) 
 
 func generateForEachListExpression(indent int, activity Activity) (int, string, bool) {
 	code := strings.Repeat(" ", indent*4)
-	code += activity.Method + " "
+	code += "for "
 	if loopValue, ok := activity.Parameter["loop_value"]; !ok {
-		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+		code += activity.ParameterDefine.Outputs[0].DefaultValue
 	} else {
-		code += loopValue[2:]
+		code += loopValue
 	}
 	code += " in "
 	if arrayValue, ok := activity.Parameter["array"]; !ok {
@@ -305,17 +305,17 @@ func generateForEachListExpression(indent int, activity Activity) (int, string, 
 
 func generateForEachMapExpression(indent int, activity Activity) (int, string, bool) {
 	code := strings.Repeat(" ", indent*4)
-	code += activity.Method + " "
+	code += "for "
 	if loopKey, ok := activity.Parameter["loop_key"]; !ok {
-		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+		code += activity.ParameterDefine.Outputs[0].DefaultValue
 	} else {
-		code += loopKey[2:]
+		code += loopKey
 	}
 	code += ","
 	if loopValue, ok := activity.Parameter["loop_value"]; !ok {
-		code += activity.ParameterDefine.Outputs[1].DefaultValue[2:]
+		code += activity.ParameterDefine.Outputs[1].DefaultValue
 	} else {
-		code += loopValue[2:]
+		code += loopValue
 	}
 	code += " in "
 	if arrayValue, ok := activity.Parameter["map"]; !ok {
@@ -329,11 +329,11 @@ func generateForEachMapExpression(indent int, activity Activity) (int, string, b
 
 func generateForLoopIndexExpression(indent int, activity Activity) (int, string, bool) {
 	code := strings.Repeat(" ", indent*4)
-	code += activity.Method + " "
+	code += "for "
 	if loopIndex, ok := activity.Parameter["loop_index"]; !ok {
-		code += activity.ParameterDefine.Outputs[0].DefaultValue[2:]
+		code += activity.ParameterDefine.Outputs[0].DefaultValue
 	} else {
-		code += loopIndex[2:]
+		code += loopIndex
 	}
 	code += " in range("
 	if start, ok := activity.Parameter["start"]; !ok {

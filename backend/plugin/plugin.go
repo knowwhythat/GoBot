@@ -61,13 +61,14 @@ type Input struct {
 	ShowIf       []string `json:"show_if,omitempty"`
 }
 type Output struct {
-	Key          string `json:"key"`
-	Label        string `json:"label"`
-	Placeholder  string `json:"placeholder"`
-	Type         string `json:"type"`
-	DefaultValue string `json:"default_value"`
-	Required     bool   `json:"required"`
-	EditorType   string `json:"editor_type"`
+	Key          string   `json:"key"`
+	Label        string   `json:"label"`
+	Placeholder  string   `json:"placeholder"`
+	Type         string   `json:"type"`
+	DefaultValue string   `json:"default_value"`
+	Required     bool     `json:"required"`
+	EditorType   string   `json:"editor_type"`
+	ShowIf       []string `json:"show_if,omitempty"`
 }
 
 func ParseAllPlugin() ([]Activity, error) {

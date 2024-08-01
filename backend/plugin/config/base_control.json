@@ -45,7 +45,7 @@
                     "key": "array",
                     "label": "列表数据",
                     "type": "array",
-                    "default_value": "1:list",
+                    "default_value": "1:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
@@ -58,10 +58,10 @@
                     "key": "loop_value",
                     "label": "循环变量",
                     "type": "any",
-                    "default_value": "1:loop_value",
+                    "default_value": "loop_value",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "SelectOrInput",
                     "show_if": []
                   }
                 ]
@@ -83,7 +83,7 @@
                     "key": "map",
                     "label": "字典数据",
                     "type": "map",
-                    "default_value": "1:map",
+                    "default_value": "1:",
                     "required": true,
                     "options": null,
                     "editor_type": "ExpressionTextInput",
@@ -96,10 +96,10 @@
                     "key": "loop_key",
                     "label": "循环变量key",
                     "type": "any",
-                    "default_value": "1:key",
+                    "default_value": "key",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "SelectOrInput",
                     "show_if": []
                   },
                   {
@@ -107,10 +107,10 @@
                     "key": "loop_value",
                     "label": "循环变量value",
                     "type": "any",
-                    "default_value": "1:value",
+                    "default_value": "value",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "SelectOrInput",
                     "show_if": []
                   }
                 ]
@@ -170,7 +170,7 @@
                     "default_value": "1:loop_index",
                     "required": true,
                     "options": null,
-                    "editor_type": "ExpressionTextInput",
+                    "editor_type": "SelectOrInput",
                     "show_if": []
                   }
                 ]

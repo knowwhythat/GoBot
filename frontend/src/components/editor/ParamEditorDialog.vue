@@ -89,28 +89,34 @@
           >
             <b>输出参数</b>
           </Divider>
-          <div
-            class="flex mb-4"
+          <template
             v-for="output in props.parameter_define?.outputs"
             :key="output.key"
           >
-            <span class="mr-2 w-32 truncate my-auto" :title="output.label">
-              {{ output.label }}
-            </span>
-            <component
-              :is="findComponent(output.editor_type)"
-              :value="
-                parameterData.parameter?.hasOwnProperty(output.key)
-                  ? parameterData.parameter[output.key]
-                  : output.default_value
-              "
-              :input="output"
-              @update="updateInnerValue(output.key, $event)"
-            />
-            <a title="提示" target="_blank" rel="noopener" class="my-auto p-4">
-              <v-remixicon name="riInformationLine" size="18" />
-            </a>
-          </div>
+            <div v-if="show(output)" class="flex mb-4">
+              <span class="mr-2 w-32 truncate my-auto" :title="output.label">
+                {{ output.label }}
+              </span>
+              <component
+                :is="findComponent(output.editor_type)"
+                :value="
+                  parameterData.parameter?.hasOwnProperty(output.key)
+                    ? parameterData.parameter[output.key]
+                    : output.default_value
+                "
+                :input="output"
+                @update="updateInnerValue(output.key, $event)"
+              />
+              <a
+                title="提示"
+                target="_blank"
+                rel="noopener"
+                class="my-auto p-4"
+              >
+                <v-remixicon name="riInformationLine" size="18" />
+              </a>
+            </div>
+          </template>
         </div>
       </TabPanel>
       <TabPanel
@@ -295,11 +301,11 @@ function show(input) {
       const v = parameterData.value.parameter[key];
       return v.substring(2) === value;
     } else {
-      return (
-        props.parameter_define.inputs
-          .filter((pd) => pd.key === key)[0]
-          .default_value.substring(2) === value
-      );
+      const pd = props.parameter_define.inputs.filter((pd) => pd.key === key);
+      if (pd.length > 0 && pd[0].default_value.length >= 2) {
+        return pd[0].default_value.substring(2) === value;
+      }
+      return false;
     }
   });
 }

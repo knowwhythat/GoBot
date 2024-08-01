@@ -9,6 +9,7 @@
     />
     <OverlayPanel ref="op" appendTo="body" :unstyled="true">
       <Tree
+        scrollHeight="300px"
         :value="windowsElement"
         selectionMode="single"
         :filter="true"
