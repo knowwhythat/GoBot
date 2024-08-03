@@ -387,6 +387,7 @@ export namespace plugin {
 	    default_value: string;
 	    required: boolean;
 	    editor_type: string;
+	    show_if?: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Output(source);
@@ -401,6 +402,7 @@ export namespace plugin {
 	        this.default_value = source["default_value"];
 	        this.required = source["required"];
 	        this.editor_type = source["editor_type"];
+	        this.show_if = source["show_if"];
 	    }
 	}
 	export class Input {

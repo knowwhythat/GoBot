@@ -26,6 +26,10 @@ export function DeleteSubFlow(arg1, arg2) {
   return window['go']['backend']['App']['DeleteSubFlow'](arg1, arg2);
 }
 
+export function DeleteSubModule(arg1, arg2) {
+  return window['go']['backend']['App']['DeleteSubModule'](arg1, arg2);
+}
+
 export function GetBasicConfigData() {
   return window['go']['backend']['App']['GetBasicConfigData']();
 }
@@ -68,6 +72,10 @@ export function GetSelectedWindowsElement(arg1) {
 
 export function GetSubFlow(arg1, arg2) {
   return window['go']['backend']['App']['GetSubFlow'](arg1, arg2);
+}
+
+export function GetSubModule(arg1, arg2) {
+  return window['go']['backend']['App']['GetSubModule'](arg1, arg2);
 }
 
 export function GetWindowsElement(arg1, arg2) {
@@ -188,6 +196,10 @@ export function SaveProjectDependency(arg1, arg2) {
 
 export function SaveSubFlow(arg1, arg2, arg3) {
   return window['go']['backend']['App']['SaveSubFlow'](arg1, arg2, arg3);
+}
+
+export function SaveSubModule(arg1, arg2, arg3) {
+  return window['go']['backend']['App']['SaveSubModule'](arg1, arg2, arg3);
 }
 
 export function SaveWindowsElement(arg1, arg2, arg3, arg4) {

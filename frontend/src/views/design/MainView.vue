@@ -144,7 +144,7 @@
       >
         <SplitterPanel
           :size="15"
-          v-show="tabs[activeIndex]?.nodeType === 'sequence'"
+          v-show="tabs[activeIndex]?.nodeType !== 'flow'"
         >
           <div class="m-1">
             <LeftPaneView />
@@ -209,6 +209,15 @@
                         @mounted="visualFlowMounted"
                         v-if="tab.nodeType === 'sequence'"
                         ref="flowTabs"
+                        :id="tab.id"
+                        :subflowId="tab.subflowId"
+                        :label="tab.title"
+                        @dataChanged="dataChanged = $event"
+                      />
+                      <CodeView
+                        @mounted="visualFlowMounted"
+                        ref="flowTabs"
+                        v-else-if="tab.nodeType === 'code'"
                         :id="tab.id"
                         :subflowId="tab.subflowId"
                         :label="tab.title"
@@ -280,7 +289,7 @@
                     <div
                       class="hover:bg-slate-200 px-1"
                       v-tooltip.left="'新建代码流程'"
-                      @click="addNewVisualFlow"
+                      @click="addNewCodeFlow"
                     >
                       <v-remixicon size="20" name="riCodeBoxLine" />
                     </div>
@@ -387,6 +396,7 @@ import ElementsView from "@/views/design/sequence/ElementsView.vue";
 import ImageView from "@/views/design/sequence/ImageView.vue";
 import ParamsView from "@/views/design/sequence/ParamsView.vue";
 import VisualFlow from "@/views/design/sequence/VisualFlow.vue";
+import CodeView from "@/views/design/code/CodeView.vue";
 import GlobalVariableView from "@/views/design/sequence/GlobalVariableView.vue";
 import PipInstallView from "@/views/design/sequence/PipInstallView.vue";
 import WorkflowView from "@/views/design/flow/WorkflowView.vue";
@@ -402,6 +412,7 @@ import {
   RunSubFlow,
   SaveProjectConfig,
   TerminateSubFlow,
+  DeleteSubModule,
 } from "@back/go/backend/App";
 import {
   EventsOff,
@@ -506,6 +517,18 @@ function addNewVisualFlow() {
   }
 }
 
+function addNewCodeFlow() {
+  if (projectConfig.value.children) {
+    projectConfig.value.children.push({
+      key: generateSubflowId(8),
+      label: `模块${tabs.value.length}`,
+      nodeType: "code",
+      opened: true,
+      children: [],
+    });
+    activeIndex.value = tabs.value.length - 1;
+  }
+}
 function openTab(node) {
   node.opened = true;
   activeIndex.value = tabs.value.findIndex((tab) => tab.subflowId === node.key);
@@ -596,7 +619,12 @@ const items = ref([
             (child) => child.key !== selectedNode.value.key,
           );
           SaveProjectConfig(props.id, JSON.stringify(projectConfig.value));
-          DeleteSubFlow(props.id, selectedNode.value.key);
+          console.log(selectedNode.value);
+          if (selectedNode.value.nodeType === "code") {
+            DeleteSubModule(props.id, selectedNode.value.key);
+          } else if (selectedNode.value.nodeType === "sequence") {
+            DeleteSubFlow(props.id, selectedNode.value.key);
+          }
           activeIndex.value = current - 1;
         },
         reject: () => {},
@@ -934,5 +962,8 @@ async function restartRepl() {
 :deep(.p-tree) {
   padding: 0;
   border: none;
+}
+:deep(.p-tabview-scrollable .p-tabview-nav-container) {
+  overflow: visible;
 }
 </style>

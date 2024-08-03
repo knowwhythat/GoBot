@@ -180,6 +180,19 @@ func (a *App) DeleteSubFlow(id, subId string) error {
 	return services.DeleteSubFlow(id, subId)
 }
 
+func (a *App) GetSubModule(id, subId string) (string, error) {
+	data, err := services.ReadSubModule(id, subId)
+	return data, err
+}
+
+func (a *App) SaveSubModule(id, subId, data string) error {
+	return services.SaveSubModule(id, subId, data)
+}
+
+func (a *App) DeleteSubModule(id, subId string) error {
+	return services.DeleteSubModule(id, subId)
+}
+
 func (a *App) RunSubFlow(id, subId string) error {
 	return services.RunSubFlow(a.ctx, id, subId)
 }

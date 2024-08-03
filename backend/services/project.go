@@ -10,6 +10,7 @@ import (
 	"gobot/backend/utils"
 	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
@@ -38,7 +39,6 @@ func QueryProjectById(id string) (result *models.Project, err error) {
 }
 
 func AddOrUpdateProject(project models.Project) (err error) {
-
 	if project.Id == "" {
 		project.Id = uuid.New().String()
 		path := viper.GetString(constants.ConfigPythonPath)
@@ -241,7 +241,7 @@ func ReadMainFlow(id string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.MainFlow
+	mainFlowPath := filepath.Join(project.Path, constants.BaseDir, constants.MainFlow)
 	if !utils.PathExist(mainFlowPath) {
 		return "", nil
 	}
@@ -259,13 +259,13 @@ func SaveMainFlow(id string, data string) error {
 	}
 	_ = ModifyProject(*project)
 
-	mainFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir
+	mainFlowPath := filepath.Join(project.Path, constants.BaseDir)
 	if !utils.PathExist(mainFlowPath) {
 		if err = os.MkdirAll(mainFlowPath, fs.ModeDir); err != nil {
 			return err
 		}
 	}
-	err = os.WriteFile(mainFlowPath+string(os.PathSeparator)+constants.MainFlow, []byte(data), 0666)
+	err = os.WriteFile(filepath.Join(mainFlowPath, constants.MainFlow), []byte(data), 0666)
 	return err
 }
 
@@ -274,7 +274,7 @@ func ReadSubFlow(id string, subId string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	subFlowPath := project.Path + string(os.PathSeparator) + constants.BaseDir + string(os.PathSeparator) + constants.DevDir + string(os.PathSeparator) + subId + ".flow"
+	subFlowPath := filepath.Join(project.Path, constants.BaseDir, constants.DevDir, subId+".flow")
 	if !utils.PathExist(subFlowPath) {
 		return "", nil
 	}
@@ -291,14 +291,14 @@ func SaveSubFlow(id string, subId string, data string) error {
 		return err
 	}
 	_ = ModifyProject(*project)
-	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
-	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
+	projectPath := filepath.Join(project.Path, constants.BaseDir)
+	devPath := filepath.Join(projectPath, constants.DevDir)
 	if !utils.PathExist(devPath) {
 		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
 			return err
 		}
 	}
-	err = os.WriteFile(devPath+string(os.PathSeparator)+subId+".flow", []byte(data), 0666)
+	err = os.WriteFile(filepath.Join(devPath, subId+".flow"), []byte(data), 0666)
 	if err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func SaveSubFlow(id string, subId string, data string) error {
 	if err != nil {
 		return nil
 	}
-	err = flow.GeneratePythonCode(projectPath + string(os.PathSeparator) + subId + ".py")
+	err = flow.GeneratePythonCode(filepath.Join(projectPath, subId+".py"))
 	return err
 }
 
@@ -316,16 +316,104 @@ func DeleteSubFlow(id string, subId string) error {
 	if err != nil {
 		return err
 	}
-	projectPath := project.Path + string(os.PathSeparator) + constants.BaseDir
-	devPath := projectPath + string(os.PathSeparator) + constants.DevDir
-	if utils.PathExist(devPath + string(os.PathSeparator) + subId + ".flow") {
-		err = os.Remove(devPath + string(os.PathSeparator) + subId + ".flow")
+	projectPath := filepath.Join(project.Path, constants.BaseDir)
+	devPath := filepath.Join(projectPath, constants.DevDir)
+	if utils.PathExist(filepath.Join(devPath, subId+".flow")) {
+		err = os.Remove(filepath.Join(devPath, subId+".flow"))
 		if err != nil {
 			return err
 		}
 	}
-	if utils.PathExist(projectPath + string(os.PathSeparator) + subId + ".py") {
-		err = os.Remove(projectPath + string(os.PathSeparator) + subId + ".py")
+	if utils.PathExist(filepath.Join(projectPath, subId+".py")) {
+		err = os.Remove(filepath.Join(projectPath, subId+".py"))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ReadSubModule(id string, subId string) (string, error) {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return "", err
+	}
+	code := ""
+	subModuleCodePath := filepath.Join(project.Path, constants.BaseDir, subId+".py")
+	if utils.PathExist(subModuleCodePath) {
+		data, err := os.ReadFile(subModuleCodePath)
+		if err != nil {
+			return "", err
+		}
+		code = string(data)
+	}
+	subModulePath := filepath.Join(project.Path, constants.BaseDir, constants.DevDir, subId+".flow")
+	if !utils.PathExist(subModulePath) {
+		return "", nil
+	}
+	data, err := os.ReadFile(subModulePath)
+	if err != nil {
+		return "", err
+	}
+	moduleConfig := make(map[string]interface{})
+	if err = json.Unmarshal(data, &moduleConfig); err != nil {
+		return "", err
+	}
+	moduleConfig["code"] = code
+	jsonData, err := json.Marshal(moduleConfig)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonData), nil
+}
+
+func SaveSubModule(id string, subId string, data string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	_ = ModifyProject(*project)
+	projectPath := filepath.Join(project.Path, constants.BaseDir)
+	devPath := filepath.Join(projectPath, constants.DevDir)
+	if !utils.PathExist(devPath) {
+		if err = os.MkdirAll(devPath, fs.ModeDir); err != nil {
+			return err
+		}
+	}
+	moduleConfig := make(map[string]interface{})
+	if err = json.Unmarshal([]byte(data), &moduleConfig); err != nil {
+		return err
+	}
+	code := moduleConfig["code"].(string)
+	delete(moduleConfig, "code")
+	jsonData, err := json.Marshal(moduleConfig)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(filepath.Join(devPath, subId+".flow"), jsonData, 0666)
+	if err != nil {
+		return err
+	}
+	subModuleCodePath := filepath.Join(project.Path, constants.BaseDir, subId+".py")
+	err = os.WriteFile(filepath.Join(subModuleCodePath), []byte(code), 0666)
+	return err
+}
+
+func DeleteSubModule(id string, subId string) error {
+	project, err := QueryProjectById(id)
+	if err != nil {
+		return err
+	}
+	projectPath := filepath.Join(project.Path, constants.BaseDir)
+	devPath := filepath.Join(projectPath, constants.DevDir)
+	if utils.PathExist(filepath.Join(devPath, subId+".flow")) {
+		err = os.Remove(filepath.Join(devPath, subId+".flow"))
+		if err != nil {
+			return err
+		}
+	}
+	if utils.PathExist(filepath.Join(projectPath, subId+".py")) {
+		err = os.Remove(filepath.Join(projectPath, subId+".py"))
 		if err != nil {
 			return err
 		}

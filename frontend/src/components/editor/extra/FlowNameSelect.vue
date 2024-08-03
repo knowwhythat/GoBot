@@ -106,7 +106,6 @@ watch(
   async (now, old) => {
     const result = await GetSubFlow(projectId, now);
     flowParams.value = JSON.parse(result).params;
-    console.log(flowParams.value);
   },
   { deep: true },
 );

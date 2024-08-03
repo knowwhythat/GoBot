@@ -16,6 +16,8 @@ export function DeleteProject(arg1:string):Promise<void>;
 
 export function DeleteSubFlow(arg1:string,arg2:string):Promise<void>;
 
+export function DeleteSubModule(arg1:string,arg2:string):Promise<void>;
+
 export function GetBasicConfigData():Promise<{[key: string]: string}>;
 
 export function GetElementImage(arg1:string,arg2:string):Promise<string>;
@@ -37,6 +39,8 @@ export function GetRunningFlows():Promise<Array<forms.RunningInstance>>;
 export function GetSelectedWindowsElement(arg1:string):Promise<void>;
 
 export function GetSubFlow(arg1:string,arg2:string):Promise<string>;
+
+export function GetSubModule(arg1:string,arg2:string):Promise<string>;
 
 export function GetWindowsElement(arg1:string,arg2:string):Promise<string>;
 
@@ -97,6 +101,8 @@ export function SaveProjectConfig(arg1:string,arg2:string):Promise<void>;
 export function SaveProjectDependency(arg1:string,arg2:Array<string>):Promise<void>;
 
 export function SaveSubFlow(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function SaveSubModule(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SaveWindowsElement(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
