@@ -84,56 +84,66 @@ const savedRange = ref(null);
 const isExpression = ref(false);
 const content = ref("");
 
+let edit = false;
+
 watch(content, () => {
+  edit = true;
   emit("update", "1:" + content.value);
 });
+
 watch(
   () => props.value,
-  () => {},
-);
-onMounted(() => {
-  // 初始化数据
-  if (props.value && props.value.length >= 2) {
-    const prefix = props.value.substring(0, 2);
-    if (prefix === "1:") {
-      isExpression.value = true;
-      content.value = props.value.substring(2);
-    } else if (prefix === "0:") {
-      isExpression.value = false;
-      wTextareaContent.value.appendChild(
-        document.createTextNode(props.value.substring(2)),
-      );
-    } else if (prefix === "2:") {
-      isExpression.value = false;
-      wTextareaContent.value.appendChild(createTag(props.value.substring(2)));
-    } else {
-      isExpression.value = false;
-      const data = props.value.substring(2);
-      if (data) {
-        try {
-          const dataArray = JSON.parse(data);
-          dataArray.forEach((text) => {
-            if (text && text.length >= 2) {
-              if (text.substring(0, 2) === "0:") {
-                wTextareaContent.value.appendChild(
-                  document.createTextNode(text.substring(2)),
-                );
-              } else {
-                wTextareaContent.value.appendChild(
-                  createTag(text.substring(2)),
-                );
-              }
+  () => {
+    if (!edit) {
+      // 初始化数据
+      if (props.value && props.value.length >= 2) {
+        const prefix = props.value.substring(0, 2);
+        if (prefix === "1:") {
+          isExpression.value = true;
+          content.value = props.value.substring(2);
+        } else if (prefix === "0:") {
+          isExpression.value = false;
+          wTextareaContent.value.appendChild(
+            document.createTextNode(props.value.substring(2)),
+          );
+        } else if (prefix === "2:") {
+          isExpression.value = false;
+          wTextareaContent.value.appendChild(
+            createTag(props.value.substring(2)),
+          );
+        } else {
+          isExpression.value = false;
+          const data = props.value.substring(2);
+          if (data) {
+            try {
+              const dataArray = JSON.parse(data);
+              dataArray.forEach((text) => {
+                if (text && text.length >= 2) {
+                  if (text.substring(0, 2) === "0:") {
+                    wTextareaContent.value.appendChild(
+                      document.createTextNode(text.substring(2)),
+                    );
+                  } else {
+                    wTextareaContent.value.appendChild(
+                      createTag(text.substring(2)),
+                    );
+                  }
+                }
+              });
+            } catch (err) {
+              log.error("变量设置错误", err);
             }
-          });
-        } catch (err) {
-          log.error("变量设置错误", err);
+          }
         }
       }
     }
-  }
-});
+  },
+);
+
+onMounted(() => {});
 
 function changeValueType() {
+  edit = true;
   isExpression.value = !isExpression.value;
   if (isExpression.value) {
     emit("update", "1:" + content.value);
@@ -186,6 +196,7 @@ function insertNode(node) {
 }
 
 function handleInput(target) {
+  edit = true;
   nextTick(() => {
     if (target.childNodes) {
       if (target.childNodes.length === 0) {

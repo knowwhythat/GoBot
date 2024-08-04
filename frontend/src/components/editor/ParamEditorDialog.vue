@@ -224,7 +224,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   icon: {
@@ -326,11 +326,6 @@ function setData() {
     parameterData.value.parameter.exception = "error";
   }
 }
-
-onMounted(() => {
-  console.log("paramEditorDialog mounted");
-  setData();
-});
 
 function updateInnerValue(key, value) {
   parameterData.value.parameter[key] = value;
