@@ -16,11 +16,28 @@ const props = defineProps({
 const emit = defineEmits(["update"]);
 const editor = ref(null);
 
+self.MonacoEnvironment = {
+  getWorker: function (workerId, label) {
+    const getWorkerModule = (moduleUrl, label) => {
+      return new Worker(self.MonacoEnvironment.getWorkerUrl(moduleUrl), {
+        name: label,
+        type: "module",
+      });
+    };
+
+    return getWorkerModule(
+      "/monaco-editor/esm/vs/editor/editor.worker?worker",
+      label,
+    );
+  },
+};
+
 const loadMonacoEditor = async () => {
   return new Promise((resolve) => {
     resolve(monaco);
   });
 };
+
 let editorInstance;
 onMounted(async () => {
   await loadMonacoEditor();

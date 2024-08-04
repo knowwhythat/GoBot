@@ -465,6 +465,24 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 		if input.DefaultValue[0] == '0' {
 			code += input.Key + "=" + strconv.Quote(input.DefaultValue[2:]) + ","
 			return true, code
+		} else if input.DefaultValue[0] == '3' {
+			mixValue := input.DefaultValue[2:]
+			mixValueArray := make([]string, 0)
+			err := json.Unmarshal([]byte(mixValue), &mixValueArray)
+			if err != nil {
+				return false, ""
+			}
+			code += input.Key + "="
+			for _, value := range mixValueArray {
+				if value[0] == '0' {
+					code += strconv.Quote(value[2:]) + "+"
+				} else {
+					code += "str(" + value[2:] + ")+"
+				}
+			}
+			code = strings.TrimRight(code, "+")
+			code += ","
+			return true, code
 		} else {
 			if len(input.DefaultValue[2:]) > 0 {
 				code += input.Key + "=" + input.DefaultValue[2:] + ","
@@ -477,6 +495,24 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 	} else if len(inputValue) > 1 && inputValue[1] == ':' {
 		if inputValue[0] == '0' {
 			code += input.Key + "=" + strconv.Quote(inputValue[2:]) + ","
+			return true, code
+		} else if inputValue[0] == '3' {
+			mixValue := inputValue[2:]
+			mixValueArray := make([]string, 0)
+			err := json.Unmarshal([]byte(mixValue), &mixValueArray)
+			if err != nil {
+				return false, ""
+			}
+			code += input.Key + "="
+			for _, value := range mixValueArray {
+				if value[0] == '0' {
+					code += strconv.Quote(value[2:]) + "+"
+				} else {
+					code += "str(" + value[2:] + ")+"
+				}
+			}
+			code = strings.TrimRight(code, "+")
+			code += ","
 			return true, code
 		} else {
 			if len(inputValue[2:]) > 0 {

@@ -46,7 +46,7 @@ import InputGroup from "primevue/inputgroup";
 import Dropdown from "primevue/dropdown";
 import { computed, inject, onBeforeMount, ref, watch } from "vue";
 import { GetSubFlow, ReadProjectConfig } from "@back/go/backend/App";
-import ExpressionTextInput from "@/components/editor/ExpressionTextInput.vue";
+import ExpressionTextInput from "@/components/editor/ExpressionTextInputOld.vue";
 import SelectOrInput from "@/components/editor/SelectOrInput.vue";
 import Divider from "primevue/divider";
 import { throttle } from "@/utils/helper.js";

@@ -80,6 +80,7 @@ import Panel from "primevue/panel";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import SystemOperate from "@/components/SystemOperate.vue";
+import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { useAppStore } from "@/stores/app";
 import { Quit } from "@back/runtime/runtime.js";
