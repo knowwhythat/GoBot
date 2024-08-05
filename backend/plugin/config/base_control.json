@@ -332,6 +332,32 @@
             "outputs": []
           },
           "component": "BasicActivity"
+        },
+        {
+          "key": "base.control.insert_python_code",
+          "label": "插入Python代码",
+          "icon_path": "riCodeView",
+          "description": "插入Python代码",
+          "namespace": "robot_basic",
+          "method": "insert_python_code",
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [
+              {
+                "category": null,
+                "key": "code",
+                "label": "代码",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ExpressionTextInput",
+                "show_if": []
+              }
+            ],
+            "outputs": []
+          },
+          "component": "BasicActivity"
         }
       ]
     }

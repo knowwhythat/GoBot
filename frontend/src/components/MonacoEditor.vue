@@ -1,73 +1,47 @@
 <template>
-  <div ref="editor" class="h-full"></div>
+  <div class="h-full" ref="dom"></div>
 </template>
+
 <script setup>
-import * as monaco from "monaco-editor";
-import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-
-const props = defineProps({
-  code: {
-    type: String,
-    default: "",
-  },
-});
-
-const emit = defineEmits(["update"]);
-const editor = ref(null);
+import * as monaco from "monaco-editor";
+import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
 
 self.MonacoEnvironment = {
-  getWorker: function (workerId, label) {
-    const getWorkerModule = (moduleUrl, label) => {
-      return new Worker(self.MonacoEnvironment.getWorkerUrl(moduleUrl), {
-        name: label,
-        type: "module",
-      });
-    };
-
-    return getWorkerModule(
-      "/monaco-editor/esm/vs/editor/editor.worker?worker",
-      label,
-    );
+  getWorker(workerId, label) {
+    return new EditorWorker();
   },
 };
 
-const loadMonacoEditor = async () => {
-  return new Promise((resolve) => {
-    resolve(monaco);
-  });
-};
+const props = defineProps({
+  modelValue: String,
+});
 
-let editorInstance;
-onMounted(async () => {
-  await loadMonacoEditor();
-  editorInstance = monaco.editor.create(editor.value, {
-    value: props.code,
-    language: "python",
-    theme: "vs",
-    lineNumbers: "on",
-    scrollBeyondLastLine: false,
-    overviewRulerBorder: false,
+const emit = defineEmits(["update:modelValue"]);
+const dom = ref();
+let instance;
+
+onMounted(() => {
+  const pythonModel = monaco.editor.createModel(props.modelValue, "python");
+  instance = monaco.editor.create(dom.value, {
+    model: pythonModel, // theme: "vs-dark",
+    tabSize: 2,
     automaticLayout: true,
-    folding: true,
-    renderLineHighlight: "gutter",
-    contextmenu: true,
-    useTabStops: false,
-    quickSuggestions: true,
-    accessibilitySupport: "on",
-    acceptSuggestionOnEnter: "on",
-    autoClosingBrackets: "always",
+    scrollBeyondLastLine: false,
   });
 
-  editorInstance.onDidChangeModelContent(() => {
-    emit("update", editorInstance.getValue());
+  instance.onDidChangeModelContent(() => {
+    const value = instance.getValue();
+    emit("update:modelValue", value);
   });
 
-  editorInstance.onKeyDown((listener, thisArgs, disposables) => {
-    console.log(listener.keyCode);
-    if (listener.ctrlKey && listener.keyCode === monaco.KeyCode.KeyS) {
-      //不拦截保存
-    } else {
+  instance.onKeyDown((listener, thisArgs, disposables) => {
+    if (
+      (listener.ctrlKey && listener.keyCode === monaco.KeyCode.KeyX) ||
+      (listener.ctrlKey && listener.keyCode === monaco.KeyCode.KeyC) ||
+      (listener.ctrlKey && listener.keyCode === monaco.KeyCode.KeyV)
+    ) {
       listener.stopPropagation();
     }
   });
@@ -81,21 +55,19 @@ watch(
 );
 
 const setEditorValue = (val) => {
-  editorInstance.pushUndoStop();
+  instance.pushUndoStop();
 
-  editorInstance.executeEdits("name-of-edit", [
+  instance.executeEdits("name-of-edit", [
     {
-      range: editorInstance.getModel().getFullModelRange(), // full range
+      range: instance.getModel().getFullModelRange(), // full range
       text: val, // target value here
     },
   ]);
 
-  editorInstance.pushUndoStop();
+  instance.pushUndoStop();
 };
 
 onBeforeUnmount(() => {
-  editorInstance?.dispose();
+  instance?.dispose();
 });
 </script>
-
-<style scoped></style>

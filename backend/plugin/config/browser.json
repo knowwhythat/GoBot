@@ -103,7 +103,7 @@
               },
               {
                 "key": "timeout",
-                "label": "超时时间(毫秒)(毫秒)",
+                "label": "超时时间(毫秒)",
                 "type": "number",
                 "default_value": "1:3000",
                 "required": true,
@@ -1463,7 +1463,7 @@
                     "default_value": "0:display",
                     "options": [
                       { "label": "出现", "value": "display" },
-                      { "label": "消失", "value": "dispare" }
+                      { "label": "消失", "value": "disappear" }
                     ],
                     "editor_type": "SelectDefine",
                     "show_if": []

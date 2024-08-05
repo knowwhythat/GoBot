@@ -31,8 +31,8 @@
     <TabView>
       <TabPanel header="常规">
         <div class="px-2">
-          <div class="flex mt-4">
-            <span class="mr-2 w-32 truncate my-auto"> 组件名称 </span>
+          <div class="flex mt-2">
+            <span class="flex-none mr-2 w-32 truncate my-auto"> 组件名称 </span>
             <InputText
               class="w-full mr-2"
               type="text"
@@ -51,7 +51,10 @@
             :key="input.key"
           >
             <div class="flex mb-4" v-if="show(input)">
-              <span class="mr-2 w-32 truncate mt-4" :title="input.label">
+              <span
+                class="flex-none mr-2 w-32 truncate mt-4"
+                :title="input.label"
+              >
                 {{ input.label }}
               </span>
               <component
@@ -75,7 +78,7 @@
                 title="提示"
                 target="_blank"
                 rel="noopener"
-                class="my-auto p-4"
+                class="flex-none my-auto p-4"
               >
                 <v-remixicon name="riInformationLine" size="18" />
               </a>
@@ -94,7 +97,10 @@
             :key="output.key"
           >
             <div v-if="show(output)" class="flex mb-4">
-              <span class="mr-2 w-32 truncate my-auto" :title="output.label">
+              <span
+                class="flex-none mr-2 w-32 truncate my-auto"
+                :title="output.label"
+              >
                 {{ output.label }}
               </span>
               <component
@@ -128,11 +134,14 @@
       >
         <div class="px-2">
           <div
-            class="flex my-4"
+            class="flex my-2"
             v-for="input in props.parameter_define?.extra"
             :key="input.key"
           >
-            <span class="mr-2 w-32 truncate my-auto" :title="input.label">
+            <span
+              class="flex-none mr-2 w-32 truncate my-auto"
+              :title="input.label"
+            >
               {{ input.label }}
             </span>
             <component
@@ -153,8 +162,10 @@
       </TabPanel>
       <TabPanel header="错误处理" v-if="props.parameter_define?.error">
         <div class="px-2">
-          <div class="flex my-4">
-            <span class="mr-2 w-32 truncate my-auto"> 异常处理策略 </span>
+          <div class="flex my-2">
+            <span class="flex-none mr-2 w-32 truncate my-auto">
+              异常处理策略
+            </span>
             <Dropdown
               v-model="parameterData.parameter['exception']"
               :options="toDoTypes"

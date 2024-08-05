@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row w-full">
+  <div class="flex flex-1 overflow-hidden">
     <Button
       class="flex-none"
       icon="pi pi-chevron-right"
@@ -23,7 +23,7 @@
       ref="wTextarea"
     >
       <div
-        class="w-textarea_input p-4 focus:outline-none"
+        class="w-textarea_input p-4 focus:outline-none text-nowrap"
         ref="wTextareaContent"
         @click="inputClick($event)"
         @keydown="(e) => e.stopPropagation()"
@@ -94,53 +94,57 @@ watch(content, () => {
 watch(
   () => props.value,
   () => {
-    if (!edit) {
-      // 初始化数据
-      if (props.value && props.value.length >= 2) {
-        const prefix = props.value.substring(0, 2);
-        if (prefix === "1:") {
-          isExpression.value = true;
-          content.value = props.value.substring(2);
-        } else if (prefix === "0:") {
-          isExpression.value = false;
-          wTextareaContent.value.appendChild(
-            document.createTextNode(props.value.substring(2)),
-          );
-        } else if (prefix === "2:") {
-          isExpression.value = false;
-          wTextareaContent.value.appendChild(
-            createTag(props.value.substring(2)),
-          );
-        } else {
-          isExpression.value = false;
-          const data = props.value.substring(2);
-          if (data) {
-            try {
-              const dataArray = JSON.parse(data);
-              dataArray.forEach((text) => {
-                if (text && text.length >= 2) {
-                  if (text.substring(0, 2) === "0:") {
-                    wTextareaContent.value.appendChild(
-                      document.createTextNode(text.substring(2)),
-                    );
-                  } else {
-                    wTextareaContent.value.appendChild(
-                      createTag(text.substring(2)),
-                    );
-                  }
+    initData();
+  },
+);
+
+onMounted(() => {
+  initData();
+});
+
+function initData() {
+  if (!edit) {
+    // 初始化数据
+    if (props.value && props.value.length >= 2) {
+      const prefix = props.value.substring(0, 2);
+      if (prefix === "1:") {
+        isExpression.value = true;
+        content.value = props.value.substring(2);
+      } else if (prefix === "0:") {
+        isExpression.value = false;
+        wTextareaContent.value.appendChild(
+          document.createTextNode(props.value.substring(2)),
+        );
+      } else if (prefix === "2:") {
+        isExpression.value = false;
+        wTextareaContent.value.appendChild(createTag(props.value.substring(2)));
+      } else {
+        isExpression.value = false;
+        const data = props.value.substring(2);
+        if (data) {
+          try {
+            const dataArray = JSON.parse(data);
+            dataArray.forEach((text) => {
+              if (text && text.length >= 2) {
+                if (text.substring(0, 2) === "0:") {
+                  wTextareaContent.value.appendChild(
+                    document.createTextNode(text.substring(2)),
+                  );
+                } else {
+                  wTextareaContent.value.appendChild(
+                    createTag(text.substring(2)),
+                  );
                 }
-              });
-            } catch (err) {
-              log.error("变量设置错误", err);
-            }
+              }
+            });
+          } catch (err) {
+            log.error("变量设置错误", err);
           }
         }
       }
     }
-  },
-);
-
-onMounted(() => {});
+  }
+}
 
 function changeValueType() {
   edit = true;

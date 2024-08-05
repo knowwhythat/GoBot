@@ -1,6 +1,9 @@
 <template>
   <div class="code-editor">
-    <MonacoEditor :code="codeData.code" @update="updateCode($event)" />
+    <MonacoEditor
+      :modelValue="codeData.code"
+      @update:modelValue="updateCode($event)"
+    />
   </div>
 </template>
 <script setup>

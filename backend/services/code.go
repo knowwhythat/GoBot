@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"github.com/duke-git/lancet/v2/strutil"
 	"gobot/backend/log"
 	"gobot/backend/models"
 	"os"
@@ -157,6 +158,13 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 		} else if activity.Method == "continue" || activity.Method == "break" {
 			code += strings.Repeat(" ", indent*4)
 			code += activity.Method + "\n"
+		} else if activity.Key == "base.control.insert_python_code" {
+			if pythonCode, ok := activity.Parameter["code"]; ok {
+				codeArray := strutil.SplitAndTrim(pythonCode[2:], "\n")
+				for _, line := range codeArray {
+					code += strings.Repeat(" ", indent*4) + line + "\n"
+				}
+			}
 		} else if activity.Method == "try" || activity.Method == "finally" {
 			indent = indent - 1
 			code += strings.Repeat(" ", indent*4)
