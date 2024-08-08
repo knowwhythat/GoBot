@@ -58,7 +58,7 @@ func InstallPackage(ctx context.Context, id string, pip forms.PipPackage) error 
 	}
 
 	if pip.InputMirror && pip.MirrorUrl != "" {
-		installArgs = append(installArgs, "i")
+		installArgs = append(installArgs, "-i")
 		installArgs = append(installArgs, pip.MirrorUrl)
 	}
 	proc := sys_exec.BuildCmd(installArgs...)

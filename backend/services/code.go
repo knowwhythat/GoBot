@@ -155,6 +155,8 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			indent, code, needPass = generateForLoopIndexExpression(indent, *activity)
 		} else if activity.Key == "base.control.invoke_flow" {
 			indent, code, needPass = generateInvokeFlowExpression(indent, activity)
+		} else if activity.Key == "base.control.invoke_module_method" {
+			indent, code, needPass = generateInvokeModuleMethodExpression(indent, activity)
 		} else if activity.Method == "continue" || activity.Method == "break" {
 			code += strings.Repeat(" ", indent*4)
 			code += activity.Method + "\n"
@@ -363,6 +365,55 @@ func generateForLoopIndexExpression(indent int, activity Activity) (int, string,
 	}
 	code += "):\n"
 	return indent, code, true
+}
+
+func generateInvokeModuleMethodExpression(indent int, activity *Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	outputValue := ""
+
+	if returnValue, ok := activity.Parameter["return_value"]; ok {
+		outputValue += returnValue
+	} else {
+		outputValue += activity.ParameterDefine.Outputs[0].DefaultValue
+	}
+
+	if len(outputValue) > 0 {
+		code += outputValue + " = "
+	}
+
+	code += activity.Namespace + "." + activity.Method + "("
+	if ok, param := generateParameter(activity.Parameter, activity.ParameterDefine.Inputs[0]); ok {
+		code += param
+	}
+
+	if methodName, ok := activity.Parameter["method_name"]; ok {
+		code += "method_name='" + methodName + "',"
+	} else {
+		code += "method_name='',"
+	}
+
+	code += "invoke_params={"
+	if inputs, ok := activity.Parameter["inputs"]; ok {
+		inputParams := make(map[string]string)
+		if err := json.Unmarshal([]byte(inputs), &inputParams); err != nil {
+			log.Logger.Error(err.Error())
+		}
+
+		for key, value := range inputParams {
+			if value[0] == '0' {
+				code += "'" + key + "'" + ":" + strconv.Quote(value[2:]) + ","
+			} else {
+				if len(value[2:]) > 0 {
+					code += "'" + key + "'" + ":" + value[2:] + ","
+				}
+			}
+		}
+	}
+	code = strings.TrimRight(code, ",")
+	code += "},"
+	code += generateCommonParameter(activity)
+	code += ")\n"
+	return indent, code, false
 }
 
 func generateInvokeFlowExpression(indent int, activity *Activity) (int, string, bool) {

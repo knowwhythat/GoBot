@@ -8,6 +8,10 @@ import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
 
+monaco.languages.register({
+  id: "python",
+});
+
 self.MonacoEnvironment = {
   getWorker(workerId, label) {
     return new EditorWorker();
@@ -26,8 +30,10 @@ onMounted(() => {
   const pythonModel = monaco.editor.createModel(props.modelValue, "python");
   instance = monaco.editor.create(dom.value, {
     model: pythonModel, // theme: "vs-dark",
-    tabSize: 2,
+    tabSize: 4,
     automaticLayout: true,
+    renderLineHighlight: "gutter",
+    autoClosingBrackets: "always",
     scrollBeyondLastLine: false,
   });
 
@@ -48,7 +54,7 @@ onMounted(() => {
 });
 
 watch(
-  () => props.code,
+  () => props.modelValue,
   (now, old) => {
     setEditorValue(now);
   },

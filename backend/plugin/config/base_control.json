@@ -334,6 +334,41 @@
           "component": "BasicActivity"
         },
         {
+          "key": "base.control.invoke_module_method",
+          "label": "调用模块方法",
+          "icon_path": "riFunctions",
+          "description": "调用本项目下的模块的方法",
+          "namespace": "robot_basic",
+          "method": "invoke_module_method",
+          "isPseudo": true,
+          "parameter_define": {
+            "inputs": [
+              {
+                "category": null,
+                "key": "module_name",
+                "label": "模块名称",
+                "type": "str",
+                "default_value": "0:",
+                "required": true,
+                "options": null,
+                "editor_type": "ModuleNameSelect",
+                "show_if": []
+              }
+            ],
+            "outputs": [
+              {
+                "key": "return_value",
+                "label": "方法返回值",
+                "type": "any",
+                "default_value": "return_value",
+                "required": true,
+                "editor_type": "SelectOrInput"
+              }
+            ]
+          },
+          "component": "BasicActivity"
+        },
+        {
           "key": "base.control.insert_python_code",
           "label": "插入Python代码",
           "icon_path": "riCodeView",
@@ -351,7 +386,7 @@
                 "default_value": "0:",
                 "required": true,
                 "options": null,
-                "editor_type": "ExpressionTextInput",
+                "editor_type": "CodeBlockValue",
                 "show_if": []
               }
             ],

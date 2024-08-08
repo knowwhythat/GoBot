@@ -384,18 +384,31 @@ func SaveSubModule(id string, subId string, data string) error {
 	if err = json.Unmarshal([]byte(data), &moduleConfig); err != nil {
 		return err
 	}
+
 	code := moduleConfig["code"].(string)
 	delete(moduleConfig, "code")
+	subModuleCodePath := filepath.Join(project.Path, constants.BaseDir, subId+".py")
+	err = os.WriteFile(filepath.Join(subModuleCodePath), []byte(code), 0666)
+	if err != nil {
+		return err
+	}
+	path := viper.GetString(constants.ConfigPythonPath)
+	command := sys_exec.BuildCmd(path, "-m", "robot_core.parse_function_definitions", subModuleCodePath)
+	funcDefine, err := command.Output()
+	if err != nil {
+		return err
+	}
+	funcs := make([]interface{}, 0)
+	if err = json.Unmarshal(funcDefine, &funcs); err != nil {
+		return err
+	}
+	moduleConfig["funcDefine"] = funcs
 	jsonData, err := json.Marshal(moduleConfig)
 	if err != nil {
 		return err
 	}
 	err = os.WriteFile(filepath.Join(devPath, subId+".flow"), jsonData, 0666)
-	if err != nil {
-		return err
-	}
-	subModuleCodePath := filepath.Join(project.Path, constants.BaseDir, subId+".py")
-	err = os.WriteFile(filepath.Join(subModuleCodePath), []byte(code), 0666)
+
 	return err
 }
 
