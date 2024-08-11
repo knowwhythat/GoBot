@@ -1,6 +1,7 @@
 /* eslint-disable */
-const defaultTheme = require('tailwindcss/defaultTheme');
-const colors = require('tailwindcss/colors');
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
+const { addDynamicIconSelectors } = require("@iconify/tailwind");
 
 function withOpacityValue(variable) {
   return ({ opacityValue }) => {
@@ -16,7 +17,7 @@ function rem2px(input, fontSize = 16) {
   }
 
   switch (typeof input) {
-    case 'object':
+    case "object":
       if (Array.isArray(input)) {
         return input.map((val) => rem2px(val, fontSize));
       }
@@ -26,10 +27,10 @@ function rem2px(input, fontSize = 16) {
       }
       return ret;
 
-    case 'string':
+    case "string":
       return input.replace(
         /(\d*\.?\d+)rem$/,
-        (_, val) => `${parseFloat(val) * fontSize}px`
+        (_, val) => `${parseFloat(val) * fontSize}px`,
       );
     default:
       return input;
@@ -37,8 +38,9 @@ function rem2px(input, fontSize = 16) {
 }
 
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx,vue}','./index.html'],
-  darkMode: 'class', // or 'media' or 'class'
+  content: ["./src/**/*.{js,jsx,ts,tsx,vue}", "./index.html"],
+  darkMode: "class", // or 'media' or 'class'
+  plugins: [addDynamicIconSelectors()],
   theme: {
     borderRadius: rem2px(defaultTheme.borderRadius),
     columns: rem2px(defaultTheme.columns),
@@ -50,26 +52,26 @@ module.exports = {
     spacing: rem2px(defaultTheme.spacing),
     extend: {
       colors: {
-        primary: withOpacityValue('--color-primary'),
-        secondary: withOpacityValue('--color-secondary'),
-        accent: withOpacityValue('--color-accent'),
+        primary: withOpacityValue("--color-primary"),
+        secondary: withOpacityValue("--color-secondary"),
+        accent: withOpacityValue("--color-accent"),
         gray: colors.zinc,
         orange: colors.orange,
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
-        mono: ['Source Code Pro', 'monospace'],
+        sans: ["Poppins", "sans-serif"],
+        mono: ["Source Code Pro", "monospace"],
       },
       container: {
         center: true,
         padding: {
-          DEFAULT: '1rem',
-          sm: '2rem',
+          DEFAULT: "1rem",
+          sm: "2rem",
         },
       },
     },
   },
   variants: {
     extend: {},
-  }
+  },
 };

@@ -27,7 +27,6 @@
         <p class="w-64 truncate">{{ parameterData.label }}</p>
       </div>
     </template>
-
     <TabView>
       <TabPanel header="常规">
         <div class="px-2">

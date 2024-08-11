@@ -16,11 +16,12 @@ var fileList = []string{
 	"browser.json",
 	"desktop_application.json",
 	"mouse_keyboard.json",
+	"excel.json",
 	"image.json",
 	"ai.json",
 }
 
-type PluginConfig struct {
+type Config struct {
 	Id          string     `json:"id"`
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
@@ -79,7 +80,7 @@ func ParseAllPlugin() ([]Activity, error) {
 		if err != nil {
 			return nil, err
 		}
-		pluginConfig := PluginConfig{}
+		pluginConfig := Config{}
 		err = json.Unmarshal(content, &pluginConfig)
 		if err != nil {
 			return nil, err

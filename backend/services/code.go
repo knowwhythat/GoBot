@@ -131,7 +131,7 @@ func generateParams(params []Param) string {
 }
 
 func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent int) string {
-	if activity.Namespace != "" {
+	if len(strings.TrimSpace(activity.Namespace)) > 0 {
 		namespace[activity.Namespace] = ""
 	}
 	code := ""
@@ -204,42 +204,9 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 			needPass = false
 		}
 	} else {
-		code = code + strings.Repeat(" ", indent*4)
-		outputValue := ""
-		if len(activity.ParameterDefine.Outputs) > 0 {
-			for _, o := range activity.ParameterDefine.Outputs {
-				if outputName, ok := activity.Parameter[o.Key]; !ok {
-					outputValue += o.DefaultValue + ","
-				} else if outputName != "" {
-					outputValue += outputName + ","
-				}
-			}
-		}
-		if len(outputValue) > 0 && outputValue[len(outputValue)-1] == ',' {
-			outputValue = strings.TrimRight(outputValue, ",")
-		}
-
-		if len(outputValue) > 0 {
-			code = code + outputValue + " = "
-		}
-		code = code + activity.Namespace + "." + activity.Method + "("
-		if len(activity.ParameterDefine.Inputs) > 0 {
-			for _, i := range activity.ParameterDefine.Inputs {
-				if ok, param := generateParameter(activity.Parameter, i); ok {
-					code += param
-				}
-			}
-		}
-		if len(activity.ParameterDefine.Extra) > 0 {
-			for _, i := range activity.ParameterDefine.Extra {
-				if ok, param := generateParameter(activity.Parameter, i); ok {
-					code += param
-				}
-			}
-		}
-		code += generateCommonParameter(activity)
-		code += ")\n"
+		indent, code, needPass = generateCommonExpression(indent, activity)
 	}
+
 	if len(activity.Children) > 0 {
 		for _, child := range activity.Children {
 			code += child.GeneratePythonCode(namespace, indent+1)
@@ -249,7 +216,32 @@ func (activity *Activity) GeneratePythonCode(namespace map[string]string, indent
 	}
 	return code
 }
+func generateCommonExpression(indent int, activity *Activity) (int, string, bool) {
+	code := strings.Repeat(" ", indent*4)
+	outputValue := generateReturnValue(activity)
 
+	if len(outputValue) > 0 {
+		code = code + outputValue + " = "
+	}
+	if len(strings.TrimSpace(activity.Namespace)) > 0 {
+		code += activity.Namespace + "."
+	}
+
+	code += activity.Method + "("
+	if len(activity.ParameterDefine.Inputs) > 0 {
+		for _, i := range activity.ParameterDefine.Inputs {
+			code += generateParameterPair(activity.Parameter, i)
+		}
+	}
+	if len(activity.ParameterDefine.Extra) > 0 {
+		for _, i := range activity.ParameterDefine.Extra {
+			code += generateParameterPair(activity.Parameter, i)
+		}
+	}
+	code += generateCommonParameter(activity)
+	code += ")\n"
+	return indent, code, false
+}
 func generateIfExpression(indent int, activity Activity) (int, string, bool) {
 	indent = indent - 1
 	code := strings.Repeat(" ", indent*4)
@@ -382,9 +374,7 @@ func generateInvokeModuleMethodExpression(indent int, activity *Activity) (int, 
 	}
 
 	code += activity.Namespace + "." + activity.Method + "("
-	if ok, param := generateParameter(activity.Parameter, activity.ParameterDefine.Inputs[0]); ok {
-		code += param
-	}
+	code += generateParameterPair(activity.Parameter, activity.ParameterDefine.Inputs[0])
 
 	if methodName, ok := activity.Parameter["method_name"]; ok {
 		code += "method_name='" + methodName + "',"
@@ -441,9 +431,7 @@ func generateInvokeFlowExpression(indent int, activity *Activity) (int, string, 
 	code = code + activity.Namespace + "." + activity.Method + "("
 	if len(activity.ParameterDefine.Inputs) > 0 {
 		for _, input := range activity.ParameterDefine.Inputs {
-			if ok, param := generateParameter(activity.Parameter, input); ok {
-				code += param
-			}
+			code += generateParameterPair(activity.Parameter, input)
 		}
 	}
 	code += "return_value=["
@@ -453,7 +441,7 @@ func generateInvokeFlowExpression(indent int, activity *Activity) (int, string, 
 			log.Logger.Error(err.Error())
 		}
 
-		for key, _ := range outputParams {
+		for key := range outputParams {
 			if len(key) > 0 {
 				code += strconv.Quote(key) + ","
 			}
@@ -481,9 +469,7 @@ func generateInvokeFlowExpression(indent int, activity *Activity) (int, string, 
 
 	if len(activity.ParameterDefine.Extra) > 0 {
 		for _, i := range activity.ParameterDefine.Extra {
-			if ok, param := generateParameter(activity.Parameter, i); ok {
-				code += param
-			}
+			code += generateParameterPair(activity.Parameter, i)
 		}
 	}
 	code += generateCommonParameter(activity)
@@ -513,25 +499,60 @@ func generateCommonParameter(activity *Activity) string {
 	return code
 }
 
-// generateParameter
+func generateReturnValue(activity *Activity) string {
+	outputValue := ""
+	if len(activity.ParameterDefine.Outputs) > 0 {
+		for _, o := range activity.ParameterDefine.Outputs {
+			resultValue := ""
+			if outputName, ok := activity.Parameter[o.Key]; !ok {
+				resultValue = o.DefaultValue
+			} else if outputName != "" {
+				resultValue = outputName
+			}
+			if len(resultValue) > 0 {
+				outputValue += resultValue + ","
+			} else {
+				outputValue += "_,"
+			}
+		}
+	}
+	if len(outputValue) > 0 && outputValue[len(outputValue)-1] == ',' {
+		outputValue = strings.TrimRight(outputValue, ",")
+	}
+	return outputValue
+}
+
+// generateParameterPair
 // 0:字符串
 // 1:表达式
 // 2:变量
 // 3:混合模式
-func generateParameter(parameter map[string]string, input Input) (bool, string) {
+func generateParameterPair(parameter map[string]string, input Input) string {
 	code := ""
 	if inputValue, ok := parameter[input.Key]; !ok {
-		if input.DefaultValue[0] == '0' {
-			code += input.Key + "=" + strconv.Quote(input.DefaultValue[2:]) + ","
-			return true, code
-		} else if input.DefaultValue[0] == '3' {
-			mixValue := input.DefaultValue[2:]
+		return code + input.Key + "=" + generateParam(input.DefaultValue) + ","
+	} else {
+		return code + input.Key + "=" + generateParam(inputValue) + ","
+	}
+}
+
+// generateParam
+// 0:字符串
+// 1:表达式
+// 2:变量
+// 3:混合模式
+func generateParam(param string) string {
+	if len(param) > 1 && param[1] == ':' {
+		if param[0] == '0' {
+			return strconv.Quote(param[2:])
+		} else if param[0] == '3' {
+			mixValue := param[2:]
 			mixValueArray := make([]string, 0)
 			err := json.Unmarshal([]byte(mixValue), &mixValueArray)
 			if err != nil {
-				return false, ""
+				return ""
 			}
-			code += input.Key + "="
+			code := ""
 			for _, value := range mixValueArray {
 				if value[0] == '0' {
 					code += strconv.Quote(value[2:]) + "+"
@@ -540,48 +561,14 @@ func generateParameter(parameter map[string]string, input Input) (bool, string) 
 				}
 			}
 			code = strings.TrimRight(code, "+")
-			code += ","
-			return true, code
+			return code
 		} else {
-			if len(input.DefaultValue[2:]) > 0 {
-				code += input.Key + "=" + input.DefaultValue[2:] + ","
-				return true, code
+			if len(param[2:]) > 0 {
+				return param[2:]
 			} else {
-				code += input.Key + "=None,"
-				return true, code
-			}
-		}
-	} else if len(inputValue) > 1 && inputValue[1] == ':' {
-		if inputValue[0] == '0' {
-			code += input.Key + "=" + strconv.Quote(inputValue[2:]) + ","
-			return true, code
-		} else if inputValue[0] == '3' {
-			mixValue := inputValue[2:]
-			mixValueArray := make([]string, 0)
-			err := json.Unmarshal([]byte(mixValue), &mixValueArray)
-			if err != nil {
-				return false, ""
-			}
-			code += input.Key + "="
-			for _, value := range mixValueArray {
-				if value[0] == '0' {
-					code += strconv.Quote(value[2:]) + "+"
-				} else {
-					code += "str(" + value[2:] + ")+"
-				}
-			}
-			code = strings.TrimRight(code, "+")
-			code += ","
-			return true, code
-		} else {
-			if len(inputValue[2:]) > 0 {
-				code += input.Key + "=" + inputValue[2:] + ","
-				return true, code
-			} else {
-				code += input.Key + "=None,"
-				return true, code
+				return "None"
 			}
 		}
 	}
-	return false, code
+	return param
 }

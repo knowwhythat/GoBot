@@ -70,7 +70,6 @@ onBeforeMount(async () => {
 
 const subModules = computed(() => {
   if (projectConfig.value?.children) {
-    console.log(projectConfig.value?.children);
     return projectConfig.value?.children.filter(
       (flow) => flow.key !== "main" && flow.nodeType === "code",
     );

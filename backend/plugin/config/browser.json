@@ -1338,7 +1338,7 @@
                   {
                     "key": "element_instance",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "element_instance",
                     "required": true,
                     "editor_type": "SelectOrInput"
@@ -1927,7 +1927,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2038,7 +2038,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2131,7 +2131,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2215,7 +2215,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2304,7 +2304,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2394,7 +2394,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2474,7 +2474,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2568,7 +2568,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2662,7 +2662,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
@@ -2763,7 +2763,7 @@
                   {
                     "key": "element",
                     "label": "web元素",
-                    "type": "web_ellement",
+                    "type": "web_element",
                     "default_value": "1:",
                     "required": true,
                     "options": null,
